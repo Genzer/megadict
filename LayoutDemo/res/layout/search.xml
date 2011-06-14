@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="wrap_content" android:layout_height="wrap_content">
+    <LinearLayout android:id="@+id/linearLayout1" android:layout_width="wrap_content" android:layout_height="match_parent" android:orientation="vertical">
+        <LinearLayout android:id="@+id/linearLayout2" android:paddingLeft="10dip" android:paddingTop="20dip" android:baselineAligned="false" android:layout_height="wrap_content" android:layout_width="wrap_content" android:orientation="horizontal">
+            <Button android:background="@drawable/sound" android:paddingRight="25dip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/pronounceButton"></Button>
+            <AutoCompleteTextView android:layout_height="50dip" android:background="@drawable/search_border" android:layout_width="218dip" android:drawableLeft="@drawable/book" android:id="@+id/searchTextView"></AutoCompleteTextView>
+            <Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/search_button" android:paddingLeft="25dip" android:id="@+id/searchButton"></Button>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

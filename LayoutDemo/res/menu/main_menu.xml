@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:id="@+id/group1" android:visible="true" android:enabled="true" android:menuCategory="container" android:checkableBehavior="none">
+        <item android:id="@+id/something1" android:title="@string/something1"></item>
+        <item android:id="@+id/something4" android:title="@string/something4"></item>
+    </group>
+    <item android:id="@+id/something5" android:title="@string/something5">
+        <menu>
+            <item android:id="@+id/something2" android:title="@string/something2"></item>
+            <item android:id="@+id/something3" android:title="@string/something3"></item>
+        </menu>
+    </item>
+    
+</menu>
