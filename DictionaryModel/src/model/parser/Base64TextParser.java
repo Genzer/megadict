@@ -30,24 +30,30 @@ public class Base64TextParser  {
 
     private static int decodeTextToInt(String text) {
 
-        byte[] octets = text.getBytes();
-        
-        int result = 0;
-        
+        byte[] octets = text.getBytes();        
+        int result = 0;        
         int maxExponent = octets.length - 1;
         
-        for (int pos = 0; pos < octets.length; pos++) {
-            
-            byte octet = octets[pos];
-            byte decodedValue = DECODE_TABLE[octet - 38];
-            int exponent = maxExponent - pos;
-            int factor = (int) Math.pow(NUM_BASE, exponent);
-            int elementValue = decodedValue * factor;
-            
-            result += elementValue;
+        for (int pos = 0; pos < octets.length; pos++) {            
+            byte octet = octets[pos];            
+            int computedInt = computeIntValueOfCharInString(octet, pos, maxExponent);            
+            result += computedInt;
         }
         
         return result;
+    }
+    
+    private static int computeIntValueOfCharInString(byte encodedChar,
+            int positionInString, int stringLength) {
+        
+        byte decodedValue = lookUpValueInDecodeTable(encodedChar);
+        int exponent = stringLength - positionInString;
+        int factor = (int) Math.pow(NUM_BASE, exponent);        
+        return decodedValue*factor;        
+    }
+    
+    private static byte lookUpValueInDecodeTable(byte octet) {
+        return DECODE_TABLE[octet - OFFSET_IN_ASCII_TABLE];
     }
     
     public static boolean isBase64Encoded(String text) {
@@ -72,16 +78,6 @@ public class Base64TextParser  {
     }
     
     /**
-     * This table contains standard characters of base64 encoding.
-     */
-    private static byte[] ENCODE_TABLE = {
-        'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
-        'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f',
-        'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
-        'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '/'
-    };
-    
-    /**
      * This decode table is a map of ASCII table and base64 character table.
      * 
      * Orgininal idea comes from apache commons codec.
@@ -95,9 +91,5 @@ public class Base64TextParser  {
     };
 
     private static byte NUM_BASE = 64;
-    private static byte MASK = 38;
-    
-    private String cachedText = "";
-    private Integer cachedValue;
-
+    private static byte OFFSET_IN_ASCII_TABLE = 38;
 }
