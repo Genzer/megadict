@@ -39,11 +39,11 @@ public class Base64TextParserTest {
     public void testParsingValidBase64Text() {
          
          String[] VALID_ENCODED = {
-                 "Eo", "A", "tE35"
+                 "Eo", "A", "tE35", "x06V"
          };
          
          int[] VALID_DECODED = {
-                 296, 0, 11816441
+                 296, 0, 11816441, 13061781
          };
         
          for (int numCase = 0; numCase < VALID_ENCODED.length; numCase++) {
