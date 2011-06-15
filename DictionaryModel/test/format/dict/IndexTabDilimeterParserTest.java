@@ -1,4 +1,4 @@
-package model.parser;
+package format.dict;
 
 import static org.junit.Assert.*;
 
