@@ -74,7 +74,7 @@ public class Base64TextParser  {
     }
     
     private static boolean isInDecodeTable(byte octet) {
-        return (octet >= 38 && octet <= 123) && DECODE_TABLE[octet - 38] != -1;
+        return (octet >= 38 && octet <= 123) && DECODE_TABLE[octet - OFFSET_IN_ASCII_TABLE] != -1;
     }
     
     /**

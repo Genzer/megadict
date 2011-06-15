@@ -27,6 +27,7 @@ public class DICTDictionaryTest {
         fail("Not yet implemented");
     }
 
+    
     @Test
     public void testGetAllWords() {
         Set<String> allWords = testDict.getAllWords();
@@ -41,7 +42,7 @@ public class DICTDictionaryTest {
 
     @Test
     public void testLookUp() {
-        String testWord = "pers";
+        String testWord = "perpetrate";
         
         Definition def = testDict.lookUp(testWord);
         

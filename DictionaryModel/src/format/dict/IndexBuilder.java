@@ -5,7 +5,7 @@ import java.util.*;
 
 import exception.ResourceMissingException;
 
-public class IndexBuilder {
+class IndexBuilder {
 
     public IndexBuilder(String indexFilePath) {
         File inputFile = new File(indexFilePath);

@@ -2,7 +2,7 @@ package format.dict;
 
 import model.parser.Base64TextParser;
 
-public class IndexTabDilimeterParser implements IndexParser {
+class IndexTabDilimeterParser implements IndexParser {
 
     @Override
     public Index parse(String text) {
