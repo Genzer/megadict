@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent" android:orientation="vertical">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:id="@+id/storage_setting_row">
+        <TextView android:id="@+id/textView1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/storage_setting"></TextView>
+        <EditText android:id="@+id/editText1" android:layout_height="wrap_content" android:width="150dip" android:layout_width="match_parent">
+            <requestFocus></requestFocus>
+        </EditText>
+    </LinearLayout>
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:id="@+id/suggest_typing_row" android:orientation="horizontal">
+        <TextView android:text="@string/suggest_typing" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/textView2"></TextView>
+        <CheckBox android:id="@+id/checkBox1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:gravity="right|center_vertical"></CheckBox>
+    </LinearLayout>
+    <LinearLayout android:layout_width="match_parent" android:id="@+id/linearLayout1" android:layout_height="wrap_content" android:orientation="vertical">
+        <CheckedTextView android:checked="true" android:layout_width="wrap_content" android:text="CheckedTextView" android:layout_height="wrap_content" android:id="@+id/checkedTextView1"></CheckedTextView>
+    </LinearLayout>
+    
+</LinearLayout>

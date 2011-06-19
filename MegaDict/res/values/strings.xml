@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Hello World, MegaDict!</string>
+    <string name="app_name">MegaDict</string>
+    <string name="something1">Something1</string>
+    <string name="something2">Something2</string>
+    <string name="something3">Something3</string>
+    <string name="something4">Something4</string>
+    <string name="something5">Something5</string>
+    <string name="storage_setting">Storage</string>
+    <string name="suggest_typing">Suggest while typing</string>
+    <string name="setting_menu_item">Setting</string>
+    <string name="settingButtonLabel">Cấu hình</string>
+    <string name="dictionaryButtonLabel">Sử dụng từ điển</string>
+    <string name="manageButtonLabel">Quản lý dữ liệu từ điển</string>
+    <string name="soundManageButtonLabel">Quản lý phát âm từ điển</string>
+    <string name="helpButtonLabel">Giúp đỡ</string>
+    <string name="aboutButtonLabel">Thông tin phần mềm</string>
+    <string name="aboutContent"><b>Từ điển đa năng này rất tốt. Tác giả là Hiếu và Hậu.</b></string>
+    <string name="aboutDialogLabel">Thông tin phầm mềm</string>
+</resources>

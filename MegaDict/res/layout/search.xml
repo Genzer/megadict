@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_gravity="bottom|center_horizontal" android:id="@+id/mainPanel">
+    <RelativeLayout android:layout_width="match_parent" android:padding="8dip" android:layout_weight="0" android:background="@drawable/search_background" android:id="@+id/searchPanel" android:layout_height="60dip">
+        <Button android:layout_width="wrap_content" android:layout_alignParentLeft="true" android:background="@drawable/sound" android:layout_centerVertical="true" android:id="@+id/pronounceButton" android:layout_height="wrap_content"></Button>
+        <AutoCompleteTextView android:layout_width="wrap_content" android:lines="1" android:layout_toLeftOf="@+id/searchButton" android:background="@drawable/search_border" android:focusable="true" android:drawableLeft="@drawable/book" android:layout_alignParentTop="false" android:layout_toRightOf="@+id/pronounceButton" android:layout_height="wrap_content" android:id="@+id/searchEditText">
+            <requestFocus></requestFocus>
+        </AutoCompleteTextView>
+        <Button android:layout_width="wrap_content" android:background="@drawable/search_button" android:layout_centerVertical="true" android:id="@+id/searchButton" android:layout_alignParentRight="true" android:layout_height="wrap_content"></Button>
+    </RelativeLayout>
+    <ScrollView android:layout_height="wrap_content" android:layout_width="match_parent" android:layout_weight="1" android:id="@+id/resultPanel" android:background="@drawable/result_background">
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Content goes here" android:id="@+id/resultTextView"></TextView>
+    </ScrollView>
+</LinearLayout>
