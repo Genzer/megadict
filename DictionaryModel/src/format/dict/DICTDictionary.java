@@ -12,12 +12,32 @@ import model.Dictionary;
 
 public class DICTDictionary implements Dictionary {
     
-    public DICTDictionary(String indexFile, String dictionaryFile) {
-        initializeIndex(indexFile);
-        definitionReader = new DictionaryReader(dictionaryFile);
+    public static class Builder {
+        private String indexFilePath;
+        private String dictionaryFilePath;
+        
+        public Builder indexFile(String indexFilePath) {
+            this.indexFilePath = indexFilePath;
+            return this;
+        }
+        
+        public Builder dictFile(String dictionaryFilePath) {
+            this.dictionaryFilePath = dictionaryFilePath;
+            return this;
+        }
+        
+        public DICTDictionary build() {
+            return new DICTDictionary(this);
+        }
     }
     
-    private void initializeIndex(String indexFile) {
+    private DICTDictionary(Builder builder) {
+        buildIndex(builder.indexFilePath);
+        definitionReader = new DictionaryReader(builder.dictionaryFilePath);
+        loadDictionaryMetadata();
+    }
+    
+    private void buildIndex(String indexFile) {
         IndexBuilder builder = new IndexBuilder(indexFile);
         loadIndexes(builder.build());
     }
@@ -29,6 +49,17 @@ public class DICTDictionary implements Dictionary {
             supportedWords.put(index.getWord(), index);
         }
     }
+    
+    private void loadDictionaryMetadata() {
+        loadDictionaryName();
+    }
+    
+    private void loadDictionaryName() {
+        Index nameEntry = supportedWords.get(MetaDataEntry.SHORT_NAME.tagName());
+        assert nameEntry != null;
+        String name = definitionReader.getDefinitionByIndex(nameEntry);
+        this.name = name;
+    }
 
     @Override
     public Set<String> getAllWords() {
@@ -37,6 +68,8 @@ public class DICTDictionary implements Dictionary {
     
     @Override
     public List<String> recommendWord(String word) {
+        //TODO: Implement to return the adjacency words. Maybe
+        // interpolation search algorithm.
         return Collections.emptyList();
     }
     

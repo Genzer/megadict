@@ -6,11 +6,62 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Set;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import exception.ResourceMissingException;
 
 public class IndexBuilderTest {
+    
+    private static class IndexFileSample {
+        
+        public IndexFileSample(String path,
+                    int totalIndexes, String sampleIndexString) {
+            this.filePath = path;
+            this.totalIndexes = totalIndexes;
+            this.sampleIndexString = sampleIndexString;
+        }
+        
+        public final String filePath;
+        public final int totalIndexes;
+        public final String sampleIndexString;
+        
+    }
+    
+    private IndexFileSample currentTestSample;
+    private IndexBuilder testBuilder;    
+    private Set<Index> builtIndexes; 
+    
+    @Before
+    public void initialize() {
+        //currentTestSample = makePackageIncludedSample();
+        currentTestSample = makeEnglishVietnameseSample();
+    }
+        
+    private IndexFileSample makePackageIncludedSample() {
+        String filePath = 
+            IndexBuilderTest.class.getResource("/format/dict/sampleIndexFile.index").getFile();
+        int numOfIndexes = 100;
+        String sampleIndexString = "abaci\t9x\tDb";
+        
+        return new IndexFileSample(filePath, numOfIndexes, sampleIndexString);
+    }
+    
+    private IndexFileSample makeThesaurusIndexFileSample() {
+        String filePath = "C:\\test\\dictd\\moby-thesaurus.index";
+        int numOfIndexes = 30263;
+        String sampleIndexString = "00-database-short\tBZ\t8";
+        
+        return new IndexFileSample(filePath, numOfIndexes, sampleIndexString);
+    }
+    
+    private IndexFileSample makeEnglishVietnameseSample() {
+        String filePath = "C:\\test\\av.index";
+        int numOfIndexes = 108857;
+        String sampleIndexString = "Z-score\tsmpF\tm";
+        
+        return new IndexFileSample(filePath, numOfIndexes, sampleIndexString);
+    }
     
     @Test (expected = ResourceMissingException.class)
     public void testNotFoundIndexFile() throws ResourceMissingException {
@@ -18,9 +69,7 @@ public class IndexBuilderTest {
     }
     
     private void constructBuilderWithPath(String file) {
-        if (testBuilder == null) {
-            this.testBuilder = new IndexBuilder(file);            
-        }
+        this.testBuilder = new IndexBuilder(file);
     }
     
     @Test
@@ -31,13 +80,11 @@ public class IndexBuilderTest {
     }
     
     private void constructBuilder() {
-        constructBuilderWithPath(SAMPLE_INDEX_FILE);
+        constructBuilderWithPath(currentTestSample.filePath);
     }
     
     private void doBuildIndex() {
-        if (builtIndexes == null) {
-            builtIndexes = testBuilder.build();
-        }       
+        builtIndexes = testBuilder.build();      
     }
     
     private void assertBuiltIndexIsNotNull() {
@@ -48,7 +95,7 @@ public class IndexBuilderTest {
     public void testAllIndexesWereBuilt() {        
         constructBuilder();
         doBuildIndex();
-        assertNumberOfIndexesBuiltIs(NUM_OF_SAMPLE_INDEXES);        
+        assertNumberOfIndexesBuiltIs(currentTestSample.totalIndexes);        
     }
     
     private void assertNumberOfIndexesBuiltIs(int expectedValue) {
@@ -66,7 +113,7 @@ public class IndexBuilderTest {
     
     private Index createSampleIndex() {
         IndexParser parser = new IndexTabDilimeterParser();
-        Index parsedIndex = parser.parse(SAMPLE_INDEX_STRING);
+        Index parsedIndex = parser.parse(currentTestSample.sampleIndexString);
         return parsedIndex;
     }
     
@@ -74,14 +121,5 @@ public class IndexBuilderTest {
         boolean contained = builtIndexes.contains(index);
         assertTrue(contained);
     }
-    
-    private static final String SAMPLE_INDEX_FILE = 
-            IndexBuilderTest.class.getResource("/format/dict/sampleIndexFile.index").getFile();
-    
-    private static final int NUM_OF_SAMPLE_INDEXES = 100;    
-    private static final String SAMPLE_INDEX_STRING = "abaci\t9x\tDb";
-    
-    private IndexBuilder testBuilder;
-    
-    private Set<Index> builtIndexes;    
+   
 }

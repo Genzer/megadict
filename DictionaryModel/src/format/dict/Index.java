@@ -1,6 +1,6 @@
 package format.dict;
 
-class Index {
+public class Index {
     
     public Index(String word, int offset, int length) {
         this.word = word;

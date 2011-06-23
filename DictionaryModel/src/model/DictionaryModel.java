@@ -15,6 +15,8 @@ public class DictionaryModel {
     }
     
     public List<Definition> lookUp(String word) {
+        //TODO: Traverse all installed dictionary then look
+        // the word up on each dictionary
         return Collections.emptyList();
     }
     

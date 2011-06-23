@@ -1,10 +1,6 @@
 package format.dict;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
+import java.io.*;
 
 import exception.ResourceMissingException;
 
@@ -70,7 +66,7 @@ class DictionaryReader {
         } catch (UnsupportedEncodingException e) {
             /*
              * We can leave this catch block empty because the exception will
-             * never be thrown. Every implementation of Java Platform are
+             * never be thrown. Every implementation of Java Platforms are
              * required to support UTF-8 charset.
              */
         }

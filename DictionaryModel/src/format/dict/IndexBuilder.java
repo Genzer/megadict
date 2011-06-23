@@ -5,7 +5,7 @@ import java.util.*;
 
 import exception.ResourceMissingException;
 
-class IndexBuilder {
+public class IndexBuilder {
 
     public IndexBuilder(String indexFilePath) {
         File inputFile = new File(indexFilePath);
@@ -48,10 +48,8 @@ class IndexBuilder {
         }
     }
     
-    private void createReader() throws IOException {        
-        FileInputStream fileInputStream = new FileInputStream(indexFile);        
-        DataInputStream dataInputStream = new DataInputStream(fileInputStream);        
-        this.textReader = new BufferedReader(new InputStreamReader(dataInputStream));
+    private void createReader() throws IOException {                
+        this.textReader = new BufferedReader(new FileReader(indexFile));
     }
     
     private void closeReader() throws IOException {
