@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import format.dict.index.Index;
+import format.dict.index.IndexBuilder;
+
 import model.Definition;
 import model.Dictionary;
 
@@ -77,8 +80,9 @@ public class DICTDictionary implements Dictionary {
     public Definition lookUp(String word) {
         if (supportedWords.containsKey(word)) {
             return loadDefinition(supportedWords.get(word));
+        } else {
+            return Definition.NOT_FOUND;
         }
-        return null;
     }
     
     private Definition loadDefinition(Index index) {       

@@ -1,9 +1,11 @@
-package format.dict;
+package format.dict.index;
 
 import java.io.*;
 import java.util.*;
 
 import exception.ResourceMissingException;
+import format.dict.parser.IndexParser;
+import format.dict.parser.IndexTabDilimeterParser;
 
 public class IndexBuilder {
 

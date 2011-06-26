@@ -1,4 +1,4 @@
-package format.dict;
+package format.dict.parser;
 
 import static org.junit.Assert.*;
 
@@ -7,9 +7,9 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import format.dict.Index;
-import format.dict.IndexParser;
-import format.dict.IndexTabDilimeterParser;
+import format.dict.index.Index;
+import format.dict.parser.IndexParser;
+import format.dict.parser.IndexTabDilimeterParser;
 
 public class IndexTabDilimeterParserTest {
     

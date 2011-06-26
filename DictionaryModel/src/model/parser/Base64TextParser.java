@@ -29,8 +29,14 @@ public class Base64TextParser  {
     }
 
     private static int decodeTextToInt(String text) {
-
-        byte[] octets = text.getBytes();        
+        return convertBase64ByteArrayToInt(text.getBytes());        
+    }
+    
+    public static int toInt(byte[] octets) {
+        return convertBase64ByteArrayToInt(octets);
+    }
+    
+    private static int convertBase64ByteArrayToInt(byte[] octets) {
         int result = 0;        
         int maxExponent = octets.length - 1;
         

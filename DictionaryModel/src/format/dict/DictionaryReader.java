@@ -3,6 +3,7 @@ package format.dict;
 import java.io.*;
 
 import exception.ResourceMissingException;
+import format.dict.index.Index;
 
 class DictionaryReader {
 

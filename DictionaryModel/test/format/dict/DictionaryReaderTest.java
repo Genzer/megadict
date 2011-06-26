@@ -9,6 +9,10 @@ import java.io.UnsupportedEncodingException;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import format.dict.index.Index;
+import format.dict.parser.IndexParser;
+import format.dict.parser.IndexTabDilimeterParser;
+
 
 public class DictionaryReaderTest {
 

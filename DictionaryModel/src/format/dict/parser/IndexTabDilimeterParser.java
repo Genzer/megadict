@@ -1,5 +1,6 @@
-package format.dict;
+package format.dict.parser;
 
+import format.dict.index.Index;
 import model.parser.Base64TextParser;
 
 public class IndexTabDilimeterParser implements IndexParser {

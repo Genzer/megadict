@@ -1,4 +1,4 @@
-package format.dict;
+package format.dict.index;
 
 public class Index {
     

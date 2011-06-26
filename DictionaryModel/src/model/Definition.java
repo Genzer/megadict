@@ -1,6 +1,12 @@
 package model;
 
 public class Definition {
+    
+    public static final Definition NOT_FOUND;
+    
+    static {
+        NOT_FOUND = makeNotFound();
+    }
 
     public Definition(String word, String definition, String dictionaryName){
         this.word = word;
@@ -18,6 +24,10 @@ public class Definition {
     
     public String getDictionaryName() {
         return this.dictionaryName;
+    }
+    
+    private static Definition makeNotFound() {
+        return new Definition("Not Found", "There is no definition", "");
     }
     
     private String word;
