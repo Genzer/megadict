@@ -23,8 +23,7 @@ public class DocumentParser {
 		final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		try {
 			final DocumentBuilder builder = factory.newDocumentBuilder();
-			final Document doc = builder.parse(file);
-			return doc;
+			return builder.parse(file);
 		} catch (final ParserConfigurationException e) {
 			throw new DocumentParserException();
 		} catch (final SAXException e) {

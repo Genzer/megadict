@@ -18,7 +18,7 @@ import android.widget.TextView;
 
 import com.megadict.R;
 import com.megadict.business.DictionaryCenter;
-import com.megadict.business.ExternalDirectoryCreator;
+import com.megadict.business.ExternalStorage;
 import com.megadict.exception.ConfigurationFileNotFoundException;
 import com.megadict.exception.CouldNotCreateExternalDirectoryException;
 import com.megadict.exception.DataFileNotFoundException;
@@ -31,12 +31,12 @@ public class DictionaryActivity extends Activity implements OnClickListener {
 
 	private DictionaryCenter dictionaryCenter;
 	private File externalDirectory;
-	private Button searchButton;
 	private EditText searchEditText;
 	private TextView resultTextView;
 	private final int currentDictID;
 
 	public DictionaryActivity() {
+		super();
 		currentDictID = 123;
 	}
 
@@ -86,8 +86,9 @@ public class DictionaryActivity extends Activity implements OnClickListener {
 	/**
 	 * Called when the search button is clicked.
 	 */
-	public void onClick(final View v) {
-		if (v.getId() == R.id.searchButton) {
+	@Override
+	public void onClick(final View view) {
+		if (view.getId() == R.id.searchButton) {
 			//Utility.messageBox(this, "Hi man");
 			searchWord(searchEditText.getText().toString());
 		}
@@ -107,7 +108,7 @@ public class DictionaryActivity extends Activity implements OnClickListener {
 	 * Init layout.
 	 */
 	private void initLayout() {
-		searchButton = (Button) findViewById(R.id.searchButton);
+		final Button searchButton = (Button) findViewById(R.id.searchButton);
 		searchButton.setOnClickListener(this);
 		searchEditText = (EditText) findViewById(R.id.searchEditText);
 		resultTextView = (TextView) findViewById(R.id.resultTextView);
@@ -118,7 +119,7 @@ public class DictionaryActivity extends Activity implements OnClickListener {
 	 */
 	private void initMegaDictDirectory() {
 		try {
-			externalDirectory = ExternalDirectoryCreator.createDirectory();
+			externalDirectory = ExternalStorage.getExternalDirectory();
 		} catch (final SecurityException e) {
 			resultTextView.setTextColor(Color.RED);
 			resultTextView.setText("Không tạo được thư mục. Thư mục không có quyền ghi.");

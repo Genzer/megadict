@@ -19,18 +19,24 @@ public class DictionaryInformation {
 	private void createNecessaryFiles(final File parentFilePath) throws IndexFileNotFoundException, DataFileNotFoundException {
 
 		/* Create index and data file path. */
-		final String fileNameWithoutExtension = bean.getSourceLanguage() + "_"
-		+ bean.getTargetLanguage();
+		final String fileNameWithoutExtension =
+			bean.getSourceLanguage() + "_" + bean.getTargetLanguage();
 		final File filePath = parentFilePath;
 		final String separator = System.getProperty("file.separator");
-		final String indexFilePath = filePath + separator + fileNameWithoutExtension + ".index";
-		final String dataFilePath = filePath + separator + fileNameWithoutExtension + ".dict";
+		final String indexFilePath =
+			filePath + separator + fileNameWithoutExtension + ".index";
+		final String dataFilePath =
+			filePath + separator + fileNameWithoutExtension + ".dict";
 
 		/* Check if index file and data file exist. If not, throw exception. */
 		indexFile = new File(indexFilePath);
 		dataFile = new File(dataFilePath);
-		if (!indexFile.exists()) throw new IndexFileNotFoundException();
-		if (!dataFile.exists()) throw new DataFileNotFoundException();
+		if (!indexFile.exists()) {
+			throw new IndexFileNotFoundException();
+		}
+		if (!dataFile.exists()) {
+			throw new DataFileNotFoundException();
+		}
 	}
 
 	public File getIndexFile() {

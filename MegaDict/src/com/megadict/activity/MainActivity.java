@@ -25,7 +25,10 @@ public class MainActivity extends ActivityGroup implements OnClickListener {
 	private List<Button> getButtonList() {
 		final List<Button> buttons = new ArrayList<Button>();
 		buttons.add((Button) findViewById(R.id.dictionaryButton));
+		buttons.add((Button) findViewById(R.id.manageButton));
+		buttons.add((Button) findViewById(R.id.soundManageButton));
 		buttons.add((Button) findViewById(R.id.settingButton));
+		buttons.add((Button) findViewById(R.id.helpButton));
 		buttons.add((Button) findViewById(R.id.aboutButton));
 		return buttons;
 	}
@@ -36,6 +39,7 @@ public class MainActivity extends ActivityGroup implements OnClickListener {
 		}
 	}
 
+	@Override
 	public void onClick(final View v) {
 		final String packageName = getCommonPackageName();
 		switch (v.getId()) {
@@ -48,6 +52,8 @@ public class MainActivity extends ActivityGroup implements OnClickListener {
 		case R.id.settingButton:
 			runActivity(packageName + ".SettingActivity");
 			break;
+		case R.id.manageButton:
+			runActivity(packageName + ".ManageActivity");
 		}
 	}
 

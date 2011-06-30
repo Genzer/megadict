@@ -18,4 +18,5 @@
     <string name="aboutButtonLabel">Thông tin phần mềm</string>
     <string name="aboutContent"><b>Từ điển đa năng này rất tốt. Tác giả là Hiếu và Hậu.</b></string>
     <string name="aboutDialogLabel">Thông tin phầm mềm</string>
+    <string name="rescan">Rescan</string>
 </resources>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+ <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+         android:orientation="vertical"
+         android:layout_width="match_parent"
+         android:layout_height="match_parent" android:padding="10dip">
+
+     <ListView android:id="@android:id/list"
+               android:layout_width="match_parent"
+               android:drawSelectorOnTop="false" android:layout_height="wrap_content" android:choiceMode="singleChoice"/>
+
+     <TextView android:id="@android:id/empty"
+               android:layout_width="match_parent"
+               android:text="Không tìm thấy từ điển nào." android:layout_height="wrap_content"/>
+ </LinearLayout>
