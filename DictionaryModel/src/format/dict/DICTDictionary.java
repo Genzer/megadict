@@ -1,72 +1,36 @@
 package format.dict;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import format.dict.index.Index;
-import format.dict.index.IndexBuilder;
 
 import model.Definition;
 import model.Dictionary;
+import format.dict.index.Index;
+import format.dict.index.IndexStore;
 
 
 public class DICTDictionary implements Dictionary {
     
-    public static class Builder {
-        private String indexFilePath;
-        private String dictionaryFilePath;
-        
-        public Builder indexFile(String indexFilePath) {
-            this.indexFilePath = indexFilePath;
-            return this;
-        }
-        
-        public Builder dictFile(String dictionaryFilePath) {
-            this.dictionaryFilePath = dictionaryFilePath;
-            return this;
-        }
-        
-        public DICTDictionary build() {
-            return new DICTDictionary(this);
-        }
-    }
-    
-    private DICTDictionary(Builder builder) {
-        buildIndex(builder.indexFilePath);
-        definitionReader = new DictionaryReader(builder.dictionaryFilePath);
+    public DICTDictionary(String indexFile, String dictFile) {
+        buildIndex(indexFile);
+        definitionReader = new DictionaryReader(dictFile);
         loadDictionaryMetadata();
     }
     
     private void buildIndex(String indexFile) {
-        IndexBuilder builder = new IndexBuilder(indexFile);
-        loadIndexes(builder.build());
+        supportedWords = new IndexStore(indexFile);
     }
     
-    private void loadIndexes(Set<Index> indexes) {
-        supportedWords = new HashMap<String, Index>(indexes.size());
-        
-        for (Index index : indexes) {
-            supportedWords.put(index.getWord(), index);
-        }
-    }
     
     private void loadDictionaryMetadata() {
         loadDictionaryName();
     }
     
     private void loadDictionaryName() {
-        Index nameEntry = supportedWords.get(MetaDataEntry.SHORT_NAME.tagName());
+        Index nameEntry = supportedWords.getIndexOf(MetaDataEntry.SHORT_NAME.tagName());
         assert nameEntry != null;
         String name = definitionReader.getDefinitionByIndex(nameEntry);
         this.name = name;
-    }
-
-    @Override
-    public Set<String> getAllWords() {
-        return supportedWords.keySet();
     }
     
     @Override
@@ -78,8 +42,8 @@ public class DICTDictionary implements Dictionary {
     
     @Override
     public Definition lookUp(String word) {
-        if (supportedWords.containsKey(word)) {
-            return loadDefinition(supportedWords.get(word));
+        if (supportedWords.containsWord(word)) {
+            return loadDefinition(supportedWords.getIndexOf(word));
         } else {
             return Definition.NOT_FOUND;
         }
@@ -97,5 +61,5 @@ public class DICTDictionary implements Dictionary {
     
     private String name;
     private final DictionaryReader definitionReader;
-    private Map<String, Index> supportedWords;
+    private IndexStore supportedWords;
 }

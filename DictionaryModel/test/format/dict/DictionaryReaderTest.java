@@ -1,17 +1,10 @@
 package format.dict;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
+import org.junit.*;
 
-import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
-
-import org.junit.Ignore;
-import org.junit.Test;
-
-import format.dict.index.Index;
-import format.dict.parser.IndexParser;
-import format.dict.parser.IndexTabDilimeterParser;
+import format.dict.index.*;
+import format.dict.parser.*;
 
 
 public class DictionaryReaderTest {

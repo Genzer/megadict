@@ -1,20 +1,14 @@
 package format.dict.index;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
+import org.junit.*;
 
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
-
 import exception.ResourceMissingException;
 import format.dict.index.IndexFileLoader;
-import format.dict.sample.index.EngVi;
-import format.dict.sample.index.ForaDictIndex;
-import format.dict.sample.index.IndexFileSample;
-import format.dict.sample.index.Thesaurus;
+
+import format.dict.sample.index.*;
 
 public class IndexFileLoaderTest {
     
@@ -24,7 +18,7 @@ public class IndexFileLoaderTest {
     
     @Before
     public void initialize() {
-        currentTestSample = new  ForaDictIndex();
+        currentTestSample = new  EngVi();
     }
   
     @Test (expected = ResourceMissingException.class)

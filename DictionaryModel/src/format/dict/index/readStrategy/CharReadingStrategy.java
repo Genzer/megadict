@@ -34,7 +34,7 @@ public class CharReadingStrategy implements IndexReadingStrategy {
         return fullContent.toString();
     }
     
-    private static final int CHAR_BUFFER_SIZE = 5000;
+    private static final int CHAR_BUFFER_SIZE = 30;
     private final BufferedReader reader;
 
 }

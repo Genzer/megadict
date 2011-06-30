@@ -1,7 +1,9 @@
 package format.dict.index;
 
-public class Index {
-    
+import java.io.Serializable;
+
+public class Index implements Serializable{
+
     public Index(String word, int offset, int length) {
         this.word = word;
         this.byteOffset = offset;
@@ -52,4 +54,6 @@ public class Index {
     private String word;
     private int byteOffset;
     private int byteLength;
+    
+    private static final long serialVersionUID = 688175721394207150L;
 }

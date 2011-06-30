@@ -51,7 +51,17 @@ public class Base64TextParserTest {
              assertEquals(VALID_DECODED[numCase], decodedInt);
          }
     }
-
+    
+    @Test
+    public void testParsingByteArray() {
+        String valid = "tE35";
+        int expected = 11816441;
+        
+        int actual = Base64TextParser.toInt(valid.getBytes());
+        
+        assertEquals(expected, actual);
+    }
+    
     @Test(expected = IllegalArgumentException.class)
     public void testParsingNotBase64Text() {
         String invalidCase = "sa s?3 3400=+";

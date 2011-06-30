@@ -11,11 +11,11 @@ public class EngVi implements IndexFileSample {
     }
 
     public String getSampleIndexString() {
-        return "Z-score\tsmpF\tm";
+        return "abet\tC2s\tBn";
     }
 
     public String getSampleHeadWord() {
-        return "Z-score";
+        return "abet";
     }
 
 }

@@ -1,11 +1,15 @@
 package format.dict.index;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.List;
 
 import exception.ResourceMissingException;
+import format.dict.index.readStrategy.CharReadingStrategy;
 import format.dict.index.readStrategy.IndexReadingStrategy;
-import format.dict.index.readStrategy.ReadLineStrategy;
 
 public class IndexFileLoader {
 
@@ -44,7 +48,7 @@ public class IndexFileLoader {
     }
     
     private void performReading() throws IOException {
-        IndexReadingStrategy readStrategy = new ReadLineStrategy(textReader);
+        IndexReadingStrategy readStrategy = new CharReadingStrategy(textReader);
         indexes = readStrategy.readFullContent();
     }
     
