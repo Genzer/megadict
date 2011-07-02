@@ -24,19 +24,22 @@ import com.megadict.model.DictionaryInformation;
 import com.megadict.parser.DocumentParser;
 
 public class ExternalReader {
-	/**
-	 * Get dictionary information list.
-	 * 
-	 * @param externalFile External storage path.
-	 * @return List of dictionary information
-	 * @throws InvalidConfigurationFileException if configuration file invalid.
-	 * @throws DictionaryNotFoundException if no dictionary found.
-	 * @throws ConfigurationFileNotFoundException if configuration file not found.
-	 * @throws DataFileNotFoundException if data file not found.
-	 * @throws IndexFileNotFoundException if index file not found.
-	 */
-	public static List<DictionaryInformation> getDictionaryInformationList(final File externalFile) throws InvalidConfigurationFileException, ConfigurationFileNotFoundException, IndexFileNotFoundException, DataFileNotFoundException, DictionaryNotFoundException {
-		final List<DictionaryInformation> infoList = new ArrayList<DictionaryInformation>();
+	private final List<DictionaryBean> beans = new ArrayList<DictionaryBean>();
+	private final List<DictionaryInformation> infos = new ArrayList<DictionaryInformation>();
+
+	public List<DictionaryBean> getBeans() {
+		return beans;
+	}
+
+	public List<DictionaryInformation> getInfos() {
+		return infos;
+	}
+
+	public ExternalReader(final File externalFile) throws InvalidConfigurationFileException, ConfigurationFileNotFoundException, IndexFileNotFoundException, DataFileNotFoundException, DictionaryNotFoundException {
+		init(externalFile);
+	}
+
+	private void init(final File externalFile) throws InvalidConfigurationFileException, ConfigurationFileNotFoundException, IndexFileNotFoundException, DataFileNotFoundException, DictionaryNotFoundException {
 		final File files[] = externalFile.listFiles();
 		if (files == null) throw new InvalidConfigurationFileException();
 		if (files.length == 0) throw new DictionaryNotFoundException();
@@ -45,64 +48,13 @@ public class ExternalReader {
 			if (file.isDirectory()) {
 				final File configurationFile = getConfigurationFile(file);
 				final DictionaryBean bean = getDictionaryBean(configurationFile);
-				final DictionaryInformation info = new DictionaryInformation(bean, file);
-				infoList.add(info);
+				beans.add(bean);
+				infos.add(getDictionaryInformation(bean, file));
 			}
 		}
-		return infoList;
 	}
 
-	/**
-	 * Get dictionary bean list.
-	 * 
-	 * @param externalFile External storage path.
-	 * @return List of dictionary beans
-	 * @throws InvalidConfigurationFileException
-	 * @throws DictionaryNotFoundException
-	 * @throws ConfigurationFileNotFoundException
-	 */
-	public static List<DictionaryBean> getDictionaryBeanList(final File externalFile) throws InvalidConfigurationFileException, DictionaryNotFoundException, ConfigurationFileNotFoundException {
-		final List<DictionaryBean> beanList = new ArrayList<DictionaryBean>();
-		final File files[] = externalFile.listFiles();
-		if (files == null) throw new InvalidConfigurationFileException();
-		if (files.length == 0) throw new DictionaryNotFoundException();
-
-		for (final File file : files) {
-			if (file.isDirectory()) {
-				final File configurationFile = getConfigurationFile(file);
-				final DictionaryBean bean = getDictionaryBean(configurationFile);
-				beanList.add(bean);
-			}
-		}
-		return beanList;
-	}
-
-	/**
-	 * Get dictionary name list.
-	 * 
-	 * @param externalFile
-	 * @return List of dictionary names
-	 * @throws InvalidConfigurationFileException
-	 * @throws DictionaryNotFoundException
-	 * @throws ConfigurationFileNotFoundException
-	 */
-	public static List<String> getDictionaryNameList(final File externalFile) throws InvalidConfigurationFileException, DictionaryNotFoundException, ConfigurationFileNotFoundException {
-		final List<String> nameList = new ArrayList<String>();
-		final File files[] = externalFile.listFiles();
-		if (files == null) throw new InvalidConfigurationFileException();
-		if (files.length == 0) throw new DictionaryNotFoundException();
-
-		for (final File file : files) {
-			if (file.isDirectory()) {
-				final File configurationFile = getConfigurationFile(file);
-				final String name = getDictionaryName(configurationFile);
-				nameList.add(name);
-			}
-		}
-		return nameList;
-	}
-
-	private static File getConfigurationFile(final File parentDirectory) throws ConfigurationFileNotFoundException {
+	private File getConfigurationFile(final File parentDirectory) throws ConfigurationFileNotFoundException {
 		final File files[] = parentDirectory.listFiles();
 		for (final File file : files) {
 			if (file.getName().equals("conf.xml")) {
@@ -112,23 +64,11 @@ public class ExternalReader {
 		throw new ConfigurationFileNotFoundException();
 	}
 
-	private static String getDictionaryName(final File file) throws InvalidConfigurationFileException {
-		try {
-			final DocumentParser parser = new DocumentParser();
-			final Document doc = parser.parse(file);
-
-			final Element root = doc.getDocumentElement();
-			final NodeList children = root.getChildNodes();
-			final String name = getDataFromNodeList("name", children);
-
-			if (name == null) throw new InvalidConfigurationFileException();
-			return name;
-		} catch (final DocumentParserException e) {
-			throw new InvalidConfigurationFileException();
-		}
+	private DictionaryInformation getDictionaryInformation(final DictionaryBean bean, final File file) throws IndexFileNotFoundException, DataFileNotFoundException {
+		return new DictionaryInformation(bean, file);
 	}
 
-	private static DictionaryBean getDictionaryBean(final File file) throws InvalidConfigurationFileException {
+	private DictionaryBean getDictionaryBean(final File file) throws InvalidConfigurationFileException {
 		try {
 			final DocumentParser parser = new DocumentParser();
 			final Document doc = parser.parse(file);
@@ -160,11 +100,11 @@ public class ExternalReader {
 		}
 	}
 
-	private static boolean isAnyOfDictAttributesNull(final String name, final String sourceLang, final String targetLang, final String description, final Date createDate) {
+	private boolean isAnyOfDictAttributesNull(final String name, final String sourceLang, final String targetLang, final String description, final Date createDate) {
 		return (name == null || sourceLang == null || targetLang == null || description == null || createDate == null);
 	}
 
-	private static String getDataFromNodeList(final String attributeName, final NodeList nodeList) {
+	private String getDataFromNodeList(final String attributeName, final NodeList nodeList) {
 		for (int i = 0; i < nodeList.getLength(); i++) {
 			final Node child = nodeList.item(i);
 			if (child instanceof Element) {

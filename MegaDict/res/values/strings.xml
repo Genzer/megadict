@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+	<!-- Others -->
     <string name="hello">Hello World, MegaDict!</string>
-    <string name="app_name">MegaDict</string>
-    <string name="something1">Something1</string>
-    <string name="something2">Something2</string>
-    <string name="something3">Something3</string>
-    <string name="something4">Something4</string>
-    <string name="something5">Something5</string>
-    <string name="storage_setting">Storage</string>
-    <string name="suggest_typing">Suggest while typing</string>
-    <string name="setting_menu_item">Setting</string>
-    <string name="settingButtonLabel">Cấu hình</string>
-    <string name="dictionaryButtonLabel">Sử dụng từ điển</string>
-    <string name="manageButtonLabel">Quản lý dữ liệu từ điển</string>
-    <string name="soundManageButtonLabel">Quản lý phát âm từ điển</string>
-    <string name="helpButtonLabel">Giúp đỡ</string>
-    <string name="aboutButtonLabel">Thông tin phần mềm</string>
+    <string name="appName">MegaDict</string>    
     <string name="aboutContent"><b>Từ điển đa năng này rất tốt. Tác giả là Hiếu và Hậu.</b></string>
-    <string name="aboutDialogLabel">Thông tin phầm mềm</string>
-    <string name="rescan">Rescan</string>
+    <string name="aboutDialogLabel">About</string>
+    <string name="storageLabel">Storage</string>
+    
+    <!-- Button labels -->
+    <string name="settingButtonLabel">Setting</string>
+    <string name="dictionaryButtonLabel">Dictionary</string>
+    <string name="manageButtonLabel">Dictionary Management</string>
+    <string name="soundManageButtonLabel">Sound Management</string>
+    <string name="helpButtonLabel">Help</string>
+    <string name="aboutButtonLabel">About</string>
+    
+    <!-- Menu items titles -->
+    <string name="rescanMenuItemTitle">Rescan storage</string>
+    <string name="settingMenuItemTitle">Settings</string>
+    <string name="manageMenuItemTitle">Manage</string>
+    <string name="aboutMenuItemTitle">About</string>
 </resources>

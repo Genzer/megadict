@@ -13,6 +13,7 @@ import android.widget.Button;
 import com.megadict.R;
 import com.megadict.utility.Utility;
 
+@Deprecated
 public class MainActivity extends ActivityGroup implements OnClickListener {
 
 	@Override
@@ -72,5 +73,8 @@ public class MainActivity extends ActivityGroup implements OnClickListener {
 		final Package pack = MainActivity.this.getClass().getPackage();
 		final String packageName = pack.getName();
 		return packageName;
+	}
+
+	private void scanStorage() {
 	}
 }

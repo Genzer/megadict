@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu
   xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:icon="@drawable/ic_menu_manage" android:menuCategory="container" android:id="@+id/setting_menu_item" android:title="@string/setting_menu_item">
+    <item android:title="@string/settingMenuItemTitle" android:id="@+id/settingMenuItem" android:icon="@drawable/crystal_configure">
     </item>
+    <item android:title="@string/manageMenuItemTitle" android:id="@+id/manageMenuItem" android:icon="@drawable/manage"></item>
+    <item android:id="@+id/aboutMenuItem" android:title="@string/aboutMenuItemTitle" android:icon="@drawable/crystal_info"></item>
     
 </menu>

@@ -6,12 +6,15 @@ import android.os.Environment;
 
 import com.megadict.exception.CouldNotCreateExternalDirectoryException;
 
-public abstract class ExternalStorage {
+public final class ExternalStorage {
 	public final static String EXTERNAL_STORAGE_DIRECTORY = "megadict";
 
-	public final static File getExternalDirectory() throws CouldNotCreateExternalDirectoryException, SecurityException {
-		if (!isExternalStorageAvailable() && isExternalStorageReadOnly())
+	private ExternalStorage(){}
+
+	public final static File getExternalDirectory() {
+		if (!isExternalStorageAvailable() && isExternalStorageReadOnly()) {
 			throw new CouldNotCreateExternalDirectoryException();
+		}
 
 		final File downloadDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
 		// Create "Download" directory if it doesn't exist.
