@@ -14,9 +14,7 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
 import com.megadict.bean.DictionaryBean;
-import com.megadict.exception.ConfigurationFileNotFoundException;
 import com.megadict.exception.DataFileNotFoundException;
-import com.megadict.exception.DictionaryNotFoundException;
 import com.megadict.exception.DocumentParserException;
 import com.megadict.exception.IndexFileNotFoundException;
 import com.megadict.exception.InvalidConfigurationFileException;
@@ -26,6 +24,13 @@ import com.megadict.parser.DocumentParser;
 public class ExternalReader {
 	private final List<DictionaryBean> beans = new ArrayList<DictionaryBean>();
 	private final List<DictionaryInformation> infos = new ArrayList<DictionaryInformation>();
+	private final List<String> logger = new ArrayList<String>();
+
+	public static final String INVALID_CONFIGURATION_FILE = "Invalid configuration file.";
+	public static final String NO_DICTIONARY = "There is no dictionary.";
+	public static final String CONFIGURATION_FILE_NOT_FOUND = "Configuration file not found.";
+	public static final String INDEX_FILE_NOT_FOUND = "Index file not found.";
+	public static final String DATA_FILE_NOT_FOUND = "Data file not found.";
 
 	public List<DictionaryBean> getBeans() {
 		return beans;
@@ -35,40 +40,69 @@ public class ExternalReader {
 		return infos;
 	}
 
-	public ExternalReader(final File externalFile) throws InvalidConfigurationFileException, ConfigurationFileNotFoundException, IndexFileNotFoundException, DataFileNotFoundException, DictionaryNotFoundException {
+	public List<String> getLogger() {
+		return logger;
+	}
+
+	public ExternalReader(final File externalFile) {
 		init(externalFile);
 	}
 
-	private void init(final File externalFile) throws InvalidConfigurationFileException, ConfigurationFileNotFoundException, IndexFileNotFoundException, DataFileNotFoundException, DictionaryNotFoundException {
+	private void init(final File externalFile) {
 		final File files[] = externalFile.listFiles();
-		if (files == null) throw new InvalidConfigurationFileException();
-		if (files.length == 0) throw new DictionaryNotFoundException();
+		if (files == null) throw new IllegalArgumentException("External storage is not a valid directory.");
+
+		DictionaryInformation info = null;
+		DictionaryBean bean = null;
 
 		for (final File file : files) {
 			if (file.isDirectory()) {
 				final File configurationFile = getConfigurationFile(file);
-				final DictionaryBean bean = getDictionaryBean(configurationFile);
+				final String locationInfo = " Location: " + file.getAbsolutePath();
+
+				// If configuration file is not found, just silently ignore it.
+				if(configurationFile == null) {
+					logger.add(CONFIGURATION_FILE_NOT_FOUND + locationInfo);
+					continue;
+				}
+
+				try {
+					bean = createDictionaryBean(configurationFile);
+					info = createDictionaryInformation(bean, file);
+				} catch (final IndexFileNotFoundException e) {
+					logger.add(INDEX_FILE_NOT_FOUND + locationInfo);
+				} catch (final DataFileNotFoundException e) {
+					logger.add(DATA_FILE_NOT_FOUND + locationInfo);
+				} catch (final InvalidConfigurationFileException e) {
+					logger.add(INVALID_CONFIGURATION_FILE + locationInfo);
+				}
+
+				// If index file or data file are not found, just silently ignore it.
+				if(bean == null || info == null) continue;
+
+				// Store bean and info for later use.
 				beans.add(bean);
-				infos.add(getDictionaryInformation(bean, file));
+				infos.add(info);
 			}
 		}
 	}
 
-	private File getConfigurationFile(final File parentDirectory) throws ConfigurationFileNotFoundException {
+	private File getConfigurationFile(final File parentDirectory) {
 		final File files[] = parentDirectory.listFiles();
+		File configurationFile = null;
 		for (final File file : files) {
 			if (file.getName().equals("conf.xml")) {
-				return file;
+				configurationFile = file;
 			}
 		}
-		throw new ConfigurationFileNotFoundException();
+		return configurationFile;
 	}
 
-	private DictionaryInformation getDictionaryInformation(final DictionaryBean bean, final File file) throws IndexFileNotFoundException, DataFileNotFoundException {
+	private DictionaryInformation createDictionaryInformation(final DictionaryBean bean, final File file) throws IndexFileNotFoundException, DataFileNotFoundException {
 		return new DictionaryInformation(bean, file);
 	}
 
-	private DictionaryBean getDictionaryBean(final File file) throws InvalidConfigurationFileException {
+	private DictionaryBean createDictionaryBean(final File file) throws InvalidConfigurationFileException {
 		try {
 			final DocumentParser parser = new DocumentParser();
 			final Document doc = parser.parse(file);
@@ -97,6 +131,8 @@ public class ExternalReader {
 			throw new InvalidConfigurationFileException();
 		} catch (final DocumentParserException e) {
 			throw new InvalidConfigurationFileException();
+		} catch (final NumberFormatException e) {
+			throw new InvalidConfigurationFileException();
 		}
 	}
 
@@ -105,18 +141,17 @@ public class ExternalReader {
 	}
 
 	private String getDataFromNodeList(final String attributeName, final NodeList nodeList) {
+		String data = "";
 		for (int i = 0; i < nodeList.getLength(); i++) {
 			final Node child = nodeList.item(i);
 			if (child instanceof Element) {
 				final Element childElement = (Element) child;
 				final String attrib = childElement.getAttribute("key");
 				final Text textNode = (Text) childElement.getFirstChild();
-				final String data = textNode != null ? textNode.getData() : "";
-				if (attrib.equals(attributeName)) {
-					return data;
-				}
+				data = textNode != null ? textNode.getData() : "";
+				if (attrib.equals(attributeName)) break;
 			}
 		}
-		return "";
+		return data;
 	}
 }

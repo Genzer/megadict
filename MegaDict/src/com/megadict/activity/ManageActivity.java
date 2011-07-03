@@ -21,11 +21,6 @@ import com.megadict.bean.DictionaryBean;
 import com.megadict.business.DictionaryClient;
 import com.megadict.business.ExternalReader;
 import com.megadict.business.ExternalStorage;
-import com.megadict.exception.ConfigurationFileNotFoundException;
-import com.megadict.exception.DataFileNotFoundException;
-import com.megadict.exception.DictionaryNotFoundException;
-import com.megadict.exception.IndexFileNotFoundException;
-import com.megadict.exception.InvalidConfigurationFileException;
 import com.megadict.model.ChosenModel;
 import com.megadict.model.DictionaryInformation;
 import com.megadict.utility.DatabaseHelper;
@@ -91,6 +86,7 @@ public class ManageActivity extends ListActivity {
 
 		final List<Pair<String, String>> list =
 			new ArrayList<Pair<String, String>>();
+
 		for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
 			final Pair<String, String> pair =
 				new Pair<String, String>(cursor.getString(cursor.getColumnIndex(ChosenModel.INDEX_PATH_COLUMN)), cursor.getString(cursor.getColumnIndex(ChosenModel.DICT_PATH_COLUMN)));
@@ -121,23 +117,15 @@ public class ManageActivity extends ListActivity {
 	}
 
 	private List<DictionaryInformation> getItems() {
-		List<DictionaryInformation> infos =
-			new ArrayList<DictionaryInformation>();
-		try {
-			final ExternalReader reader =
-				new ExternalReader(ExternalStorage.getExternalDirectory());
-			infos = reader.getInfos();
-		} catch (final InvalidConfigurationFileException e) {
-			Log.e(TAG, e.getMessage());
-		} catch (final DictionaryNotFoundException e) {
-			Log.e(TAG, e.getMessage());
-		} catch (final ConfigurationFileNotFoundException e) {
-			Log.e(TAG, e.getMessage());
-		} catch (final IndexFileNotFoundException e) {
-			Log.e(TAG, e.getMessage());
-		} catch (final DataFileNotFoundException e) {
-			Log.e(TAG, e.getMessage());
+		final ExternalReader reader =
+			new ExternalReader(ExternalStorage.getExternalDirectory());
+
+		// Print info after reading.
+		final List<String> logger = reader.getLogger();
+		for(final String message : logger) {
+			Log.e(TAG, message);
 		}
-		return infos;
+
+		return reader.getInfos();
 	}
 }

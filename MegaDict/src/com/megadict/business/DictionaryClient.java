@@ -1,5 +1,6 @@
 package com.megadict.business;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +14,10 @@ public class DictionaryClient {
 	public void scanChosenDictionaries(final List<Pair<String, String>> chosenDictionaries) {
 		dictionaryModels.clear();
 		for(final Pair<String, String> dict : chosenDictionaries) {
-			dictionaryModels.add(new DICTDictionary(dict.first, dict.second));
+			// Create dictionary model ony when the index file and the dict file exists.
+			if( (new File(dict.first).exists()) && (new File(dict.second).exists()) ) {
+				dictionaryModels.add(new DICTDictionary(dict.first, dict.second));
+			}
 		}
 	}
 

@@ -24,10 +24,28 @@ public class ChosenModel {
 	public static Cursor selectChosenDictionaries(final SQLiteDatabase database)
 	{
 		final Cursor cursor =
-			database.query(ChosenModel.TABLE_NAME, new String[] {
-					ChosenModel.INDEX_PATH_COLUMN,
-					ChosenModel.DICT_PATH_COLUMN }, ChosenModel.ENABLED_COLUMN
-					+ " = ?", new String[]{"1"}, null, null, ChosenModel.DICTIONARY_NAME_COLUMN);
+			database.query(
+					ChosenModel.TABLE_NAME,
+					new String[] { ChosenModel.INDEX_PATH_COLUMN, ChosenModel.DICT_PATH_COLUMN },
+					ChosenModel.ENABLED_COLUMN + " = ?",
+					new String[]{"1"},
+					null,
+					null,
+					ChosenModel.DICTIONARY_NAME_COLUMN);
+		return cursor;
+	}
+
+	public static Cursor selectAll(final SQLiteDatabase database)
+	{
+		final Cursor cursor =
+			database.query(
+					ChosenModel.TABLE_NAME,
+					new String[] { ChosenModel.INDEX_PATH_COLUMN, ChosenModel.DICT_PATH_COLUMN },
+					null,
+					null,
+					null,
+					null,
+					ChosenModel.DICTIONARY_NAME_COLUMN);
 		return cursor;
 	}
 

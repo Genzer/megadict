@@ -31,6 +31,7 @@ public class DictionaryInformation {
 		/* Check if index file and data file exist. If not, throw exception. */
 		indexFile = new File(indexFilePath);
 		dataFile = new File(dataFilePath);
+
 		if (!indexFile.exists()) {
 			throw new IndexFileNotFoundException();
 		}
