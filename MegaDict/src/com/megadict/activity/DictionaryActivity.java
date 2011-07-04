@@ -125,5 +125,23 @@ public class DictionaryActivity extends Activity implements OnClickListener, and
 	private void searchWord(final String word) {
 		final String result = dictionaryClient.lookup(word);
 		resultTextView.setText(result);
+
+		//		final SearchTask task = new SearchTask(word);
+		//		(new Thread(task)).start();
+	}
+
+	private class SearchTask implements Runnable
+	{
+		private final String word;
+
+		public SearchTask(final String word) {
+			this.word = word;
+		}
+
+		@Override
+		public void run() {
+			final String result = dictionaryClient.lookup(word);
+			resultTextView.setText(result);
+		}
 	}
 }

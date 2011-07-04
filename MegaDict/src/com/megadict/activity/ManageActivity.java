@@ -92,6 +92,8 @@ public class ManageActivity extends ListActivity {
 				new Pair<String, String>(cursor.getString(cursor.getColumnIndex(ChosenModel.INDEX_PATH_COLUMN)), cursor.getString(cursor.getColumnIndex(ChosenModel.DICT_PATH_COLUMN)));
 			list.add(pair);
 		}
+
+		System.out.println("Prepare to rescan storage.");
 		dictionaryClient.scanChosenDictionaries(list);
 	}
 
