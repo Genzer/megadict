@@ -8,7 +8,7 @@
 
     <application android:name=".application.MegaDictApp" android:icon="@drawable/megadict_icon" android:label="@string/appName">
         <activity android:name=".activity.DictionaryActivity"
-                  android:label="@string/appName">
+                  android:label="@string/appName" android:windowSoftInputMode="stateAlwaysHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
