@@ -43,11 +43,17 @@ public class DICTDictionary implements Dictionary {
     
     @Override
     public Definition lookUp(String word) {
-        if (supportedWords.containsWord(word)) {
+        boolean validated = validateWord(word);
+        
+        if (validated && supportedWords.containsWord(word)) {
             return loadDefinition(supportedWords.getIndexOf(word));
         } else {
             return Definition.NOT_FOUND;
         }
+    }
+    
+    private static boolean validateWord(String word) {
+        return StringChecker.check(word);
     }
     
     private Definition loadDefinition(Index index) {       

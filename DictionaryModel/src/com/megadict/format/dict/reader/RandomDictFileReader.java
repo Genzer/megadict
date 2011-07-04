@@ -4,8 +4,6 @@ import java.io.*;
 
 class RandomDictFileReader extends DictFileReader {
     
-    private RandomAccessFile fileReader;
-    
     public RandomDictFileReader(String dictFile) throws FileNotFoundException {
         openFile(dictFile);
     }
@@ -31,4 +29,5 @@ class RandomDictFileReader extends DictFileReader {
         fileReader.close();  
     }
     
+    private RandomAccessFile fileReader;    
 }

@@ -31,6 +31,19 @@ public class IndexStore {
         }
     }
     
+    public boolean containsWord(String word) {
+        boolean foundInCache = cache.containsKey(word);
+        
+        if (foundInCache == false) {
+            Index findInFile = findInFile(word);
+            if (findInFile != null) {
+                cache(findInFile);
+                return true;
+            }
+        }
+        return foundInCache;
+    }    
+    
     private Index findInFile(String headWord) {
         Index foundIndex = reader.getIndexOf(headWord);
         if (foundIndex != null) {
@@ -47,19 +60,6 @@ public class IndexStore {
     
     public int size() {
         return cache.size();
-    }
-    
-    public boolean containsWord(String word) {
-        boolean foundInCache = cache.containsKey(word);
-        
-        if (foundInCache == false) {
-            Index findInFile = findInFile(word);
-            if (findInFile != null) {
-                cache(findInFile);
-                return true;
-            }
-        }
-        return foundInCache;
     }
     
     private static final int DEFAULT_CACHE_CAPACITY = 1000;

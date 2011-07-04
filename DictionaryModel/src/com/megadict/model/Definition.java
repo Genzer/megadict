@@ -7,6 +7,10 @@ public class Definition {
     static {
         NOT_FOUND = makeNotFound();
     }
+        
+    private static Definition makeNotFound() {
+        return new Definition("Not Found", "There is no definition", "");
+    }
 
     public Definition(String word, String definition, String dictionaryName){
         this.word = word;
@@ -24,10 +28,6 @@ public class Definition {
     
     public String getDictionaryName() {
         return this.dictionaryName;
-    }
-    
-    private static Definition makeNotFound() {
-        return new Definition("Not Found", "There is no definition", "");
     }
     
     private String word;

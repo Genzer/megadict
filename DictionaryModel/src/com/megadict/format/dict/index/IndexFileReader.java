@@ -3,6 +3,7 @@ package com.megadict.format.dict.index;
 import java.io.*;
 import java.util.Arrays;
 
+import com.megadict.exception.ClosingFileException;
 import com.megadict.exception.ReadingIndexFileException;
 import com.megadict.exception.ResourceMissingException;
 import com.megadict.format.dict.parser.IndexParser;
@@ -42,12 +43,13 @@ class IndexFileReader {
         try {
             makeReader();
             String found = locateIndexStringOf(headWord);
-            closeReader();
             return found;
         } catch (FileNotFoundException fnf) {
             throw new ResourceMissingException(indexFilePath, fnf);
         } catch (IOException ioException) {
             throw new ReadingIndexFileException(indexFilePath, ioException);
+        } finally {
+            closeReader();
         }
     }
 
@@ -112,8 +114,12 @@ class IndexFileReader {
         builder.delete(0, builder.length());
     }
 
-    private void closeReader() throws IOException {
-        reader.close();
+    private void closeReader() {
+        try {
+            reader.close();
+        } catch (IOException ioe) {
+            throw new ClosingFileException(indexFilePath, ioe);
+        }
     }
 
     private static final int READER_INTERNAL_BUFFER_SIZE = 8 * 1024;

@@ -1,13 +1,10 @@
 package com.megadict.format.dict.index;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 
-import com.megadict.format.dict.parser.IndexParser;
-import com.megadict.format.dict.parser.IndexTabDilimeterParser;
+import com.megadict.format.dict.parser.*;
 
 public class IndexFileReaderTest {
 
@@ -89,5 +86,13 @@ public class IndexFileReaderTest {
         
         assertNull(found);
     }
-
+    
+    @Test
+    public void testWithBlankString() {
+        String blankString = "";
+        
+        Index found = testee.getIndexOf(blankString);
+        
+        assertNull(found);
+    }
 }

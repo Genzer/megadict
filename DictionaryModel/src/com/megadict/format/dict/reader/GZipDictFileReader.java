@@ -11,16 +11,15 @@ class GZipDictFileReader extends DictFileReader {
 
     @Override
     public int read(byte[] buffer, int offset, int length) throws IOException {
-        // TODO Auto-generated method stub
+        // TODO: find an appropriate algorithm to read like randon file access.
         return 0;
     }
 
     @Override
     public void close() throws IOException {
-        // TODO Auto-generated method stub
-
+        gzipReader.close();
     }
-    
+
     private final GZIPInputStream gzipReader;
 
 }
