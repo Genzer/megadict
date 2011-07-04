@@ -7,7 +7,7 @@ public class ResourceMissingException extends RuntimeException {
     }
     
     private static String makeMessage(String resourceName) {
-        return resourceName + " is Missing";
+        return resourceName + " is missing";
     }
     
     public ResourceMissingException(String resourceName, Exception rootCause) {
