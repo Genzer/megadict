@@ -1,6 +1,7 @@
 package com.megadict.format.dict.index;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 
 import com.megadict.exception.ClosingFileException;
@@ -18,11 +19,15 @@ class IndexFileReader {
     /**
      * Finds the word in index file, if that word exists then reads its content
      * and returns a corresponding {@code Index} instance.
-     * @param headWord - the word to find
+     * 
+     * @param headWord
+     *            - the word to find
      * @return an Index object if found, otherwise, returns null.
      * 
-     * @throws ResourceMissingException when the index file is not found.
-     * @throws ReadingIndexFileException when reading index file has problems.
+     * @throws ResourceMissingException
+     *             when the index file is not found.
+     * @throws ReadingIndexFileException
+     *             when reading index file has problems.
      */
     public Index getIndexOf(String headWord) {
         String indexString = find(headWord);
@@ -53,6 +58,16 @@ class IndexFileReader {
         }
     }
 
+    private void makeReader() throws FileNotFoundException {
+        FileInputStream rawStream = new FileInputStream(indexFilePath);
+        reader = new BufferedReader(newUnicodeStream(rawStream),
+                READER_INTERNAL_BUFFER_SIZE);
+    }
+
+    private InputStreamReader newUnicodeStream(FileInputStream rawStream) {
+        return new InputStreamReader(rawStream, UTF8_CHARSET);
+    }
+
     private String locateIndexStringOf(String headWord) throws IOException {
 
         headWord = optimizeHeadWordForFinding(headWord);
@@ -79,11 +94,6 @@ class IndexFileReader {
 
     private static void resetBuffer(char[] buffer) {
         Arrays.fill(buffer, ' ');
-    }
-
-    private void makeReader() throws FileNotFoundException {
-        reader = new BufferedReader(new FileReader(indexFilePath),
-                READER_INTERNAL_BUFFER_SIZE);
     }
 
     private boolean stillReading() throws IOException {
@@ -116,19 +126,23 @@ class IndexFileReader {
 
     private void closeReader() {
         try {
-            reader.close();
+            if (reader != null) {
+                reader.close();
+            }
         } catch (IOException ioe) {
             throw new ClosingFileException(indexFilePath, ioe);
         }
     }
 
     private static final int READER_INTERNAL_BUFFER_SIZE = 8 * 1024;
-    private static final IndexParser parser = new IndexTabDilimeterParser();
     private static final String HEAD_WORD_PREFIX = "\n";
+    private static final Charset UTF8_CHARSET = Charset.forName("UTF-8");
+
     private static final int BUFFER_SIZE = 5000;
     private static final char[] CHAR_BUFFER = new char[BUFFER_SIZE];
     private static final StringBuilder builder = new StringBuilder(BUFFER_SIZE);
 
+    private static final IndexParser parser = new IndexTabDilimeterParser();
     private BufferedReader reader;
     private final String indexFilePath;
 }

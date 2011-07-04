@@ -86,13 +86,4 @@ public class IndexFileReaderTest {
         
         assertNull(found);
     }
-    
-    @Test
-    public void testWithBlankString() {
-        String blankString = "";
-        
-        Index found = testee.getIndexOf(blankString);
-        
-        assertNull(found);
-    }
 }

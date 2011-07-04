@@ -5,23 +5,19 @@ public class StringChecker {
     private StringChecker() {}
     
     public static boolean check(String string) {
-        boolean validated = true;
+        boolean passed = true;
         
-        if (nullityCheck(string)) {
-            validated = false;
-        } else if (emptyStringCheck(string)) {
-            validated = false;
-        }
+        passed = nullityCheck(string) && emptyStringCheck(string);
         
-        return validated;
+        return passed;
     }
     
     private static boolean nullityCheck(String string) {
-        return string == null;
+        return string != null;
     }
     
     private static boolean emptyStringCheck(String string) {
-        return (string.trim().length() == 0);
+        return (string.trim().length() > 0);
     }  
     
 }
