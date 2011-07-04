@@ -1,4 +1,4 @@
-package exception;
+package com.megadict.exception;
 
 public class ReadingIndexFileException extends RuntimeException {
 
