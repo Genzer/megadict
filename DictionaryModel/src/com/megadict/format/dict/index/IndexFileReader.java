@@ -16,23 +16,10 @@ class IndexFileReader {
         this.indexFilePath = indexFilePath;
     }
 
-    /**
-     * Finds the word in index file, if that word exists then reads its content
-     * and returns a corresponding {@code Index} instance.
-     * 
-     * @param headWord
-     *            - the word to find
-     * @return an Index object if found, otherwise, returns null.
-     * 
-     * @throws ResourceMissingException
-     *             when the index file is not found.
-     * @throws ReadingIndexFileException
-     *             when reading index file has problems.
-     */
     public Index getIndexOf(String headWord) {
         String indexString = find(headWord);
         if (indexString != null) {
-            return parser.parse(indexString);
+            return INDEX_PARSER.parse(indexString);
         } else {
             return null;
         }
@@ -70,7 +57,7 @@ class IndexFileReader {
 
     private String locateIndexStringOf(String headWord) throws IOException {
 
-        headWord = optimizeHeadWordForFinding(headWord);
+        headWord = matchingWholeWord(headWord);
         resetBuffer(CHAR_BUFFER);
         resetBuilder();
 
@@ -89,8 +76,8 @@ class IndexFileReader {
         return null;
     }
 
-    private static String optimizeHeadWordForFinding(String headWord) {
-        return HEAD_WORD_PREFIX + headWord + "\t";
+    private static String matchingWholeWord(String headWord) {
+        return HEAD_WORD_PREFIX + headWord + HEAD_WORD_SUFFIX;
     }
 
     private static void resetBuffer(char[] buffer) {
@@ -136,14 +123,16 @@ class IndexFileReader {
     }
 
     private static final int READER_INTERNAL_BUFFER_SIZE = 8 * 1024;
-    private static final String HEAD_WORD_PREFIX = "\n";
-    private static final Charset UTF8_CHARSET = Charset.forName("UTF-8");
-
     private static final int BUFFER_SIZE = 5000;
-    private static final char[] CHAR_BUFFER = new char[BUFFER_SIZE];
-    private static final StringBuilder builder = new StringBuilder(BUFFER_SIZE);
-
-    private static final IndexParser parser = new IndexTabDilimeterParser();
+    
+    private static final String HEAD_WORD_PREFIX = "\n";
+    private static final String HEAD_WORD_SUFFIX = "\t";    
+    private static final Charset UTF8_CHARSET = Charset.forName("UTF-8");
+    
+    private static final IndexParser INDEX_PARSER = new IndexTabDilimeterParser();
+    
+    private final char[] CHAR_BUFFER = new char[BUFFER_SIZE];
+    private final StringBuilder builder = new StringBuilder(BUFFER_SIZE);
     private BufferedReader reader;
     private final String indexFilePath;
 }
