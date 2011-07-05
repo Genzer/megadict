@@ -72,6 +72,7 @@ class IndexFileReader {
 
         headWord = optimizeHeadWordForFinding(headWord);
         resetBuffer(CHAR_BUFFER);
+        resetBuilder();
 
         while (stillReading()) {
             builder.append(CHAR_BUFFER);
@@ -89,7 +90,7 @@ class IndexFileReader {
     }
 
     private static String optimizeHeadWordForFinding(String headWord) {
-        return HEAD_WORD_PREFIX + headWord;
+        return HEAD_WORD_PREFIX + headWord + "\t";
     }
 
     private static void resetBuffer(char[] buffer) {

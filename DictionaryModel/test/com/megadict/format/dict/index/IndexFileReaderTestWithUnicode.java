@@ -1,13 +1,13 @@
 package com.megadict.format.dict.index;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import org.junit.Ignore;
 import org.junit.Test;
 
 import com.megadict.format.dict.reader.DictionaryReader;
 import com.megadict.format.dict.reader.RandomDictionaryReader;
-import com.megadict.model.Definition;
 
 public class IndexFileReaderTestWithUnicode {
 

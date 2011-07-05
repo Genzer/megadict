@@ -11,35 +11,53 @@ public class DICTDictionaryTest {
     
     private Dictionary testDict;
     
+    final String hndIndexFile = "C:\\test\\av.index";
+    final String hndDictFile = "C:\\test\\av-d.dict.dz";
+    
+    final String foraIndexFile = "C:\\test\\fora\\fora_ve.index";
+    final String foraDictFile = "C:\\test\\fora\\fora_ve.dict.dz";
+    
     @Before
     public void initialize() {
-        String indexFilePath = "C:\\test\\av.index";
-        String dictionaryFile = "C:\\test\\av-d.dict.dz";
-        testDict = new DICTDictionary(indexFilePath, dictionaryFile);
+        testDict = new DICTDictionary(hndIndexFile, hndDictFile);
     }
 
-    @Test
+    @Ignore @Test
     public void testRecommendWord() {
         fail("Not yet implemented");
     }
     
-    @Test
+    @Ignore @Test
     public void testGetName() {
         fail("Not yet implemented");
     }
     
     
-    @Test
+    @Ignore @Test
     public void testLookUpWithExistingWord() {
-        String testWord = "alert";
+        String testWord = "con";
         
         Definition def = testDict.lookUp(testWord);
         
         assertNotNull(def);
         assertNotSame(Definition.NOT_FOUND, def);
+        
+        def = testDict.lookUp("co");
+        assertNotNull(def);
+        assertNotSame(Definition.NOT_FOUND, def);
     }
     
-    @Test
+    @Ignore @Test
+    public void testLookUpWithExistingWordContainsWhitespaces() {
+        String wordContainsWhitespaces = "\"buddhist\" economy";
+        
+        Definition def = testDict.lookUp(wordContainsWhitespaces);
+        
+        assertNotNull(def);
+        assertNotSame(Definition.NOT_FOUND, def);
+    }
+    
+    @Ignore @Test
     public void testLookUpWithNonExistingWord() {
         String testWord = "xyas324";
         
@@ -49,7 +67,7 @@ public class DICTDictionaryTest {
         assertSame(Definition.NOT_FOUND, def);
     }
     
-    @Test
+    @Ignore @Test
     public void testLookUpWithNullString() {
         String nullString = null;
         
@@ -59,7 +77,7 @@ public class DICTDictionaryTest {
         assertSame(Definition.NOT_FOUND, def);
     }
     
-    @Test
+    @Ignore @Test
     public void testLookUpWithBlankString() {
         String blankString = "";
         
@@ -69,7 +87,7 @@ public class DICTDictionaryTest {
         assertSame(Definition.NOT_FOUND, def);
     }
     
-    @Test
+    @Ignore @Test
     public void testLookUpWithStringContainsAllSpaces() {
         String allSpacesString = "   ";
         
@@ -77,6 +95,26 @@ public class DICTDictionaryTest {
         
         assertNotNull(def);
         assertSame(Definition.NOT_FOUND, def);
+    }
+    
+    @Test
+    public void testTakeTurnLookUpTwoDictWithSameWord() {
+        String testWord = "con";
+        
+        Definition def = testDict.lookUp(testWord);
+        
+        assertNotNull(def);
+        assertNotSame(Definition.NOT_FOUND, def);
+        
+        System.out.println(def.getContent());
+        
+        Dictionary foraDict;
+        foraDict = new DICTDictionary(foraIndexFile, foraDictFile);
+        Definition foraDef = foraDict.lookUp(testWord);
+        assertNotNull(foraDef);
+        assertNotSame(Definition.NOT_FOUND, foraDef);
+        
+        System.out.println(foraDef.getContent());
     }
 
 }

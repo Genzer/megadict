@@ -15,11 +15,11 @@ public class IndexFileReaderTest {
     @Before
     public void prepareTests() {
         parser = new IndexTabDilimeterParser();
-        indexTestFile = "C:\\test\\av.index";
+        indexTestFile = "C:\\test\\fora\\fora_ve.index";
         testee = new IndexFileReader(indexTestFile);
     }
 
-    @Test
+    @Ignore @Test
     public void testFoundWordsInFile() {
         String[] wordsToFind = loadTestHeadWords();   
         
@@ -85,5 +85,15 @@ public class IndexFileReaderTest {
         Index found = testee.getIndexOf(nonExistWord);
         
         assertNull(found);
+    }
+    
+    @Test
+    public void testOddBug() {
+        String word = "con";
+        String expected = "con\tbnGw\tGZ";
+        
+        String actual = testee.getIndexStringOf(word);
+        
+        assertEquals(expected, actual);
     }
 }
