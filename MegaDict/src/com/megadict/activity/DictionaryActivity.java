@@ -3,9 +3,10 @@ package com.megadict.activity;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.app.Activity;
+import android.app.ProgressDialog;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Pair;
 import android.view.KeyEvent;
@@ -17,6 +18,7 @@ import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
@@ -27,18 +29,28 @@ import com.megadict.model.ChosenModel;
 import com.megadict.utility.DatabaseHelper;
 import com.megadict.utility.Utility;
 
-public class DictionaryActivity extends Activity implements OnClickListener, android.view.View.OnKeyListener, OnEditorActionListener {
+public class DictionaryActivity extends BaseActivity implements OnClickListener, android.view.View.OnKeyListener, OnEditorActionListener {
 	private static final String TAG = "DictionaryActivity";
 	private DictionaryClient dictionaryClient;
 	private EditText searchEditText;
 	private TextView resultTextView;
 	private SQLiteDatabase database;
+	private ProgressDialog progressDialog;
+
+	public DictionaryActivity() {
+		super(R.layout.search);
+	}
 
 	@Override
 	public void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.search);
+		//setContentView(R.layout.search);
 		initLayout();
+
+		// Init progress dialog
+		progressDialog = new ProgressDialog(this);
+		progressDialog.setMessage("Searching...");
+
 
 		// Get application-scoped variables.
 		dictionaryClient = ((MegaDictApp) getApplication()).dictionaryClient;
@@ -79,7 +91,7 @@ public class DictionaryActivity extends Activity implements OnClickListener, and
 	@Override
 	public void onClick(final View view) {
 		if (view.getId() == R.id.searchButton) {
-			searchWord(searchEditText.getText().toString());
+			doSearching(searchEditText.getText().toString());
 		}
 	}
 
@@ -122,26 +134,38 @@ public class DictionaryActivity extends Activity implements OnClickListener, and
 		return list;
 	}
 
-	private void searchWord(final String word) {
-		final String result = dictionaryClient.lookup(word);
-		resultTextView.setText(result);
-
-		//		final SearchTask task = new SearchTask(word);
-		//		(new Thread(task)).start();
+	private void doSearching(final String word) {
+		final SearchTask task = new SearchTask();
+		task.execute(word);
 	}
 
-	private class SearchTask implements Runnable
-	{
-		private final String word;
-
-		public SearchTask(final String word) {
-			this.word = word;
+	private class SearchTask extends AsyncTask<String, Void, String> {
+		private ProgressBar progressBar;
+		@Override
+		protected void onPreExecute() {
+			progressBar = (ProgressBar)findViewById(R.id.progressBar);
+			progressBar.setVisibility(View.VISIBLE);
 		}
 
 		@Override
-		public void run() {
-			final String result = dictionaryClient.lookup(word);
-			resultTextView.setText(result);
+		protected String doInBackground(final String... params) {
+			return search(params[0]);
+		}
+
+		@Override
+		protected void onPostExecute(final String content) {
+			updateResult(content);
+			progressBar.setVisibility(View.INVISIBLE);
+		}
+
+		private String search(final String word) {
+			return dictionaryClient.lookup(word);
+		}
+
+		private void updateResult(final String content) {
+			resultTextView.setText(content);
 		}
 	}
+
 }
+

@@ -6,18 +6,36 @@
     <uses-sdk android:minSdkVersion="8" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
 
-    <application android:name=".application.MegaDictApp" android:icon="@drawable/megadict_icon" android:label="@string/appName">
+    <application android:name=".application.MegaDictApp" 
+    			 android:icon="@drawable/megadict_icon" 
+    			 android:label="@string/appName">
+    			 
         <activity android:name=".activity.DictionaryActivity"
-                  android:label="@string/appName" android:windowSoftInputMode="stateAlwaysHidden">
-            <intent-filter>
+                  android:label="@string/appName" 
+                  android:windowSoftInputMode="stateAlwaysHidden" 
+                  android:icon="@drawable/megadict_icon"
+                  android:theme="@style/MegaDictTheme">
+			<intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         
-        <activity android:name=".activity.SettingActivity"></activity>
-        <activity android:name=".activity.AboutActivity" android:theme="@android:style/Theme.Dialog" android:label="@string/aboutDialogLabel"></activity>
-        <activity android:name=".activity.ManageActivity"></activity>	
+        <activity android:name=".activity.SettingActivity" 
+        		  android:icon="@drawable/megadict_icon"
+        		  android:theme="@style/MegaDictTheme">
+        </activity>
+        
+        <activity android:name=".activity.ManageActivity" 
+        		  android:icon="@drawable/megadict_icon"
+        		  android:theme="@style/MegaDictTheme">
+		</activity>
+		
+        <activity android:name=".activity.AboutActivity" 
+        		  android:theme="@android:style/Theme.Dialog" 
+        		  android:label="@string/aboutDialogLabel" 
+        		  android:icon="@drawable/megadict_icon">
+		</activity>
 		
     </application>
 </manifest>

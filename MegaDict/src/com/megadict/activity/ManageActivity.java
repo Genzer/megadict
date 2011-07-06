@@ -3,7 +3,6 @@ package com.megadict.activity;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.app.ListActivity;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -25,16 +24,20 @@ import com.megadict.model.ChosenModel;
 import com.megadict.model.DictionaryInformation;
 import com.megadict.utility.DatabaseHelper;
 
-public class ManageActivity extends ListActivity {
+public class ManageActivity extends BaseListActivity {
 	private final String TAG = "ManageActivity";
 	private Cursor listViewCursor;
 	private SQLiteDatabase database;
 	private DictionaryClient dictionaryClient;
 
+	public ManageActivity() {
+		super(R.layout.manage);
+	}
+
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.manage);
+		//setContentView(R.layout.manage);
 
 		// Get application-scoped variables.
 		dictionaryClient = ((MegaDictApp) getApplication()).dictionaryClient;
