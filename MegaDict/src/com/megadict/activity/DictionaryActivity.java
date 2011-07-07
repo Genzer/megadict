@@ -6,6 +6,7 @@ import java.util.List;
 import android.app.ProgressDialog;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Pair;
@@ -29,13 +30,15 @@ import com.megadict.model.ChosenModel;
 import com.megadict.utility.DatabaseHelper;
 import com.megadict.utility.Utility;
 
-public class DictionaryActivity extends BaseActivity implements OnClickListener, android.view.View.OnKeyListener, OnEditorActionListener {
+public class DictionaryActivity extends BaseActivity implements OnClickListener, OnEditorActionListener {
 	private static final String TAG = "DictionaryActivity";
 	private DictionaryClient dictionaryClient;
+	private Button searchButton;
 	private EditText searchEditText;
 	private TextView resultTextView;
 	private SQLiteDatabase database;
 	private ProgressDialog progressDialog;
+	private boolean isSearching = false;
 
 	public DictionaryActivity() {
 		super(R.layout.search);
@@ -44,7 +47,6 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 	@Override
 	public void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		//setContentView(R.layout.search);
 		initLayout();
 
 		// Init progress dialog
@@ -96,11 +98,6 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 	}
 
 	@Override
-	public boolean onKey(final View v, final int keyCode, final KeyEvent event) {
-		return false;
-	}
-
-	@Override
 	public boolean onEditorAction(final TextView v, final int actionId, final KeyEvent event) {
 		if (actionId == EditorInfo.IME_ACTION_SEARCH
 				|| actionId == EditorInfo.IME_ACTION_DONE
@@ -112,12 +109,19 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 
 	// // ========================= Private functions ======================= ////
 	private void initLayout() {
-		final Button searchButton = (Button) findViewById(R.id.searchButton);
+		searchButton = (Button) findViewById(R.id.searchButton);
 		searchButton.setOnClickListener(this);
 		searchButton.setOnEditorActionListener(this);
 		searchEditText = (EditText) findViewById(R.id.searchEditText);
 		resultTextView = (TextView) findViewById(R.id.resultTextView);
+		setTextViewFont();
 		resultTextView.setText("");
+	}
+
+	private void setTextViewFont()
+	{
+		final Typeface font= Typeface.createFromAsset(getAssets(), "fonts/DejaVuSans.ttf");
+		resultTextView.setTypeface(font);
 	}
 
 	private List<Pair<String, String>> getChosenDictionaries() {
@@ -128,15 +132,23 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 			new ArrayList<Pair<String, String>>();
 		for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
 			final Pair<String, String> pair =
-				new Pair<String, String>(cursor.getString(cursor.getColumnIndex(ChosenModel.INDEX_PATH_COLUMN)), cursor.getString(cursor.getColumnIndex(ChosenModel.DICT_PATH_COLUMN)));
+				createDictPair(cursor.getString(cursor.getColumnIndex(ChosenModel.INDEX_PATH_COLUMN)), cursor.getString(cursor.getColumnIndex(ChosenModel.DICT_PATH_COLUMN)));
 			list.add(pair);
 		}
 		return list;
 	}
 
+	private Pair<String, String> createDictPair(final String indexPath, final String dataPath) {
+		return new Pair<String, String>(indexPath, dataPath);
+	}
+
 	private void doSearching(final String word) {
-		final SearchTask task = new SearchTask();
-		task.execute(word);
+		if(!isSearching) {
+			final SearchTask searchTask = new SearchTask();
+			searchTask.execute(word);
+		} else {
+			Utility.messageBox(this, "Seaching... Please wait.");
+		}
 	}
 
 	private class SearchTask extends AsyncTask<String, Void, String> {
@@ -145,6 +157,7 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 		protected void onPreExecute() {
 			progressBar = (ProgressBar)findViewById(R.id.progressBar);
 			progressBar.setVisibility(View.VISIBLE);
+			isSearching = true;
 		}
 
 		@Override
@@ -154,15 +167,16 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 
 		@Override
 		protected void onPostExecute(final String content) {
-			updateResult(content);
+			updateUI(content);
 			progressBar.setVisibility(View.INVISIBLE);
+			isSearching = false;
 		}
 
 		private String search(final String word) {
 			return dictionaryClient.lookup(word);
 		}
 
-		private void updateResult(final String content) {
+		private void updateUI(final String content) {
 			resultTextView.setText(content);
 		}
 	}

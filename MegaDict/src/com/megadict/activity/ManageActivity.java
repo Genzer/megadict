@@ -96,7 +96,6 @@ public class ManageActivity extends BaseListActivity {
 			list.add(pair);
 		}
 
-		System.out.println("Prepare to rescan storage.");
 		dictionaryClient.scanChosenDictionaries(list);
 	}
 

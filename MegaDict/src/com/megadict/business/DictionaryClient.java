@@ -13,12 +13,10 @@ public class DictionaryClient {
 	private final List<DICTDictionary> dictionaryModels = new ArrayList<DICTDictionary>();
 
 	public void scanChosenDictionaries(final List<Pair<String, String>> chosenDictionaries) {
-		System.out.println("Before clear dictionary model list.");
 		dictionaryModels.clear();
 		for(final Pair<String, String> dict : chosenDictionaries) {
 			// Create dictionary model ony when the index file and the dict file exists.
 			if( (new File(dict.first).exists()) && (new File(dict.second).exists()) ) {
-				System.out.println(dict.first + "   " + dict.second);
 				dictionaryModels.add(new DICTDictionary(dict.first, dict.second));
 			}
 		}
