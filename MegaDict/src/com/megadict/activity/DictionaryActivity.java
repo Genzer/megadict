@@ -1,24 +1,27 @@
 package com.megadict.activity;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import android.app.ProgressDialog;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Pair;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
@@ -26,19 +29,21 @@ import android.widget.TextView.OnEditorActionListener;
 import com.megadict.R;
 import com.megadict.application.MegaDictApp;
 import com.megadict.business.DictionaryClient;
-import com.megadict.model.ChosenModel;
 import com.megadict.utility.DatabaseHelper;
 import com.megadict.utility.Utility;
+import com.megadict.widget.ResultTextView;
 
 public class DictionaryActivity extends BaseActivity implements OnClickListener, OnEditorActionListener {
 	private static final String TAG = "DictionaryActivity";
 	private DictionaryClient dictionaryClient;
 	private Button searchButton;
 	private EditText searchEditText;
-	private TextView resultTextView;
 	private SQLiteDatabase database;
 	private ProgressDialog progressDialog;
 	private boolean isSearching = false;
+	private ViewGroup resultPanel;
+	private Typeface font;
+	private List<String> dictionaryNames;
 
 	public DictionaryActivity() {
 		super(R.layout.search);
@@ -49,20 +54,25 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 		super.onCreate(savedInstanceState);
 		initLayout();
 
+		// Init typeface.
+		font = Typeface.createFromAsset(getAssets(), "fonts/DejaVuSans.ttf");
+
 		// Init progress dialog
 		progressDialog = new ProgressDialog(this);
 		progressDialog.setMessage("Searching...");
 
-
 		// Get application-scoped variables.
 		dictionaryClient = ((MegaDictApp) getApplication()).dictionaryClient;
+
+		// Init dictionary name list.
+		dictionaryNames = dictionaryClient.getDictionaryNames();
 
 		// Create and open database.
 		final DatabaseHelper helper = new DatabaseHelper(this);
 		database = helper.getReadableDatabase();
 
-		// Scan chosen databases.
-		dictionaryClient.scanChosenDictionaries(getChosenDictionaries());
+		// Scan chosen databases when MegaDict opens.
+		dictionaryClient.scanDatabase(this, database);
 	}
 
 	@Override
@@ -107,39 +117,13 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 		return true;
 	}
 
-	// // ========================= Private functions ======================= ////
+	// ========================= Private functions ======================= //
 	private void initLayout() {
 		searchButton = (Button) findViewById(R.id.searchButton);
 		searchButton.setOnClickListener(this);
 		searchButton.setOnEditorActionListener(this);
 		searchEditText = (EditText) findViewById(R.id.searchEditText);
-		resultTextView = (TextView) findViewById(R.id.resultTextView);
-		setTextViewFont();
-		resultTextView.setText("");
-	}
-
-	private void setTextViewFont()
-	{
-		final Typeface font= Typeface.createFromAsset(getAssets(), "fonts/DejaVuSans.ttf");
-		resultTextView.setTypeface(font);
-	}
-
-	private List<Pair<String, String>> getChosenDictionaries() {
-		final Cursor cursor = ChosenModel.selectChosenDictionaries(database);
-		startManagingCursor(cursor);
-
-		final List<Pair<String, String>> list =
-			new ArrayList<Pair<String, String>>();
-		for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
-			final Pair<String, String> pair =
-				createDictPair(cursor.getString(cursor.getColumnIndex(ChosenModel.INDEX_PATH_COLUMN)), cursor.getString(cursor.getColumnIndex(ChosenModel.DICT_PATH_COLUMN)));
-			list.add(pair);
-		}
-		return list;
-	}
-
-	private Pair<String, String> createDictPair(final String indexPath, final String dataPath) {
-		return new Pair<String, String>(indexPath, dataPath);
+		resultPanel = (ViewGroup)findViewById(R.id.resultPanel);
 	}
 
 	private void doSearching(final String word) {
@@ -151,7 +135,8 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 		}
 	}
 
-	private class SearchTask extends AsyncTask<String, Void, String> {
+	// ============================ Search task inner class =============== //
+	private class SearchTask extends AsyncTask<String, Void, List<String>> {
 		private ProgressBar progressBar;
 		@Override
 		protected void onPreExecute() {
@@ -161,25 +146,66 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 		}
 
 		@Override
-		protected String doInBackground(final String... params) {
+		protected List<String> doInBackground(final String... params) {
 			return search(params[0]);
 		}
 
 		@Override
-		protected void onPostExecute(final String content) {
-			updateUI(content);
+		protected void onPostExecute(final List<String> list) {
+			updateUI(list);
 			progressBar.setVisibility(View.INVISIBLE);
 			isSearching = false;
 		}
 
-		private String search(final String word) {
-			return dictionaryClient.lookup(word);
+		private List<String> search(final String word) {
+			final List<String> contents = dictionaryClient.lookup(word, "");
+			return contents;
 		}
 
-		private void updateUI(final String content) {
-			resultTextView.setText(content);
+		private void updateUI(final List<String> contents) {
+			resultPanel.removeAllViews();
+
+			if(contents.size() == 0) {
+				final TextView textView = createResultTextView(getString(R.string.noDictionary), Color.RED, "");
+				resultPanel.addView(textView);
+			} else {
+				for(int i = 0; i < contents.size(); ++i) {
+					final TextView titleTextView = createResultTextView(contents.get(i).trim(), Color.BLACK, dictionaryNames.get(i).trim());
+					resultPanel.addView(titleTextView);
+				}
+			}
+		}
+
+		private ResultTextView createResultTextView(final String text, final int color, final String dictionaryName) {
+			final ResultTextView resultTextView = new ResultTextView(DictionaryActivity.this);
+
+			// Calculate px relative to dip.
+			final int paddingInDIP = 5;
+			final int marginInDIP = 5;
+			final int paddingInPx = convertDIPToPx(resultTextView, paddingInDIP);
+			final int marginInPx = convertDIPToPx(resultTextView, marginInDIP);
+			// Set padding by px has just calculated.
+			resultTextView.setPadding(paddingInPx, paddingInPx, paddingInPx, paddingInPx);
+			// Set text color and type face.
+			resultTextView.setTextColor(Color.BLACK);
+			resultTextView.setTypeface(font);
+			// Add some bottom margin for each result view
+			final LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+			param.setMargins(marginInPx, marginInPx, marginInPx, marginInPx);
+			resultTextView.setLayoutParams(param);
+
+			// Prepare result text.
+			final String resultText = text + "\n\n" + dictionaryName;
+			final SpannableString styledResultText = new SpannableString(resultText);
+			styledResultText.setSpan(new ForegroundColorSpan(Color.GRAY), text.length() + 2, text.length() + 2 + dictionaryName.length(), 0);
+			resultTextView.setText(styledResultText);
+			return resultTextView;
+		}
+
+		private int convertDIPToPx(final View view, final int dip) {
+			final float scale = view.getResources().getDisplayMetrics().density;
+			return (int) (dip * scale + 0.5f);
 		}
 	}
-
 }
 

@@ -20,4 +20,7 @@
     <string name="settingMenuItemTitle">Settings</string>
     <string name="manageMenuItemTitle">Manage</string>
     <string name="aboutMenuItemTitle">About</string>
+    
+    <!-- Report -->
+    <string name="noDictionary">Please choose a dictionary.</string>
 </resources>

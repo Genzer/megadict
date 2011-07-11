@@ -11,7 +11,13 @@
         </EditText>
         <Button android:layout_width="wrap_content" android:background="@drawable/search_button" android:layout_centerVertical="true" android:id="@+id/searchButton" android:layout_alignParentRight="true" android:layout_height="wrap_content" android:typeface="sans"></Button>
     </RelativeLayout>
-    <ScrollView android:layout_height="wrap_content" android:layout_width="match_parent" android:layout_weight="1" android:id="@+id/resultPanel" android:background="@drawable/result_background">
-        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Content goes here" android:id="@+id/resultTextView" android:textColor="@color/black" android:padding="5dip" android:textSize="16dip"></TextView>
+    <ScrollView android:id="@+id/resultScrollView" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_weight="1" android:padding="3dip" android:background="@drawable/result_background">
+    
+        <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:id="@+id/resultPanel">
+        </LinearLayout>
+         
+        <!-- <FrameLayout android:id="@+id/resultPanel" android:layout_width="match_parent" android:layout_height="match_parent"></FrameLayout> -->
+         
+         
     </ScrollView>
 </LinearLayout>

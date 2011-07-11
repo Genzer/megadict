@@ -2,6 +2,7 @@ package com.megadict.bean;
 
 import java.util.Date;
 
+@Deprecated
 public class DictionaryBean {
 	private final int id;
 	private final String name;

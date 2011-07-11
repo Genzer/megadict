@@ -1,14 +1,13 @@
 package com.megadict.activity;
 
-import java.util.ArrayList;
+
+
 import java.util.List;
 
-import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -16,12 +15,8 @@ import android.view.MenuItem;
 import com.megadict.R;
 import com.megadict.adapter.ChosenDictionaryCheckBoxAdapter;
 import com.megadict.application.MegaDictApp;
-import com.megadict.bean.DictionaryBean;
 import com.megadict.business.DictionaryClient;
-import com.megadict.business.ExternalReader;
-import com.megadict.business.ExternalStorage;
 import com.megadict.model.ChosenModel;
-import com.megadict.model.DictionaryInformation;
 import com.megadict.utility.DatabaseHelper;
 
 public class ManageActivity extends BaseListActivity {
@@ -37,7 +32,6 @@ public class ManageActivity extends BaseListActivity {
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		//setContentView(R.layout.manage);
 
 		// Get application-scoped variables.
 		dictionaryClient = ((MegaDictApp) getApplication()).dictionaryClient;
@@ -63,14 +57,16 @@ public class ManageActivity extends BaseListActivity {
 	@Override
 	protected void onStop() {
 		super.onStop();
-		rescanStorage();
+		dictionaryClient.scanDatabase(this, database);
 	}
 
 	@Override
 	public boolean onMenuItemSelected(final int featureId, final MenuItem item) {
 		if (item.getItemId() == R.id.rescanMenuItem) {
-			rescanDatabase();
-			rescanStorage();
+			dictionaryClient.scanStorage(database);
+			outputLog();
+			// Refresh list view.
+			listViewCursor.requery();
 		}
 		return true;
 	}
@@ -82,54 +78,11 @@ public class ManageActivity extends BaseListActivity {
 		return true;
 	}
 
-	// //========================= Private functions ======================= ////
-	public void rescanStorage() {
-		final Cursor cursor = ChosenModel.selectChosenDictionaries(database);
-		startManagingCursor(cursor);
-
-		final List<Pair<String, String>> list =
-			new ArrayList<Pair<String, String>>();
-
-		for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
-			final Pair<String, String> pair =
-				new Pair<String, String>(cursor.getString(cursor.getColumnIndex(ChosenModel.INDEX_PATH_COLUMN)), cursor.getString(cursor.getColumnIndex(ChosenModel.DICT_PATH_COLUMN)));
-			list.add(pair);
+	// ======================= Private functions =================== //
+	private void outputLog() {
+		final List<String> logger = dictionaryClient.getLogger();
+		for(final String log : logger) {
+			Log.e(TAG, log);
 		}
-
-		dictionaryClient.scanChosenDictionaries(list);
-	}
-
-	private void rescanDatabase() {
-		// Remove old chosen dictionaries.
-		database.delete(ChosenModel.TABLE_NAME, null, null);
-
-		// Storage information of available dictionaries.
-		final List<DictionaryInformation> infos = getItems();
-		final ContentValues value = new ContentValues();
-		for (final DictionaryInformation info : infos) {
-			final DictionaryBean bean = info.getBean();
-			value.put(ChosenModel.ID_COLUMN, bean.getId());
-			value.put(ChosenModel.DICTIONARY_NAME_COLUMN, bean.getName());
-			value.put(ChosenModel.INDEX_PATH_COLUMN, info.getIndexFile().getAbsolutePath());
-			value.put(ChosenModel.DICT_PATH_COLUMN, info.getDataFile().getAbsolutePath());
-			value.put(ChosenModel.ENABLED_COLUMN, 0);
-			database.insert(ChosenModel.TABLE_NAME, null, value);
-		}
-
-		// This will refresh list view.
-		listViewCursor.requery();
-	}
-
-	private List<DictionaryInformation> getItems() {
-		final ExternalReader reader =
-			new ExternalReader(ExternalStorage.getExternalDirectory());
-
-		// Print info after reading.
-		final List<String> logger = reader.getLogger();
-		for(final String message : logger) {
-			Log.e(TAG, message);
-		}
-
-		return reader.getInfos();
 	}
 }
