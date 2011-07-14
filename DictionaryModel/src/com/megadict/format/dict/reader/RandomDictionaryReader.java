@@ -11,7 +11,7 @@ public class RandomDictionaryReader extends BaseDictionaryReader
     
     @Override
     DictFileReader constructFileReader() throws FileNotFoundException {
-        return new RandomDictFileReader(dictionaryFile);
+        return new BufferedDictFileReader(dictionaryFile);
     }
 
 }

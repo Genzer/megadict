@@ -41,14 +41,16 @@ class IndexFileReader {
         } catch (IOException ioException) {
             throw new ReadingIndexFileException(indexFilePath, ioException);
         } finally {
-            closeReader();
+            //closeReader();
         }
     }
 
     private void makeReader() throws FileNotFoundException {
-        FileInputStream rawStream = new FileInputStream(indexFilePath);
-        reader = new BufferedReader(newUnicodeStream(rawStream),
-                READER_INTERNAL_BUFFER_SIZE);
+        if (reader == null) {
+            FileInputStream rawStream = new FileInputStream(indexFilePath);
+            reader = new BufferedReader(newUnicodeStream(rawStream),
+                    READER_INTERNAL_BUFFER_SIZE);
+        }
     }
 
     private InputStreamReader newUnicodeStream(FileInputStream rawStream) {
@@ -111,7 +113,7 @@ class IndexFileReader {
     private void resetBuilder() {
         builder.delete(0, builder.length());
     }
-
+    
     private void closeReader() {
         try {
             if (reader != null) {
@@ -120,6 +122,10 @@ class IndexFileReader {
         } catch (IOException ioe) {
             throw new ClosingFileException(indexFilePath, ioe);
         }
+    }
+    
+    void close() {
+        closeReader();
     }
 
     private static final int READER_INTERNAL_BUFFER_SIZE = 8 * 1024;

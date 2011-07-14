@@ -12,6 +12,8 @@ import com.megadict.model.Dictionary;
 public class DICTDictionary implements Dictionary {
 
     public DICTDictionary(String indexFile, String dictFile) {
+        this.indexFile = indexFile;
+        this.dictFile = dictFile;
         buildIndex(indexFile);
         definitionReader = new RandomDictionaryReader(dictFile);
         loadDictionaryMetadata();
@@ -75,9 +77,22 @@ public class DICTDictionary implements Dictionary {
     public String getName() {
         return this.name;
     }
+    
+    @Override
+    public String toString() {
+        if (toStringCache == null) {
+            toStringCache = String.format(toStringPattern, name, indexFile, dictFile);
+        }
+        return toStringCache;
+    }
 
+    private final String indexFile;
+    private final String dictFile;
     private String name;
     private final DictionaryReader definitionReader;
     private Map<String, Definition> definitionCache = new HashMap<String, Definition>();
     private IndexStore supportedWords;
+    
+    private final String toStringPattern = "DICTDictionary[name: %s; indexFile: %s; dictFile: %s]";
+    private String toStringCache;
 }

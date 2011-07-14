@@ -2,6 +2,12 @@ package com.megadict.format.dict;
 
 import static org.junit.Assert.*;
 
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+
 import org.junit.*;
 
 import com.megadict.model.Definition;
@@ -22,18 +28,18 @@ public class DICTDictionaryTest {
         testDict = new DICTDictionary(hndIndexFile, hndDictFile);
     }
 
-    @Ignore @Test
+    @Ignore
     public void testRecommendWord() {
         fail("Not yet implemented");
     }
     
-    @Ignore @Test
+    @Ignore
     public void testGetName() {
         fail("Not yet implemented");
     }
     
     
-    @Ignore @Test
+    @Ignore
     public void testLookUpWithExistingWord() {
         String testWord = "con";
         
@@ -47,7 +53,7 @@ public class DICTDictionaryTest {
         assertNotSame(Definition.NOT_FOUND, def);
     }
     
-    @Ignore @Test
+    @Ignore
     public void testLookUpWithExistingWordContainsWhitespaces() {
         String wordContainsWhitespaces = "\"buddhist\" economy";
         
@@ -57,7 +63,7 @@ public class DICTDictionaryTest {
         assertNotSame(Definition.NOT_FOUND, def);
     }
     
-    @Ignore @Test
+    @Ignore
     public void testLookUpWithNonExistingWord() {
         String testWord = "xyas324";
         
@@ -67,7 +73,7 @@ public class DICTDictionaryTest {
         assertSame(Definition.NOT_FOUND, def);
     }
     
-    @Ignore @Test
+    @Ignore
     public void testLookUpWithNullString() {
         String nullString = null;
         
@@ -77,7 +83,7 @@ public class DICTDictionaryTest {
         assertSame(Definition.NOT_FOUND, def);
     }
     
-    @Ignore @Test
+    @Ignore
     public void testLookUpWithBlankString() {
         String blankString = "";
         
@@ -87,7 +93,7 @@ public class DICTDictionaryTest {
         assertSame(Definition.NOT_FOUND, def);
     }
     
-    @Ignore @Test
+    @Ignore
     public void testLookUpWithStringContainsAllSpaces() {
         String allSpacesString = "   ";
         
@@ -106,15 +112,24 @@ public class DICTDictionaryTest {
         assertNotNull(def);
         assertNotSame(Definition.NOT_FOUND, def);
         
-        System.out.println(def.getContent());
-        
-        Dictionary foraDict;
-        foraDict = new DICTDictionary(foraIndexFile, foraDictFile);
-        Definition foraDef = foraDict.lookUp(testWord);
-        assertNotNull(foraDef);
-        assertNotSame(Definition.NOT_FOUND, foraDef);
-        
-        System.out.println(foraDef.getContent());
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\test\\contentOutput.txt"));
+            writer.write(def.getContent());            
+            writer.write(Integer.toString(def.getContent().length()));
+            writer.flush();
+            writer.close();
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+    
+    @Ignore
+    public void testToString() {
+        System.out.println(testDict);
     }
 
 }

@@ -58,10 +58,6 @@ public class IndexStore {
         cache.put(index.getWord(), index);
     }
     
-    public int size() {
-        return cache.size();
-    }
-    
     private static final int DEFAULT_CACHE_CAPACITY = 1000;
     private Map<String, Index> cache = Collections.emptyMap();
     private IndexFileReader reader;    
