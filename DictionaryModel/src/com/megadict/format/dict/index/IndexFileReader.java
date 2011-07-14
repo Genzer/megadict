@@ -41,16 +41,14 @@ class IndexFileReader {
         } catch (IOException ioException) {
             throw new ReadingIndexFileException(indexFilePath, ioException);
         } finally {
-            //closeReader();
+            closeReader();
         }
     }
 
     private void makeReader() throws FileNotFoundException {
-        if (reader == null) {
-            FileInputStream rawStream = new FileInputStream(indexFilePath);
-            reader = new BufferedReader(newUnicodeStream(rawStream),
-                    READER_INTERNAL_BUFFER_SIZE);
-        }
+        FileInputStream rawStream = new FileInputStream(indexFilePath);
+        reader = new BufferedReader(newUnicodeStream(rawStream),
+                READER_INTERNAL_BUFFER_SIZE);
     }
 
     private InputStreamReader newUnicodeStream(FileInputStream rawStream) {
@@ -113,7 +111,7 @@ class IndexFileReader {
     private void resetBuilder() {
         builder.delete(0, builder.length());
     }
-    
+
     private void closeReader() {
         try {
             if (reader != null) {
@@ -123,20 +121,20 @@ class IndexFileReader {
             throw new ClosingFileException(indexFilePath, ioe);
         }
     }
-    
+
     void close() {
         closeReader();
     }
 
     private static final int READER_INTERNAL_BUFFER_SIZE = 8 * 1024;
     private static final int BUFFER_SIZE = 5000;
-    
+
     private static final String HEAD_WORD_PREFIX = "\n";
-    private static final String HEAD_WORD_SUFFIX = "\t";    
+    private static final String HEAD_WORD_SUFFIX = "\t";
     private static final Charset UTF8_CHARSET = Charset.forName("UTF-8");
-    
+
     private static final IndexParser INDEX_PARSER = new IndexTabDilimeterParser();
-    
+
     private final char[] CHAR_BUFFER = new char[BUFFER_SIZE];
     private final StringBuilder builder = new StringBuilder(BUFFER_SIZE);
     private BufferedReader reader;

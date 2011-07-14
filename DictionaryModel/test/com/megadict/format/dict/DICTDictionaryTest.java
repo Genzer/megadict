@@ -28,32 +28,32 @@ public class DICTDictionaryTest {
         testDict = new DICTDictionary(hndIndexFile, hndDictFile);
     }
 
-    @Ignore
+    @Test
     public void testRecommendWord() {
         fail("Not yet implemented");
     }
     
-    @Ignore
+    @Test
     public void testGetName() {
         fail("Not yet implemented");
     }
     
     
-    @Ignore
+    @Test
     public void testLookUpWithExistingWord() {
-        String testWord = "con";
+        String testWord = "test";
         
         Definition def = testDict.lookUp(testWord);
         
         assertNotNull(def);
         assertNotSame(Definition.NOT_FOUND, def);
         
-        def = testDict.lookUp("co");
+        def = testDict.lookUp("person");
         assertNotNull(def);
         assertNotSame(Definition.NOT_FOUND, def);
     }
     
-    @Ignore
+    @Test
     public void testLookUpWithExistingWordContainsWhitespaces() {
         String wordContainsWhitespaces = "\"buddhist\" economy";
         
@@ -63,7 +63,7 @@ public class DICTDictionaryTest {
         assertNotSame(Definition.NOT_FOUND, def);
     }
     
-    @Ignore
+    @Test
     public void testLookUpWithNonExistingWord() {
         String testWord = "xyas324";
         
@@ -73,7 +73,7 @@ public class DICTDictionaryTest {
         assertSame(Definition.NOT_FOUND, def);
     }
     
-    @Ignore
+    @Test
     public void testLookUpWithNullString() {
         String nullString = null;
         
@@ -83,7 +83,7 @@ public class DICTDictionaryTest {
         assertSame(Definition.NOT_FOUND, def);
     }
     
-    @Ignore
+    @Test
     public void testLookUpWithBlankString() {
         String blankString = "";
         
@@ -93,7 +93,7 @@ public class DICTDictionaryTest {
         assertSame(Definition.NOT_FOUND, def);
     }
     
-    @Ignore
+    @Test
     public void testLookUpWithStringContainsAllSpaces() {
         String allSpacesString = "   ";
         
@@ -127,7 +127,7 @@ public class DICTDictionaryTest {
         }
     }
     
-    @Ignore
+    @Test
     public void testToString() {
         System.out.println(testDict);
     }
