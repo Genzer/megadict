@@ -8,11 +8,28 @@ public class IndexTabDilimeterParser implements IndexParser {
     @Override
     public Index parse(String text) {
         extractValues(text);
-        return newIndex();
+        if (checkExtractedValues()) {
+            return newIndex();
+        } else {
+            return null;
+        }
     }
 
     private void extractValues(String text) {
         splittedValues = text.split(TAB_DELEMITER);
+    }
+
+    private boolean checkExtractedValues() {
+        return isEnoughElements() && bothIntValuesIsBase64Encoded();
+    }
+    
+    private boolean isEnoughElements() {
+        return splittedValues.length == 3;
+    }
+    
+    private boolean bothIntValuesIsBase64Encoded() {
+        return Base64TextParser.isBase64Encoded(splittedValues[OFFSET])
+        && Base64TextParser.isBase64Encoded(splittedValues[LENGTH]);
     }
 
     private Index newIndex() {

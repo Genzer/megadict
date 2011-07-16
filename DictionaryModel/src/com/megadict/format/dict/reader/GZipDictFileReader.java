@@ -3,23 +3,33 @@ package com.megadict.format.dict.reader;
 import java.io.IOException;
 import java.util.zip.GZIPInputStream;
 
-class GZipDictFileReader extends DictFileReader {
+import com.megadict.exception.OperationFailedException;
+
+class GZipDictFileReader implements DictFileReader {
 
     public GZipDictFileReader(GZIPInputStream inputStream) {
         this.gzipReader = inputStream;
     }
-
+    
     @Override
-    public int read(byte[] buffer, int offset, int length) throws IOException {
-        // TODO: find an appropriate algorithm to read like randon file access.
-        return 0;
+    public void open() {
+        // TODO Implement opening a GZIPInputStream        
     }
 
     @Override
-    public void close() throws IOException {
-        gzipReader.close();
+    public byte[] read(int offset, int length) {
+        // TODO Forward invocation to GZIPInputStream read method
+        return null;
+    }
+
+    @Override
+    public void close() {
+        try {
+            gzipReader.close();
+        } catch (IOException ioe) {
+            throw new OperationFailedException("closing reader", ioe);
+        }
     }
 
     private final GZIPInputStream gzipReader;
-
 }

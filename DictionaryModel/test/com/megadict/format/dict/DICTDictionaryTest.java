@@ -2,134 +2,103 @@ package com.megadict.format.dict;
 
 import static org.junit.Assert.*;
 
-import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.util.Set;
 
 import org.junit.*;
 
-import com.megadict.model.Definition;
-import com.megadict.model.Dictionary;
+import com.megadict.format.dict.sample.*;
+import com.megadict.model.*;
 
 public class DICTDictionaryTest {
     
-    private Dictionary testDict;
-    
-    final String hndIndexFile = "C:\\test\\av.index";
-    final String hndDictFile = "C:\\test\\av-d.dict.dz";
-    
-    final String foraIndexFile = "C:\\test\\fora\\fora_ve.index";
-    final String foraDictFile = "C:\\test\\fora\\fora_ve.dict.dz";
+    private Dictionary testee;
+    private DictionaryTestSample sampleTest;
     
     @Before
-    public void initialize() {
-        testDict = new DICTDictionary(hndIndexFile, hndDictFile);
+    public void setUp() {
+        sampleTest = TestSamples.getCurrentDictionarySample();
+        testee = new DICTDictionary(sampleTest.getIndexFile(), sampleTest.getDictionaryFile());
     }
 
-    @Test
+    @Ignore ("not yet implemented") @Test
     public void testRecommendWord() {
         fail("Not yet implemented");
     }
     
     @Test
     public void testGetName() {
-        fail("Not yet implemented");
+        String actualName = testee.getName();      
+        assertEquals(sampleTest.getDictionaryName(), actualName);
     }
     
     
     @Test
     public void testLookUpWithExistingWord() {
-        String testWord = "test";
+        Set<String> words = sampleTest.getSampleWords();
         
-        Definition def = testDict.lookUp(testWord);
-        
-        assertNotNull(def);
-        assertNotSame(Definition.NOT_FOUND, def);
-        
-        def = testDict.lookUp("person");
-        assertNotNull(def);
-        assertNotSame(Definition.NOT_FOUND, def);
+        for (String word : words) {
+            Definition actualDef = testee.lookUp(word);
+            String expectedContent = sampleTest.getActualContentOfTestWord(word);
+            assertDefActualContentEqualsExpected(actualDef, expectedContent);
+        }
+    }
+    
+    private static void assertDefActualContentEqualsExpected(Definition actualDef, String expected) {
+        assertNotNull(actualDef);
+        assertEquals(expected, actualDef.getContent());
     }
     
     @Test
     public void testLookUpWithExistingWordContainsWhitespaces() {
-        String wordContainsWhitespaces = "\"buddhist\" economy";
+        Set<String> phrases = sampleTest.getSamplePhrases();
         
-        Definition def = testDict.lookUp(wordContainsWhitespaces);
-        
-        assertNotNull(def);
-        assertNotSame(Definition.NOT_FOUND, def);
+        for (String phrase : phrases) {
+            Definition actualDef = testee.lookUp(phrase);
+            String expectedContent = sampleTest.getActualContentOfTestWord(phrase);
+            assertDefActualContentEqualsExpected(actualDef, expectedContent);
+        }
     }
     
     @Test
-    public void testLookUpWithNonExistingWord() {
-        String testWord = "xyas324";
+    public void testLookUpNotExistingWords() {
+        Set<String> notExistingWords = sampleTest.getNotExistingWords();
         
-        Definition def = testDict.lookUp(testWord);
-        
-        assertNotNull(def);
-        assertSame(Definition.NOT_FOUND, def);
+        for (String word : notExistingWords) {
+            Definition shouldBeNotFound = testee.lookUp(word);
+            assertActualDefinitionIsNotFound(shouldBeNotFound);
+        }
+    }
+    
+    private static void assertActualDefinitionIsNotFound(Definition actual) {
+        assertNotNull(actual);
+        assertSame(Definition.NOT_FOUND, actual);
     }
     
     @Test
     public void testLookUpWithNullString() {
         String nullString = null;
         
-        Definition def = testDict.lookUp(nullString);
+        Definition shouldBeNotFound = testee.lookUp(nullString);
         
-        assertNotNull(def);
-        assertSame(Definition.NOT_FOUND, def);
+        assertActualDefinitionIsNotFound(shouldBeNotFound);
     }
     
     @Test
     public void testLookUpWithBlankString() {
         String blankString = "";
         
-        Definition def = testDict.lookUp(blankString);
+        Definition shouldBeNotFound = testee.lookUp(blankString);
         
-        assertNotNull(def);
-        assertSame(Definition.NOT_FOUND, def);
+        assertActualDefinitionIsNotFound(shouldBeNotFound);
     }
     
     @Test
     public void testLookUpWithStringContainsAllSpaces() {
-        String allSpacesString = "   ";
+        String onlySpacesText = "   ";
         
-        Definition def = testDict.lookUp(allSpacesString);
+        Definition shouldBeNotFound = testee.lookUp(onlySpacesText);
         
-        assertNotNull(def);
-        assertSame(Definition.NOT_FOUND, def);
-    }
-    
-    @Test
-    public void testTakeTurnLookUpTwoDictWithSameWord() {
-        String testWord = "con";
-        
-        Definition def = testDict.lookUp(testWord);
-        
-        assertNotNull(def);
-        assertNotSame(Definition.NOT_FOUND, def);
-        
-        try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\test\\contentOutput.txt"));
-            writer.write(def.getContent());            
-            writer.write(Integer.toString(def.getContent().length()));
-            writer.flush();
-            writer.close();
-        } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
-    
-    @Test
-    public void testToString() {
-        System.out.println(testDict);
+        assertActualDefinitionIsNotFound(shouldBeNotFound);
     }
 
 }

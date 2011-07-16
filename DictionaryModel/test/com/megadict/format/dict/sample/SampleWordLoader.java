@@ -13,18 +13,20 @@ class SampleWordLoader {
         this.sampleFile = sampleFile;
     }
 
-    public Map<String, String> loadContent() {
+    public Map<String, Sample> loadContent() {
         XmlDocumentReader reader = new XmlDocumentReader(sampleFile);
 
         List<Element> samples = reader.getAllElementsAt("samples/sample");
 
-        Map<String, String> sampleWords = new HashMap<String, String>(
+        Map<String, Sample> sampleWords = new HashMap<String, Sample>(
                 samples.size());
 
         for (Element sample : samples) {
             String headWord = sample.getChildText("headword");
+            String indexString = sample.getChildText("indexString");
             String expectedContent = sample.getChildText("expectedContent");
-            sampleWords.put(headWord, expectedContent);
+            Sample newSample = new Sample(headWord, indexString, expectedContent);
+            sampleWords.put(newSample.getHeadWord(), newSample);
         }
         
         return sampleWords;

@@ -13,16 +13,17 @@ class DefaultUnitTestProfile implements DictionaryTestSample {
     private void loadContent() throws RuntimeException {
         XmlDocumentReader reader = new XmlDocumentReader(profile);
         
-        dictionaryName = reader.getElementAt("profile/dictionaryName").getText();        
-        dictFile = makeDictFile(reader.getElementAt("profile/files/dict").getText());        
-        zippedFile = makeDictFile(reader.getElementAt("profile/files/zipped").getText());
+        dictionaryName = reader.getValueOf("profile/dictionaryName");        
+        dictFile = makeFile(reader.getValueOf("profile/files/dict"));        
+        zippedFile = makeFile(reader.getValueOf("profile/files/zipped"));
+        indexFile = makeFile(reader.getValueOf("profile/files/index"));
         
-        sampleWords = loadContentOf(reader.getElementAt("profile/sampleSet/word").getText());
-        samplePhrases = loadContentOf(reader.getElementAt("profile/sampleSet/phrase").getText());
-        notExistingWords = loadContentOf(reader.getElementAt("profile/sampleSet/notExisting").getText());        
+        sampleWords = loadSampleContent(reader.getValueOf("profile/sampleSet/word"));
+        samplePhrases = loadSampleContent(reader.getValueOf("profile/sampleSet/phrase"));
+        notExistingWords = loadSampleContent(reader.getValueOf("profile/sampleSet/notExisting"));        
     }
     
-    private File makeDictFile(String dictFilePath) {
+    private File makeFile(String dictFilePath) {
         return new File(makeFullPath(dictFilePath));
     }    
     
@@ -30,12 +31,12 @@ class DefaultUnitTestProfile implements DictionaryTestSample {
         return profile.getParent() + "\\" + sampleFile;
     }
     
-    private Map<String, String> loadContentOf(String sampleFile) {
+    private Map<String, Sample> loadSampleContent(String sampleFile) {
         String fullSampleFilePath = makeFullPath(sampleFile);
         return loadSampleFileContent(fullSampleFilePath);
     }
     
-    private Map<String, String> loadSampleFileContent(String fullFilePath) {
+    private Map<String, Sample> loadSampleFileContent(String fullFilePath) {
         return new SampleWordLoader(new File(fullFilePath)).loadContent();
     }
     
@@ -64,15 +65,38 @@ class DefaultUnitTestProfile implements DictionaryTestSample {
     }
 
     public String getActualContentOfTestWord(String word) {
-        if (sampleWords.containsKey(word)) {
-            return sampleWords.get(word);
-        } else if (samplePhrases.containsKey(word)) {
-            return samplePhrases.get(word);
-        } else if (notExistingWords.containsKey(word)) {
-            return notExistingWords.get(word);
-        } else {
-            return "";
+        return findSample(word).getExcpectedContent();
+    }
+    
+    private Sample findSample(String key) {
+        Sample found = null;
+        if (sampleWords.containsKey(key)) {
+            found = sampleWords.get(key);
+        } else if (samplePhrases.containsKey(key)) {
+            found = samplePhrases.get(key);
+        } else if (notExistingWords.containsKey(key)) {
+            found = notExistingWords.get(key);
         }
+        return found;
+    }
+    
+    @Override
+    public File getIndexFile() {
+        return indexFile; 
+    }
+
+    @Override
+    public Set<String> getHeadwords() {
+        int size = sampleWords.size() + samplePhrases.size();
+        Set<String> result = new HashSet<String>(size);
+        result.addAll(sampleWords.keySet());
+        result.addAll(samplePhrases.keySet());
+        return result;
+    }
+
+    @Override
+    public String getFullIndexStringOf(String headword) {
+        return findSample(headword).getIndexString();
     }
     
     private File profile;
@@ -80,9 +104,10 @@ class DefaultUnitTestProfile implements DictionaryTestSample {
     private String dictionaryName = "";
     private File dictFile;
     private File zippedFile;
+    private File indexFile;
     
-    private Map<String, String> sampleWords = Collections.emptyMap();
-    private Map<String, String> samplePhrases = Collections.emptyMap();
-    private Map<String, String> notExistingWords = Collections.emptyMap();
+    private Map<String, Sample> sampleWords = Collections.emptyMap();
+    private Map<String, Sample> samplePhrases = Collections.emptyMap();
+    private Map<String, Sample> notExistingWords = Collections.emptyMap();
     
 }

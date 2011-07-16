@@ -1,25 +1,26 @@
 package com.megadict.format.dict.index;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 public class IndexStore {
     
-    public IndexStore(String indexFile) {
+    public IndexStore(File indexFile) {
         this(indexFile, DEFAULT_CACHE_CAPACITY);       
     }
     
-    public IndexStore(String indexFile, int totalIndexes) {
+    public IndexStore(File indexFile, int totalIndexes) {
         buildCacheOfIndexesWithInitialCapacity(indexFile, totalIndexes);
         initializeReader(indexFile);
     }   
     
-    private void buildCacheOfIndexesWithInitialCapacity(String indexFile, int initialTotalIndexes) {
+    private void buildCacheOfIndexesWithInitialCapacity(File indexFile, int initialTotalIndexes) {
         cache = new HashMap<String, Index>(initialTotalIndexes);
     }
     
-    private void initializeReader(String indexFile) {
+    private void initializeReader(File indexFile) {
         reader = new IndexFileReader(indexFile);
     }
     

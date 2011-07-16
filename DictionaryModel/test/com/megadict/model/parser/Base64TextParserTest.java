@@ -63,7 +63,7 @@ public class Base64TextParserTest {
     }
     
     @Test(expected = IllegalArgumentException.class)
-    public void testParsingNotBase64Text() {
+    public void testParsingNotBase64Text() throws IllegalArgumentException {
         String invalidCase = "sa s?3 3400=+";
         Base64TextParser.parse(invalidCase);
     }

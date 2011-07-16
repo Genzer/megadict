@@ -1,26 +1,52 @@
 package com.megadict.format.dict;
 
+import java.io.File;
 import java.util.*;
 
+import com.megadict.exception.ResourceMissingException;
 import com.megadict.format.dict.index.Index;
 import com.megadict.format.dict.index.IndexStore;
-import com.megadict.format.dict.reader.DictionaryReader;
-import com.megadict.format.dict.reader.RandomDictionaryReader;
+import com.megadict.format.dict.reader.BufferedDictReader;
+import com.megadict.format.dict.reader.DictFileReader;
 import com.megadict.model.Definition;
 import com.megadict.model.Dictionary;
 
 public class DICTDictionary implements Dictionary {
 
-    public DICTDictionary(String indexFile, String dictFile) {
+    public DICTDictionary(String indexFilePath, String dictFilePath) {
+        this(new File(indexFilePath), new File(dictFilePath));        
+    }
+    
+    public DICTDictionary(File indexFile, File dictFile) {
         this.indexFile = indexFile;
         this.dictFile = dictFile;
-        buildIndex(indexFile);
-        definitionReader = new RandomDictionaryReader(dictFile);
+        initialize();
+    }
+    
+    private void initialize() {
+        checkFileExistence();
+        buildIndex();
+        prepareDefinitions();
         loadDictionaryMetadata();
     }
+    
+    private void checkFileExistence() {
+        if (!(indexFile.exists())) {
+            throw new ResourceMissingException("Index file does not exist.");
+        }
+        
+        if( !(dictFile.exists())) {
+            throw new ResourceMissingException("Dict file does not exist.");
+        }
+    }
 
-    private void buildIndex(String indexFile) {
+    private void buildIndex() {
         supportedWords = new IndexStore(indexFile);
+    }
+    
+    private void prepareDefinitions() {
+        DictFileReader defaultDictFileReader = new BufferedDictReader(dictFile);
+        definitionFinder = new DefinitionFinder(defaultDictFileReader);
     }
 
     private void loadDictionaryMetadata() {
@@ -28,10 +54,17 @@ public class DICTDictionary implements Dictionary {
     }
 
     private void loadDictionaryName() {
-        Index nameEntry = supportedWords.getIndexOf(MetaDataEntry.SHORT_NAME
-                .tagName());
-        String name = definitionReader.getDefinitionByIndex(nameEntry);
-        this.name = name;
+        Index nameEntry = 
+            supportedWords.getIndexOf(MetaDataEntry.SHORT_NAME.tagName());
+        String name = definitionFinder.getDefinitionAt(nameEntry);        
+        this.name = cleanedUpName(name);
+    }
+    
+    private static String cleanedUpName(String rawName) {
+        String noNewLineCharactersName = rawName.replace("\n", "");
+        StringBuilder builder = new StringBuilder(noNewLineCharactersName);
+        builder.delete(0, NAME_REDUNDANT_STRING.length());
+        return builder.toString();
     }
 
     @Override
@@ -60,8 +93,8 @@ public class DICTDictionary implements Dictionary {
         if (definitionCache.containsKey(index)) {
             return definitionCache.get(index);
         } else {
-            String definitionContent = definitionReader
-                    .getDefinitionByIndex(index);
+            String definitionContent = definitionFinder
+                    .getDefinitionAt(index);
             Definition def = new Definition(index.getWord(), definitionContent,
                     this.name);
             cacheDefinition(def);
@@ -81,18 +114,19 @@ public class DICTDictionary implements Dictionary {
     @Override
     public String toString() {
         if (toStringCache == null) {
-            toStringCache = String.format(toStringPattern, name, indexFile, dictFile);
+            toStringCache = String.format(TO_STRING_PATTERN, name, indexFile, dictFile);
         }
         return toStringCache;
     }
 
-    private final String indexFile;
-    private final String dictFile;
+    private final File indexFile;
+    private final File dictFile;
     private String name;
-    private final DictionaryReader definitionReader;
+    private DefinitionFinder definitionFinder;
     private Map<String, Definition> definitionCache = new HashMap<String, Definition>();
     private IndexStore supportedWords;
     
-    private final String toStringPattern = "DICTDictionary[name: %s; indexFile: %s; dictFile: %s]";
+    private static final String NAME_REDUNDANT_STRING = "@00-database-short- FVDP "; 
+    private static final String TO_STRING_PATTERN = "DICTDictionary[name: %s; indexFile: %s; dictFile: %s]";
     private String toStringCache;
 }

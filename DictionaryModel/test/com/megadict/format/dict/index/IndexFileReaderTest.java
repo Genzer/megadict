@@ -1,99 +1,88 @@
 package com.megadict.format.dict.index;
 
 import static org.junit.Assert.*;
-
 import org.junit.*;
 
-import com.megadict.format.dict.parser.*;
+import java.util.HashSet;
+import java.util.Set;
+
+import com.megadict.format.dict.parser.IndexParser;
+import com.megadict.format.dict.parser.IndexTabDilimeterParser;
+import com.megadict.format.dict.sample.IndexTestSample;
+import com.megadict.format.dict.sample.TestSamples;
 
 public class IndexFileReaderTest {
 
+    private IndexTestSample sampleSet;
     private IndexParser parser;
-    private String indexTestFile;
     private IndexFileReader testee;
 
     @Before
     public void prepareTests() {
         parser = new IndexTabDilimeterParser();
-        indexTestFile = "C:\\test\\fora\\fora_ve.index";
-        testee = new IndexFileReader(indexTestFile);
+        sampleSet = TestSamples.getCurrentIndexSample();
+
+        testee = new IndexFileReader(sampleSet.getIndexFile());
     }
 
-    @Ignore @Test
-    public void testFoundWordsInFile() {
-        String[] wordsToFind = loadTestHeadWords();   
-        
-        Index[] expectedValues = loadExpectedIndexes();
-        
-        Index[] actualValues = processActualData(wordsToFind);
-        
-        assertActualValuesEqualExpected(actualValues, expectedValues);
+    @Test
+    public void testGettingIndexes() {
+        Set<String> wordsToTest = sampleSet.getHeadwords();
+
+        Set<Index> expectedParsedIndexes = parseToIndex(wordsToTest);
+
+        Set<Index> actualParsedIndexes = processActualData(wordsToTest);
+
+        assertActualValuesEqualExpected(actualParsedIndexes, expectedParsedIndexes);
     }
 
-    private String[] loadTestHeadWords() {
-        return new String[] { 
-                "abbey", "perplexed", "zygospore", "zymology",
-                "zymometer", "zoography", "yucky", "yid",
-                "fundamental wavelength", "Function income distribution",
-                "full-length", "bipart", "biometrically", "biometrician",
-                "remonstrating" };
-    }
-    
-    private Index[] loadExpectedIndexes() {
-        String[] testIndexStrings = { "abbey\tCAY\tBo", "perplexed\tYzfM\tBr",
-                "zygospore\toNvE\tBW", "zymology\toNya\tBC",
-                "zymometer\toNzc\tBC", "zoography\toNBv\tBJ", "yucky\t2FGG\tv",
-                "yid\t2E1a\tt", "fundamental wavelength\tpcAp\t8",
-                "Function income distribution\tqqw5\tBS",
-                "full-length\tNgJx\tDz", "bipart\t2QCw\tV",
-                "biometrically\ttQsP\tg", "biometrician\tDJjl\tBH",
-                "remonstrating\tcds3\tB4" };
-        
-        Index[] expectedValues = new Index[testIndexStrings.length];
-        
-        for (int row = 0; row < expectedValues.length; row++) {
-            expectedValues[row] = makeIndex(testIndexStrings[row]);
+    private Set<Index> parseToIndex(Set<String> words) {
+
+        Set<Index> expectedValues = new HashSet<Index>(words.size());
+
+        for (String word : words) {
+            String indexString = sampleSet.getFullIndexStringOf(word);
+            expectedValues.add(makeIndex(indexString));
         }
-        
+
         return expectedValues;
-     }
-    
-    private Index[] processActualData(String[] wordsToFind) {
-        Index[] actualValues = new Index[wordsToFind.length];
-        
-        for (int row = 0; row < wordsToFind.length; row++) {
-            actualValues[row] = testee.getIndexOf(wordsToFind[row]);
+    }
+
+    private Set<Index> processActualData(Set<String> wordsToTest) {
+
+        Set<Index> actualValues = new HashSet<Index>(wordsToTest.size());
+
+        for (String word : wordsToTest) {
+            Index actualIndex = testee.getIndexOf(word);
+            actualValues.add(actualIndex);
         }
-        
+
         return actualValues;
     }
-    
-    private void assertActualValuesEqualExpected(Index[] actualValues, Index[] expectedValues) {
-        for (int row = 0; row < actualValues.length; row++) {
-            assertEquals(expectedValues[row], actualValues[row]);
+
+    private void assertActualValuesEqualExpected(Set<Index> actualValues,
+            Set<Index> expectedValues) {
+        Index[] actuals = new Index[actualValues.size()];
+        actualValues.toArray(actuals);
+        
+        Index[] expecteds = new Index[expectedValues.size()];
+        expectedValues.toArray(expecteds);
+        
+        for (int i = 0; i < actuals.length; i++) {
+            assertEquals(expecteds[i], actuals[i]);
         }
     }
 
     private Index makeIndex(String index) {
         return parser.parse(index);
     }
-    
+
     @Test
-    public void testNotFoundWordInFile() {
-        String nonExistWord = "okaydokay";
-        
+    public void testGetIndexOfWordThatNotExists() {
+        String nonExistWord = "blablabla";
+
         Index found = testee.getIndexOf(nonExistWord);
-        
+
         assertNull(found);
-    }
-    
-    @Test
-    public void testOddBug() {
-        String word = "con";
-        String expected = "con\tbnGw\tGZ";
-        
-        String actual = testee.getIndexStringOf(word);
-        
-        assertEquals(expected, actual);
     }
 }

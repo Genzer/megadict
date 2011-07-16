@@ -1,6 +1,6 @@
 package com.megadict.format.dict;
 
-public class StringChecker {
+class StringChecker {
     
     private StringChecker() {}
     

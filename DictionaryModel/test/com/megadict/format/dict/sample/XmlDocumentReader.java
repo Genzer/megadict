@@ -6,7 +6,7 @@ import java.util.List;
 import org.jdom.*;
 import org.jdom.input.SAXBuilder;
 
-class XmlDocumentReader {
+public class XmlDocumentReader {
     
     public XmlDocumentReader(File xmlDocument) {
         loadContent(xmlDocument);
@@ -25,6 +25,10 @@ class XmlDocumentReader {
     
     private static void handleException(Exception ex) {
         throw new RuntimeException("Problem occured while building XML document.", ex);
+    }
+    
+    public String getValueOf(String pathToElement) {
+        return getElementAt(pathToElement).getText();
     }
         
     public Element getElementAt(String pathToElement) {

@@ -3,7 +3,7 @@ package com.megadict.format.dict.sample;
 import java.io.File;
 import java.util.Set;
 
-public interface DictionaryTestSample {
+public interface DictionaryTestSample extends IndexTestSample {
     
     String getDictionaryName();
     File getDictionaryFile();
