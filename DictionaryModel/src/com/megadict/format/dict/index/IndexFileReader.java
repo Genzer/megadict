@@ -14,30 +14,32 @@ public class IndexFileReader {
     public IndexFileReader(File indexFile) {
         this.indexFile = indexFile;
     }
+    
+    public String getIndexStringOf(String word) {
+        return findInFile(word);
+    }
 
     public Index getIndexOf(String headWord) {
         String indexString = findInFile(headWord);
         if (indexString != null) {
-            return INDEX_PARSER.parse(indexString);
+            return makeNewIndex(indexString);
         } else {
             return null;
         }
     }
-
-    public String getIndexStringOf(String word) {
-        return findInFile(word);
+    
+    private Index makeNewIndex(String indexString) {
+        return INDEX_PARSER.parse(indexString);
     }
 
     private String findInFile(String headWord) {
         try {
             makeReader();
-            String found = locateIndexStringOf(headWord);
-            return found;
+            return locateIndexStringOf(headWord);
         } catch (FileNotFoundException fnf) {
             throw new ResourceMissingException(indexFile, fnf);
         } catch (IOException ioException) {
-            throw new OperationFailedException("reading index file",
-                    ioException);
+            throw new OperationFailedException("reading index file", ioException);
         } finally {
             closeReader();
         }
@@ -45,8 +47,7 @@ public class IndexFileReader {
 
     private void makeReader() throws FileNotFoundException {
         FileInputStream rawStream = new FileInputStream(indexFile);
-        reader = new BufferedReader(newUnicodeStream(rawStream),
-                INNER_READER_BUFFER_SIZE);
+        reader = new BufferedReader(newUnicodeStream(rawStream), INNER_READER_BUFFER_SIZE);
     }
 
     private InputStreamReader newUnicodeStream(FileInputStream rawStream) {

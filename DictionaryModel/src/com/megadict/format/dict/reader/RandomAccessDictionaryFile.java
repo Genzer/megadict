@@ -3,7 +3,7 @@ package com.megadict.format.dict.reader;
 import java.io.File;
 
 
-public class RandomAccessDictionaryFile extends DictionaryFile {
+class RandomAccessDictionaryFile extends DictionaryFile {
 
     public RandomAccessDictionaryFile(String dictFilePath) {
         super(dictFilePath);

@@ -2,8 +2,7 @@ package com.megadict.format.dict.reader;
 
 import java.io.File;
 
-
-public class BufferedDictionaryFile extends DictionaryFile {
+class BufferedDictionaryFile extends DictionaryFile {
 
     public BufferedDictionaryFile(String dictFilePath) {
         super(dictFilePath);

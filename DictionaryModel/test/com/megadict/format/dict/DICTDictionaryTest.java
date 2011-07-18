@@ -8,7 +8,6 @@ import org.junit.*;
 
 import com.megadict.format.dict.index.IndexFile;
 import com.megadict.format.dict.reader.DictionaryFile;
-import com.megadict.format.dict.reader.RandomAccessDictionaryFile;
 import com.megadict.format.dict.sample.*;
 import com.megadict.model.*;
 
@@ -20,8 +19,9 @@ public class DICTDictionaryTest {
     @Before
     public void setUp() {
         sampleTest = TestSamples.getCurrentDictionarySample();
-        IndexFile indexFile = new IndexFile(sampleTest.getIndexFile());
-        DictionaryFile dictFile = new RandomAccessDictionaryFile(sampleTest.getDictionaryFile());
+        
+        IndexFile indexFile = IndexFile.makeFile(sampleTest.getIndexFile());
+        DictionaryFile dictFile = DictionaryFile.makeBufferedFile(sampleTest.getDictionaryFile());
         
         testee = new DICTDictionary(indexFile, dictFile);
     }

@@ -2,7 +2,7 @@ package com.megadict.format.dict.reader;
 
 import java.io.File;
 
-public class GZipDicitonaryFile extends DictionaryFile {
+class GZipDicitonaryFile extends DictionaryFile {
 
     public GZipDicitonaryFile(String dictFilePath) {
         super(dictFilePath);

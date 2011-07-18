@@ -5,12 +5,36 @@ import java.io.File;
 
 public abstract class DictionaryFile {
     
-    public DictionaryFile(String dictFilePath) {
+    protected DictionaryFile(String dictFilePath) {
         this.dictFile = new File(dictFilePath);
     }
     
-    public DictionaryFile(File dictFile) {
+    protected DictionaryFile(File dictFile) {
         this.dictFile = dictFile;
+    }
+    
+    public static DictionaryFile makeRandomAccessFile(File dictFile) {
+        return new RandomAccessDictionaryFile(dictFile);
+    }
+    
+    public static DictionaryFile makeRandomAccessFile(String dictFilePath) {
+        return new RandomAccessDictionaryFile(new File(dictFilePath));
+    }
+    
+    public static DictionaryFile makeBufferedFile(File dictFile) {
+        return new BufferedDictionaryFile(dictFile);
+    }
+    
+    public static DictionaryFile makeBufferedFile(String dictFilePath) {
+        return new BufferedDictionaryFile(new File(dictFilePath));
+    }
+    
+    public static DictionaryFile makeGZipFile(File gzipFile) {
+        return new GZipDicitonaryFile(gzipFile);
+    }
+    
+    public static DictionaryFile makeGZipFile(String dictFilePath) {
+        return new GZipDicitonaryFile(new File(dictFilePath));
     }
     
     public boolean exists() {

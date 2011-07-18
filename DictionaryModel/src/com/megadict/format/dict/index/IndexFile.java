@@ -5,12 +5,20 @@ import java.io.File;
 
 public class IndexFile {
     
-    public IndexFile(String indexFilePath) {
+    protected IndexFile(String indexFilePath) {
         this.indexFile = new File(indexFilePath);
     }
     
-    public IndexFile(File indexFile) {
+    protected IndexFile(File indexFile) {
         this.indexFile = indexFile;
+    }
+    
+    public static IndexFile makeFile(String indexFilePath) {
+        return new IndexFile(indexFilePath);
+    }
+    
+    public static IndexFile makeFile(File indexFile) {
+        return new IndexFile(indexFile);
     }
     
     public boolean exists() {
