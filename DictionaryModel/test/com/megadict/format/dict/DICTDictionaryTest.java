@@ -6,6 +6,9 @@ import java.util.Set;
 
 import org.junit.*;
 
+import com.megadict.format.dict.index.IndexFile;
+import com.megadict.format.dict.reader.DictionaryFile;
+import com.megadict.format.dict.reader.RandomAccessDictionaryFile;
 import com.megadict.format.dict.sample.*;
 import com.megadict.model.*;
 
@@ -17,7 +20,10 @@ public class DICTDictionaryTest {
     @Before
     public void setUp() {
         sampleTest = TestSamples.getCurrentDictionarySample();
-        testee = new DICTDictionary(sampleTest.getIndexFile(), sampleTest.getDictionaryFile());
+        IndexFile indexFile = new IndexFile(sampleTest.getIndexFile());
+        DictionaryFile dictFile = new RandomAccessDictionaryFile(sampleTest.getDictionaryFile());
+        
+        testee = new DICTDictionary(indexFile, dictFile);
     }
 
     @Ignore ("not yet implemented") @Test
@@ -49,7 +55,7 @@ public class DICTDictionaryTest {
     }
     
     @Test
-    public void testLookUpWithExistingWordContainsWhitespaces() {
+    public void testLookUpWithExistingPhrases() {
         Set<String> phrases = sampleTest.getSamplePhrases();
         
         for (String phrase : phrases) {

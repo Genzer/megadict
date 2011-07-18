@@ -9,7 +9,7 @@ import com.megadict.exception.ResourceMissingException;
 import com.megadict.format.dict.parser.IndexParser;
 import com.megadict.format.dict.parser.IndexTabDilimeterParser;
 
-class IndexFileReader {
+public class IndexFileReader {
 
     public IndexFileReader(File indexFile) {
         this.indexFile = indexFile;

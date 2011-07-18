@@ -2,9 +2,9 @@ package com.megadict.format.dict.reader;
 
 import java.io.*;
 
-public class BufferedDictReader extends BaseDictFileReader implements DictFileReader {
+class BufferedDictFileReader extends BaseDictFileReader implements DictFileReader {
 
-    public BufferedDictReader(File dictFile) {
+    public BufferedDictFileReader(File dictFile) {
         super(dictFile);
     }
 

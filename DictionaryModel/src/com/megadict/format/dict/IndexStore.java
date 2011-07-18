@@ -1,27 +1,30 @@
-package com.megadict.format.dict.index;
+package com.megadict.format.dict;
 
-import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class IndexStore {
+import com.megadict.format.dict.index.Index;
+import com.megadict.format.dict.index.IndexFile;
+import com.megadict.format.dict.index.IndexFileReader;
+
+class IndexStore {
     
-    public IndexStore(File indexFile) {
+    public IndexStore(IndexFile indexFile) {
         this(indexFile, DEFAULT_CACHE_CAPACITY);       
     }
     
-    public IndexStore(File indexFile, int totalIndexes) {
+    public IndexStore(IndexFile indexFile, int totalIndexes) {
         buildCacheOfIndexesWithInitialCapacity(indexFile, totalIndexes);
         initializeReader(indexFile);
     }   
     
-    private void buildCacheOfIndexesWithInitialCapacity(File indexFile, int initialTotalIndexes) {
+    private void buildCacheOfIndexesWithInitialCapacity(IndexFile indexFile, int initialTotalIndexes) {
         cache = new HashMap<String, Index>(initialTotalIndexes);
     }
     
-    private void initializeReader(File indexFile) {
-        reader = new IndexFileReader(indexFile);
+    private void initializeReader(IndexFile indexFile) {
+        reader = indexFile.getReader();
     }
     
     public Index getIndexOf(String headWord) {

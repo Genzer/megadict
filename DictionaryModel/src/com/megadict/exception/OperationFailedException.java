@@ -7,8 +7,9 @@ public class OperationFailedException extends RuntimeException {
     }
     
     private static String makeMessage(String operationName) {
-        return "Problem occured while performing " + operationName + ".";
+        return  String.format(TEMPLATE_MESSAGE, operationName);
     }
    
+    private static final String TEMPLATE_MESSAGE = "Problem occured while performing %s .";
     private static final long serialVersionUID = 4475812074237232764L;
 }
