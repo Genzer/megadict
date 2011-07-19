@@ -2,39 +2,38 @@ package com.megadict.format.dict.reader;
 
 import java.io.File;
 
-
-public abstract class DictionaryFile {
+public class DictionaryFile {
     
-    protected DictionaryFile(String dictFilePath) {
-        this.dictFile = new File(dictFilePath);
-    }
-    
-    protected DictionaryFile(File dictFile) {
+    private DictionaryFile(File dictFile, DictFileReader reader) {
         this.dictFile = dictFile;
+        this.reader = reader;
     }
     
     public static DictionaryFile makeRandomAccessFile(File dictFile) {
-        return new RandomAccessDictionaryFile(dictFile);
+        RandomDictFileReader randomReader = new RandomDictFileReader(dictFile);
+        return new DictionaryFile(dictFile, randomReader);
     }
     
     public static DictionaryFile makeRandomAccessFile(String dictFilePath) {
-        return new RandomAccessDictionaryFile(new File(dictFilePath));
+        return makeRandomAccessFile(new File(dictFilePath));
     }
     
     public static DictionaryFile makeBufferedFile(File dictFile) {
-        return new BufferedDictionaryFile(dictFile);
+        BufferedDictFileReader bufferedReader = new BufferedDictFileReader(dictFile);
+        return new DictionaryFile(dictFile, bufferedReader);
     }
     
     public static DictionaryFile makeBufferedFile(String dictFilePath) {
-        return new BufferedDictionaryFile(new File(dictFilePath));
+        return makeBufferedFile(new File(dictFilePath));
     }
     
     public static DictionaryFile makeGZipFile(File gzipFile) {
-        return new GZipDicitonaryFile(gzipFile);
+        GZipDictFileReader gzipReader = new GZipDictFileReader(gzipFile);
+        return new DictionaryFile(gzipFile, gzipReader);
     }
     
     public static DictionaryFile makeGZipFile(String dictFilePath) {
-        return new GZipDicitonaryFile(new File(dictFilePath));
+        return makeGZipFile(new File(dictFilePath));
     }
     
     public boolean exists() {
@@ -49,12 +48,15 @@ public abstract class DictionaryFile {
         return dictFile.getName();
     }
     
-    public abstract DictFileReader getReader();
+    public  DictFileReader getReader() {
+        return this.reader;
+    }
     
     @Override
     public String toString() {
         return dictFile.toString();
     }
     
-    protected final File dictFile;
+    private final File dictFile;
+    private final DictFileReader reader;
 }
