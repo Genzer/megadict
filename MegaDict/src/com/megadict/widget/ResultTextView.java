@@ -5,9 +5,9 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.widget.TextView;
+import android.webkit.WebView;
 
-public class ResultTextView extends TextView {
+public class ResultTextView extends WebView {
 
 	public ResultTextView(final Context context) {
 		super(context);

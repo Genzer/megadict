@@ -12,22 +12,47 @@ import android.database.sqlite.SQLiteDatabase;
 import com.megadict.exception.DataFileNotFoundException;
 import com.megadict.exception.IndexFileNotFoundException;
 import com.megadict.format.dict.DICTDictionary;
+import com.megadict.format.dict.index.IndexFile;
+import com.megadict.format.dict.reader.DictionaryFile;
 import com.megadict.model.ChosenModel;
 import com.megadict.model.Definition;
+import com.megadict.model.Dictionary;
 import com.megadict.model.DictionaryInformation;
 
 public class DictionaryClient {
-	private final List<DICTDictionary> dictionaryModels = new ArrayList<DICTDictionary>();
+	private final List<Dictionary> dictionaryModels = new ArrayList<Dictionary>();
 	private final List<String> names = new ArrayList<String>();
 	private final List<String> logger = new ArrayList<String>();
+	private final List<SearchTask> searchTasks = new ArrayList<SearchTask>();
+	final List<String> contents = new ArrayList<String>();
 
 	// ========================= Public functions ========================= //
-	public List<String> lookup(final String word, final String dump) {
-		final List<String> contents = new ArrayList<String>();
-		for(final DICTDictionary dict : dictionaryModels) {
-			final Definition d = dict.lookUp(word);
-			final String content = d.getContent();
-			contents.add(content);
+	public List<String> lookup(final String word) {
+		// Reset all list.
+		searchTasks.clear();
+		contents.clear();
+
+		// Create and start search threads.
+		for(final Dictionary dict : dictionaryModels) {
+			final SearchTask task = new SearchTask(dict, word);
+			searchTasks.add(task);
+			task.start();
+		}
+
+		// Wait all search tasks finish.
+		for(final SearchTask task : searchTasks) {
+			task.join();
+			contents.add(task.getContent());
+		}
+
+		return contents;
+	}
+
+	public List<String> lookupFirstDict(final String word) {
+		contents.clear();
+		if(!dictionaryModels.isEmpty()) {
+			final Definition d = dictionaryModels.get(0).lookUp(word);
+			contents.add(d.getContent());
 		}
 		return contents;
 	}
@@ -54,7 +79,6 @@ public class DictionaryClient {
 
 		// Truncate the table.
 		database.delete(ChosenModel.TABLE_NAME, null, null);
-
 		// Get dictionary names.
 		final List<String> dictNames = getDictionaryNames();
 
@@ -68,7 +92,6 @@ public class DictionaryClient {
 		}
 	}
 
-
 	// ========================== Private functions ============================ //
 	private void resetClient(final List<DictionaryInformation> infos) {
 		clearAllList();
@@ -76,7 +99,11 @@ public class DictionaryClient {
 			// Create dictionary model ony when the index file and the dict file exists.
 			final String indexFilePath = info.getIndexFile().getAbsolutePath();
 			final String dataFilePath = info.getDataFile().getAbsolutePath();
-			final DICTDictionary model = new DICTDictionary(indexFilePath, dataFilePath);
+			// Create necessary files.
+			final IndexFile indexFile = IndexFile.makeFile(indexFilePath);
+			final DictionaryFile dictFile = DictionaryFile.makeRandomAccessFile(dataFilePath);
+			// Create model and add it to list.
+			final DICTDictionary model = new DICTDictionary(indexFile, dictFile);
 			dictionaryModels.add(model);
 			names.add(model.getName());
 		}
@@ -116,5 +143,44 @@ public class DictionaryClient {
 			logger.add(e.getMessage());
 		}
 		return list;
+	}
+
+
+	// ============================ Search task inner class =============== //
+	private class SearchTask implements Runnable {
+		private static final String CONTENT_NOT_FOUND = "No definition found.";
+		private final Dictionary dictionaryModel;
+		private final String word;
+		private String content;
+		private final Thread thread;
+
+		SearchTask(final Dictionary dictionaryModel, final String word) {
+			this.dictionaryModel = dictionaryModel;
+			this.word = word;
+			content = CONTENT_NOT_FOUND;
+			thread = new Thread(this);
+		}
+
+		public void start() {
+			thread.start();
+		}
+
+		public void join() {
+			try {
+				thread.join();
+			} catch (final InterruptedException e) {
+				logger.add(e.getMessage());
+			}
+		}
+
+		@Override
+		public void run() {
+			final Definition d = dictionaryModel.lookUp(word);
+			content = d.getContent();
+		}
+
+		public String getContent() {
+			return content;
+		}
 	}
 }
