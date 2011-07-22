@@ -1,12 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
-	<!-- Others -->
-    <string name="hello">Hello World, MegaDict!</string>
-    <string name="appName">MegaDict</string>    
-    <string name="aboutContent"><b>Từ điển đa năng này rất tốt. Tác giả là Hiếu và Hậu.</b></string>
-    <string name="aboutDialogLabel">About</string>
-    <string name="storageLabel">Storage</string>
-    
+<resources>    
     <!-- Button labels -->
     <string name="settingButtonLabel">Setting</string>
     <string name="dictionaryButtonLabel">Dictionary</string>
@@ -20,7 +13,23 @@
     <string name="settingMenuItemTitle">Settings</string>
     <string name="manageMenuItemTitle">Manage</string>
     <string name="aboutMenuItemTitle">About</string>
+    <string name="selectTextMenuItemTitle">Select text</string>
     
-    <!-- Report -->
+    <!-- Common Strings -->
+    <string name="noDefinition">There is no definition. Don\'t be silly guy!</string>    
     <string name="noDictionary">Please choose a dictionary.</string>
+    <string name="noDictionary2">There is no dictionary. Please put dictionaries\' data 
+    folders in SD card at the location <br>/mnt/sdcard/Download/megadict</br>.</string>    
+    <string name="searching">Searching... Please wait</string>
+    <string name="usingDictionary">You are using %1$d dictionary.</string>
+    <string name="usingDictionaryPlural">You are using %1$d dictionaries.</string>
+    <string name="selectText">Select text now</string>
+    <string name="canNotSelectText">Can\'t select text</string>
+    <string name="cancel">Cancel</string>
+    
+    <!-- Others -->
+    <string name="appName">MegaDict</string>    
+    <string name="aboutContent"><b>This is the best dictionary in the world. The autor are Hieu and Hau.</b></string>
+    <string name="aboutDialogLabel">About</string>
+    <string name="storageLabel">Storage</string>
 </resources>

@@ -1,8 +1,10 @@
 package com.megadict.activity;
 
-import android.app.ProgressDialog;
+
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.text.ClipboardManager;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -10,10 +12,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
-import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
@@ -21,22 +23,30 @@ import com.megadict.R;
 import com.megadict.application.MegaDictApp;
 import com.megadict.business.DictionaryClient;
 import com.megadict.business.ResultTextMaker;
-import com.megadict.business.SearchTask;
+import com.megadict.task.SearchTask;
+import com.megadict.task.WordListTask;
+import com.megadict.task.WordListTask.OnClickWordListener;
 import com.megadict.utility.DatabaseHelper;
 import com.megadict.utility.Utility;
+import com.megadict.widget.ResultView;
+import com.megadict.widget.ResultView.OnSelectTextListener;
 
-public class DictionaryActivity extends BaseActivity implements OnClickListener, OnEditorActionListener {
+public class DictionaryActivity extends BaseActivity implements OnClickListener, OnEditorActionListener, OnSelectTextListener, OnClickWordListener {
+	private final String TAG = "DictionaryActivity";
+
 	// Activity control variables.
 	private EditText searchEditText;
-	private WebView resultView;
+	private ResultView resultView;
 	private ProgressBar progressBar;
+	private ClipboardManager clipboardManager;
 
 	// Member variables
 	private DictionaryClient dictionaryClient;
 	private SQLiteDatabase database;
 	private ResultTextMaker resultTextMaker;
 	private SearchTask searchTask;
-
+	private WordListTask task;
+	private boolean shouldSetStartPage = true;
 
 	public DictionaryActivity() {
 		super(R.layout.search);
@@ -47,7 +57,14 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 		super.onCreate(savedInstanceState);
 		initLayout();
 		initVariables();
-		setStartPage();
+	}
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+		if(shouldSetStartPage) {
+			setStartPage();
+		}
 	}
 
 	@Override
@@ -71,6 +88,8 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 			Utility.startActivity(this, "com.megadict.activity.ManageActivity");
 		} else if(item.getItemId() == R.id.aboutMenuItem) {
 			Utility.startActivity(this, "com.megadict.activity.AboutActivity");
+		} else if(item.getItemId() == R.id.selectTextMenuItem) {
+			selectText(resultView);
 		}
 		return true;
 	}
@@ -80,6 +99,20 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 		if (view.getId() == R.id.searchButton) {
 			doSearching(searchEditText.getText().toString());
 		}
+	}
+
+	@Override
+	public void onSelectText() {
+		final String text = clipboardManager.getText().toString();
+		task = new WordListTask(this, text);
+		task.setOnClickWordListener(this);
+		task.execute((Void [])null);
+	}
+
+	@Override
+	public void onClickWord() {
+		searchEditText.setText(task.getWord());
+		doSearching(searchEditText.getText().toString());
 	}
 
 	@Override
@@ -94,24 +127,17 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 
 	// ========================= Private functions ======================= //
 	private void initLayout() {
+		progressBar = (ProgressBar)findViewById(R.id.progressBar);
 		final Button searchButton = (Button) findViewById(R.id.searchButton);
 		searchButton.setOnClickListener(this);
 		searchButton.setOnEditorActionListener(this);
 		searchEditText = (EditText) findViewById(R.id.searchEditText);
-		resultView = (WebView)findViewById(R.id.resultView);
+		// Init Result view.
+		resultView = new ResultView(this, clipboardManager);
 		resultView.setBackgroundColor(0x00000000);
-		progressBar = (ProgressBar)findViewById(R.id.progressBar);
-	}
-
-	private void doSearching(final String word) {
-		if(searchTask == null || !searchTask.isSearching()) {
-			searchTask = new SearchTask(dictionaryClient, resultTextMaker,
-					progressBar, resultView, getString(R.string.noDictionary));
-			searchTask.execute(word);
-
-		} else {
-			Utility.messageBox(this, "Seaching... Please wait.");
-		}
+		resultView.setOnSelectTextListener(this);
+		final ScrollView resultScrollView = (ScrollView)findViewById(R.id.resultScrollView);
+		resultScrollView.addView(resultView);
 	}
 
 	private void initVariables() {
@@ -124,13 +150,38 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 		dictionaryClient.scanDatabase(this, database);
 		// Init result text maker.
 		resultTextMaker = new ResultTextMaker(getAssets());
-		// Init progress dialog.
-		final ProgressDialog progressDialog = new ProgressDialog(this);
-		progressDialog.setMessage("Searching...");
+		// Init clipboard manager.
+		clipboardManager = (ClipboardManager)getSystemService(CLIPBOARD_SERVICE);
+	}
+
+	private void doSearching(final String word) {
+		if(searchTask == null || !searchTask.isSearching()) {
+			searchTask = new SearchTask(dictionaryClient, resultTextMaker,
+					progressBar, resultView, getString(R.string.noDictionary));
+			searchTask.execute(word);
+			shouldSetStartPage = false;
+		} else {
+			Utility.messageBox(this, getString(R.string.searching));
+		}
 	}
 
 	private void setStartPage() {
-		final String welcomeStr = resultTextMaker.getWelcomeHTML(dictionaryClient.getDictionaryNames());
-		resultView.loadDataWithBaseURL(ResultTextMaker.ASSET_URL, welcomeStr, "text/html", "utf-8", null);
+		final int dictCount = dictionaryClient.getDictionaryNames().size();
+		final String welcomeStr = (dictCount > 1 ? getString(R.string.usingDictionaryPlural, dictCount) : getString(R.string.usingDictionary, dictCount));
+		final String welcomeHTML = resultTextMaker.getWelcomeHTML(welcomeStr);
+		resultView.loadDataWithBaseURL(ResultTextMaker.ASSET_URL, welcomeHTML, "text/html", "utf-8", null);
+	}
+
+	private void selectText(final ResultView resultView) {
+		try
+		{
+			final KeyEvent shiftPressEvent = new KeyEvent(0, 0, KeyEvent.ACTION_DOWN,
+					KeyEvent.KEYCODE_SHIFT_LEFT, 0, 0);
+			shiftPressEvent.dispatch(resultView);
+			Utility.messageBox(this, getString(R.string.selectText));
+		}
+		catch (final Exception e) {
+			Log.e(TAG, getString(R.string.canNotSelectText), e);
+		}
 	}
 }

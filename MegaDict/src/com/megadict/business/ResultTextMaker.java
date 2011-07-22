@@ -38,11 +38,9 @@ public class ResultTextMaker {
 		return headTagContent.toString();
 	}
 
-	public String getWelcomeHTML(final List<String> dictionaryNames) {
-		final int dictCount = dictionaryNames.size();
-		final String welcomeStr = "<html>" + headTag + "<body>You are using " +
-		dictCount + (dictCount > 1 ? " dictionaries" : " dictionary") + "</body></html>";
-		return welcomeStr;
+	public String getWelcomeHTML(final String welcomStr) {
+		final String welcomeHTML = "<html>" + headTag + "<body>" + welcomStr + "</body></html>";
+		return welcomeHTML;
 	}
 
 	public String getResultHTML(final List<String> contents, final List<String> dictionaryNames) {
@@ -56,7 +54,7 @@ public class ResultTextMaker {
 
 		// Create dictionary blocks.
 		for(int i = 0; i < contentSize; ++i) {
-			final String formattedContent = contents.get(i).replace("\n", "<br/>");
+			final String formattedContent = contents.get(i).trim().replace("\n", "<br/>");
 			resultText.append("<div class=\"dictionaryBlock\"><div class=\"dictionaryContent\">" + formattedContent + "</div>" +
 					"<div class=\"dictionaryName\">" + dictionaryNames.get(i) + "</div></div>");
 		}

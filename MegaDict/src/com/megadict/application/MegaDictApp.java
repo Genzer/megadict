@@ -12,16 +12,17 @@ import java.io.File;
 
 import android.app.Application;
 
+import com.megadict.R;
 import com.megadict.business.DictionaryClient;
 import com.megadict.business.ExternalStorage;
 
 public class MegaDictApp extends Application {
-	public final DictionaryClient dictionaryClient = new DictionaryClient();;
+	public DictionaryClient dictionaryClient;
 	public final File externalStorage = ExternalStorage.getExternalDirectory();;
 
 	@Override
 	public void onCreate() {
-		super.onCreate();
+		dictionaryClient = new DictionaryClient(getString(R.string.noDefinition));
 	}
 
 }

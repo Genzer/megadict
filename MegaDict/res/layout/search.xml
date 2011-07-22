@@ -14,7 +14,6 @@
     <ScrollView android:id="@+id/resultScrollView" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_weight="1" android:padding="3dip" android:background="@drawable/result_background">
          
         <!-- <FrameLayout android:id="@+id/resultPanel" android:layout_width="match_parent" android:layout_height="match_parent"></FrameLayout> -->
-        <WebView android:layout_width="match_parent" android:layout_height="match_parent" android:id="@+id/resultView"></WebView>
          
          
     </ScrollView>

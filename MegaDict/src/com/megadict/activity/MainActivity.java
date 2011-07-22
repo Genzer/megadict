@@ -74,7 +74,4 @@ public class MainActivity extends ActivityGroup implements OnClickListener {
 		final String packageName = pack.getName();
 		return packageName;
 	}
-
-	private void scanStorage() {
-	}
 }

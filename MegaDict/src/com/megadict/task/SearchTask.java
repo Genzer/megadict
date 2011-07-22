@@ -1,6 +1,9 @@
-package com.megadict.business;
+package com.megadict.task;
 
 import java.util.List;
+
+import com.megadict.business.DictionaryClient;
+import com.megadict.business.ResultTextMaker;
 
 import android.os.AsyncTask;
 import android.view.View;

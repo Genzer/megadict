@@ -10,5 +10,5 @@
 
      <TextView android:id="@android:id/empty"
                android:layout_width="match_parent"
-               android:text="Không tìm thấy từ điển nào." android:layout_height="wrap_content"/>
+               android:text="@string/noDictionary" android:layout_height="wrap_content" android:textColor="@color/white" android:textSize="16sp"/>
  </LinearLayout>

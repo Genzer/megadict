@@ -3,6 +3,7 @@ package com.megadict.business;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import android.app.Activity;
 import android.content.ContentValues;
@@ -21,10 +22,16 @@ import com.megadict.model.DictionaryInformation;
 
 public class DictionaryClient {
 	private final List<Dictionary> dictionaryModels = new ArrayList<Dictionary>();
-	private final List<String> names = new ArrayList<String>();
+	private final List<String> dictionaryNames = new ArrayList<String>();
 	private final List<String> logger = new ArrayList<String>();
 	private final List<SearchTask> searchTasks = new ArrayList<SearchTask>();
-	final List<String> contents = new ArrayList<String>();
+	private final List<String> contents = new ArrayList<String>();
+	private final String noDefinitionStr;
+	//private List<DictionaryInformation> dictionaryInfos = new ArrayList<DictionaryInformation>();
+
+	public DictionaryClient(final String noDefinitionStr) {
+		this.noDefinitionStr = noDefinitionStr;
+	}
 
 	// ========================= Public functions ========================= //
 	public List<String> lookup(final String word) {
@@ -32,9 +39,11 @@ public class DictionaryClient {
 		searchTasks.clear();
 		contents.clear();
 
+		// Lower it. I am not sure if we should lower it.
+		final String searchedWord = word.toLowerCase(Locale.ENGLISH);
 		// Create and start search threads.
 		for(final Dictionary dict : dictionaryModels) {
-			final SearchTask task = new SearchTask(dict, word);
+			final SearchTask task = new SearchTask(dict, searchedWord);
 			searchTasks.add(task);
 			task.start();
 		}
@@ -57,16 +66,6 @@ public class DictionaryClient {
 		return contents;
 	}
 
-	public List<String> getLogger()
-	{
-		return logger;
-	}
-
-	public List<String> getDictionaryNames()
-	{
-		return names;
-	}
-
 	public void scanDatabase(final Activity activity, final SQLiteDatabase database) {
 		final List<DictionaryInformation> infos = getChosenDictionaryInfos(activity, database);
 		resetClient(infos);
@@ -79,13 +78,11 @@ public class DictionaryClient {
 
 		// Truncate the table.
 		database.delete(ChosenModel.TABLE_NAME, null, null);
-		// Get dictionary names.
-		final List<String> dictNames = getDictionaryNames();
 
 		// Insert dictionary infos to database.
 		final ContentValues value = new ContentValues();
 		for(int i = 0; i < infos.size(); ++i) {
-			value.put(ChosenModel.DICTIONARY_NAME_COLUMN, dictNames.get(i));
+			value.put(ChosenModel.DICTIONARY_NAME_COLUMN, dictionaryNames.get(i));
 			value.put(ChosenModel.DICTIONARY_PATH_COLUMN, infos.get(i).getParentFile().getAbsolutePath());
 			value.put(ChosenModel.ENABLED_COLUMN, 0);
 			database.insert(ChosenModel.TABLE_NAME, null, value);
@@ -96,21 +93,18 @@ public class DictionaryClient {
 	private void resetClient(final List<DictionaryInformation> infos) {
 		clearAllList();
 		for(final DictionaryInformation info : infos) {
-			// Create dictionary model ony when the index file and the dict file exists.
-			final String indexFilePath = info.getIndexFile().getAbsolutePath();
-			final String dataFilePath = info.getDataFile().getAbsolutePath();
 			// Create necessary files.
-			final IndexFile indexFile = IndexFile.makeFile(indexFilePath);
-			final DictionaryFile dictFile = DictionaryFile.makeRandomAccessFile(dataFilePath);
+			final IndexFile indexFile = IndexFile.makeFile(info.getIndexFile());
+			final DictionaryFile dictFile = DictionaryFile.makeRandomAccessFile( info.getDataFile());
 			// Create model and add it to list.
 			final DICTDictionary model = new DICTDictionary(indexFile, dictFile);
 			dictionaryModels.add(model);
-			names.add(model.getName());
+			dictionaryNames.add(model.getName());
 		}
 	}
 
 	private void clearAllList() {
-		names.clear();
+		dictionaryNames.clear();
 		dictionaryModels.clear();
 		logger.clear();
 	}
@@ -130,34 +124,42 @@ public class DictionaryClient {
 		final Cursor cursor = ChosenModel.selectChosenDictionaries(database);
 		activity.startManagingCursor(cursor);
 
-		final List<DictionaryInformation> list = new ArrayList<DictionaryInformation>();
+		final List<DictionaryInformation> infos = new ArrayList<DictionaryInformation>();
 		try {
 			for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
 				final String dictPath = cursor.getString(cursor.getColumnIndex(ChosenModel.DICTIONARY_PATH_COLUMN));
 				final DictionaryInformation info = new DictionaryInformation(new File(dictPath));
-				list.add(info);
+				infos.add(info);
 			}
 		} catch (final IndexFileNotFoundException e) {
 			logger.add(e.getMessage());
 		} catch (final DataFileNotFoundException e) {
 			logger.add(e.getMessage());
 		}
-		return list;
+		return infos;
+	}
+
+	public List<String> getLogger()
+	{
+		return logger;
+	}
+
+	public List<String> getDictionaryNames()
+	{
+		return dictionaryNames;
 	}
 
 
 	// ============================ Search task inner class =============== //
 	private class SearchTask implements Runnable {
-		private static final String CONTENT_NOT_FOUND = "No definition found.";
 		private final Dictionary dictionaryModel;
 		private final String word;
-		private String content;
+		private String content = "";
 		private final Thread thread;
 
 		SearchTask(final Dictionary dictionaryModel, final String word) {
 			this.dictionaryModel = dictionaryModel;
 			this.word = word;
-			content = CONTENT_NOT_FOUND;
 			thread = new Thread(this);
 		}
 
@@ -176,7 +178,7 @@ public class DictionaryClient {
 		@Override
 		public void run() {
 			final Definition d = dictionaryModel.lookUp(word);
-			content = d.getContent();
+			content = d == Definition.NOT_FOUND ? noDefinitionStr : d.getContent();
 		}
 
 		public String getContent() {
