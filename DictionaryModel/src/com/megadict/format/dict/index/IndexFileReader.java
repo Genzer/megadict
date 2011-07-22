@@ -2,7 +2,7 @@ package com.megadict.format.dict.index;
 
 import java.io.*;
 import java.nio.charset.Charset;
-import java.util.Arrays;
+import java.util.*;
 
 import com.megadict.exception.OperationFailedException;
 import com.megadict.exception.ResourceMissingException;
@@ -15,12 +15,8 @@ public class IndexFileReader {
         this.indexFile = indexFile;
     }
     
-    public String getIndexStringOf(String word) {
-        return findInFile(word);
-    }
-
-    public Index getIndexOf(String headWord) {
-        String indexString = findInFile(headWord);
+    public Index getIndexOf(String headword) {
+        String indexString = findInFile(headword);
         if (indexString != null) {
             return makeNewIndex(indexString);
         } else {
@@ -28,14 +24,48 @@ public class IndexFileReader {
         }
     }
     
+    public Set<Index> getIndexesStartFrom(String headword) {
+        
+        Set<Index> indexes = new HashSet<Index>();
+        
+        String[] indexStrings = retrieveIndexStringsFrom(headword);
+        
+        for (String indexString : indexStrings) {
+            Index newIndex = makeNewIndex(indexString);
+            if (newIndex != null) {
+                indexes.add(newIndex);
+            }
+        }
+        
+        return indexes;
+    }
+    
     private Index makeNewIndex(String indexString) {
         return INDEX_PARSER.parse(indexString);
     }
 
-    private String findInFile(String headWord) {
+    private String findInFile(String headword) {
         try {
             makeReader();
-            return locateIndexStringOf(headWord);
+            String customedHeadword = createExactMatching(headword);
+            int foundPosition = locateIndexStringOf(customedHeadword);
+            String indexString = readWholeLineAt(foundPosition);
+            return indexString;
+        } catch (FileNotFoundException fnf) {
+            throw new ResourceMissingException(indexFile, fnf);
+        } catch (IOException ioException) {
+            throw new OperationFailedException("reading index file", ioException);
+        } finally {
+            closeReader();
+        }
+    }
+    
+    private String[] retrieveIndexStringsFrom(String headword) {
+        try {
+            makeReader();
+            String customedheadword = createFuzzyMatching(headword); 
+            int foundPosition = locateIndexStringOf(customedheadword);
+            return readAsManyIndexStringAsPossible(foundPosition);
         } catch (FileNotFoundException fnf) {
             throw new ResourceMissingException(indexFile, fnf);
         } catch (IOException ioException) {
@@ -54,27 +84,30 @@ public class IndexFileReader {
         return new InputStreamReader(rawStream, UTF8_CHARSET);
     }
 
-    private String locateIndexStringOf(String headWord) throws IOException {
-        headWord = matchingWholeWord(headWord);
+    private int locateIndexStringOf(String headword) throws IOException {
         fillCharBufferWithSpaces();
 
         while (stillAbleToRead()) {
             builder.append(CHAR_BUFFER);
 
-            int foundPosition = builder.indexOf(headWord);
+            int foundPosition = builder.indexOf(headword);
 
             if (foundPosition != -1) {
-                return readWholeLineAt(foundPosition);
+                return foundPosition;
             } else {
                 resetBuilder();
+                fillCharBufferWithSpaces();
             }
         }
-
-        return null;
+        return -1;
+    }
+    
+    private static String createFuzzyMatching(String headword) {
+       return HEAD_WORD_PREFIX + headword;
     }
 
-    private static String matchingWholeWord(String headWord) {
-        return HEAD_WORD_PREFIX + headWord + HEAD_WORD_SUFFIX;
+    private static String createExactMatching(String headword) {
+        return HEAD_WORD_PREFIX + headword + HEAD_WORD_SUFFIX;
     }
 
     private void fillCharBufferWithSpaces() {
@@ -86,11 +119,23 @@ public class IndexFileReader {
     }
 
     private String readWholeLineAt(int startPosition) {
+        String[] readLines = readAsManyIndexStringAsPossible(startPosition);
+        if (readLines.length > 0) {
+            return readLines[0];
+        } else {
+            return null;
+        }
+    }
+    
+    private String[] readAsManyIndexStringAsPossible(int startPosition) {
+        if (startPosition == -1) {
+            return EMPTY_STRING_ARRAY;
+        }
         // Ignore heading new line character "\n".
         startPosition++;
 
         // Choose 100 because lines are often no longer than 100 characters.
-        int endPosition = startPosition + 100;
+        int endPosition = startPosition + NUM_OF_CHAR_TO_BE_READ_ON;
 
         int currentBufferLength = builder.length();
         // TODO: It's still has a bug in case when the found record is only
@@ -101,9 +146,7 @@ public class IndexFileReader {
 
         String rawString = builder.substring(startPosition, endPosition).trim();
 
-        String[] rawStringSplitted = rawString.split("\n");
-
-        return rawStringSplitted[0];
+        return rawString.split("\n");
     }
 
     private void resetBuilder() {
@@ -131,6 +174,10 @@ public class IndexFileReader {
      * CHAR_BUFFER is determined from BufferedReader buffer size;
      */
     private static final int CHAR_BUFFER_SIZE = INNER_READER_BUFFER_SIZE / 2;
+    
+    private static final int NUM_OF_CHAR_TO_BE_READ_ON = 1000;
+    
+    private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
     private static final String HEAD_WORD_PREFIX = "\n";
     private static final String HEAD_WORD_SUFFIX = "\t";
@@ -143,3 +190,4 @@ public class IndexFileReader {
     private BufferedReader reader;
     private final File indexFile;
 }
+

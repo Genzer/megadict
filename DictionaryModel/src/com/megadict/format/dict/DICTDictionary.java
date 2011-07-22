@@ -25,11 +25,11 @@ public class DICTDictionary implements Dictionary {
 
     private void checkFileExistence() {
         if (!(indexFile.exists())) {
-            throw new ResourceMissingException("Index file does not exist.");
+            throw new ResourceMissingException("Index file " + indexFile);
         }
 
         if (!(dictFile.exists())) {
-            throw new ResourceMissingException("Dict file does not exist.");
+            throw new ResourceMissingException("Dict file " + dictFile);
         }
     }
 
@@ -46,8 +46,7 @@ public class DICTDictionary implements Dictionary {
     }
 
     private void loadDictionaryName() {
-        Index nameEntry = supportedWords.getIndexOf(MetaDataEntry.SHORT_NAME
-                .tagName());
+        Index nameEntry = supportedWords.getIndexOf(MetaDataEntry.SHORT_NAME.tagName());
         String name = definitionFinder.getDefinitionAt(nameEntry);
         this.name = cleanedUpName(name);
     }
@@ -61,17 +60,24 @@ public class DICTDictionary implements Dictionary {
 
     @Override
     public List<String> recommendWord(String word) {
-        // TODO: Implement to return the adjacency words. Maybe
-        // interpolation search algorithm.
-        return Collections.emptyList();
+        return supportedWords.getSimiliarWord(word, 20);
     }
 
     @Override
     public Definition lookUp(String word) {
         boolean validated = validateWord(word);
 
-        if (validated && supportedWords.containsWord(word)) {
-            return loadDefinition(supportedWords.getIndexOf(word));
+        if (validated == false) {
+            return Definition.NOT_FOUND;
+        }
+
+        Definition foundInDefinitionCache = findInDefinitionCache(word);
+        if (foundInDefinitionCache != Definition.NOT_FOUND) {
+            return foundInDefinitionCache;
+        }
+
+        if (supportedWords.containsWord(word)) {
+            return loadAndCacheDefinition(supportedWords.getIndexOf(word));
         } else {
             return Definition.NOT_FOUND;
         }
@@ -81,16 +87,19 @@ public class DICTDictionary implements Dictionary {
         return StringChecker.check(word);
     }
 
-    private Definition loadDefinition(Index index) {
-        if (definitionCache.containsKey(index)) {
-            return definitionCache.get(index);
+    private Definition findInDefinitionCache(String word) {
+        if (definitionCache.containsKey(word)) {
+            return definitionCache.get(word);
         } else {
-            String definitionContent = definitionFinder.getDefinitionAt(index);
-            Definition def = new Definition(index.getWord(), definitionContent,
-                    this.name);
-            cacheDefinition(def);
-            return def;
+            return Definition.NOT_FOUND;
         }
+    }
+
+    private Definition loadAndCacheDefinition(Index index) {
+        String definitionContent = definitionFinder.getDefinitionAt(index);
+        Definition def = new Definition(index.getWord(), definitionContent, this.name);
+        cacheDefinition(def);
+        return def;
     }
 
     private void cacheDefinition(Definition def) {
@@ -105,8 +114,7 @@ public class DICTDictionary implements Dictionary {
     @Override
     public String toString() {
         if (toStringCache == null) {
-            toStringCache = String.format(TO_STRING_PATTERN, name, indexFile,
-                    dictFile);
+            toStringCache = String.format(TO_STRING_PATTERN, name, indexFile, dictFile);
         }
         return toStringCache;
     }

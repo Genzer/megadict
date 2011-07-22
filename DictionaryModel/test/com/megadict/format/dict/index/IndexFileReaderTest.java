@@ -3,8 +3,7 @@ package com.megadict.format.dict.index;
 import static org.junit.Assert.*;
 import org.junit.*;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import com.megadict.format.dict.parser.IndexParser;
 import com.megadict.format.dict.parser.IndexTabDilimeterParser;
@@ -38,7 +37,7 @@ public class IndexFileReaderTest {
 
     private Set<Index> parseToIndex(Set<String> words) {
 
-        Set<Index> expectedValues = new HashSet<Index>(words.size());
+        Set<Index> expectedValues = new LinkedHashSet<Index>(words.size());
 
         for (String word : words) {
             String indexString = sampleSet.getFullIndexStringOf(word);
@@ -50,7 +49,7 @@ public class IndexFileReaderTest {
 
     private Set<Index> processActualData(Set<String> wordsToTest) {
 
-        Set<Index> actualValues = new HashSet<Index>(wordsToTest.size());
+        Set<Index> actualValues = new LinkedHashSet<Index>(wordsToTest.size());
 
         for (String word : wordsToTest) {
             Index actualIndex = testee.getIndexOf(word);
@@ -85,4 +84,15 @@ public class IndexFileReaderTest {
 
         assertNull(found);
     }
+    
+    @Test
+    public void testGetIndexesFromHeadword() {
+        String word = "00-database-short";
+        
+        Set<Index> found = testee.getIndexesStartFrom(word);
+        
+        boolean empty = found.isEmpty();
+        assertFalse(empty);
+    }
+    
 }

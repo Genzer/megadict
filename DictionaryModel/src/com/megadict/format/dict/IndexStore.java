@@ -1,68 +1,90 @@
 package com.megadict.format.dict;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import com.megadict.format.dict.index.Index;
 import com.megadict.format.dict.index.IndexFile;
 import com.megadict.format.dict.index.IndexFileReader;
 
 class IndexStore {
-    
+
     public IndexStore(IndexFile indexFile) {
-        this(indexFile, DEFAULT_CACHE_CAPACITY);       
-    }
-    
-    public IndexStore(IndexFile indexFile, int totalIndexes) {
-        buildCacheOfIndexesWithInitialCapacity(indexFile, totalIndexes);
         initializeReader(indexFile);
-    }   
-    
-    private void buildCacheOfIndexesWithInitialCapacity(IndexFile indexFile, int initialTotalIndexes) {
-        cache = new HashMap<String, Index>(initialTotalIndexes);
+        buildCache();
     }
-    
+
+    private void buildCache() {
+        cache = new TreeMap<String, Index>();
+    }
+
     private void initializeReader(IndexFile indexFile) {
         reader = indexFile.getReader();
     }
-    
-    public Index getIndexOf(String headWord) {
-        if (containsWord(headWord)) {
-            return cache.get(headWord);
+
+    public Index getIndexOf(String headword) {
+        if (containsWord(headword)) {
+            return getFromCache(headword);
         } else {
             return null;
         }
     }
-    
+
     public boolean containsWord(String word) {
-        boolean foundInCache = cache.containsKey(word);
+        if (findInCache(word) == false) {
+            findInFileAndCacheEverythingFound(word);
+        }
+        return findInCache(word);
+    }
+
+    private boolean findInCache(String word) {
+        return cache.containsKey(word);
+    }
+
+    private void findInFileAndCacheEverythingFound(String word) {
+        Set<Index> foundIndexes = findInFile(word);
+        cacheAll(foundIndexes);
+    }
+
+    private Set<Index> findInFile(String headword) {
+        return reader.getIndexesStartFrom(headword);
+    }
+
+    private void cacheAll(Iterable<Index> indexes) {
+        for (Index index : indexes) {
+            cache.put(index.getWord(), index);
+        }
+    }
+
+    private Index getFromCache(String headword) {
+        return cache.get(headword);
+    }
+
+    public List<String> getSimiliarWord(String headword, int preferredNumber) {
+        findInFileAndCacheEverythingFound(headword);
+        Set<Map.Entry<String, Index>> filtered = filterSimilarWord(headword);
+        return extractByPreferredNumber(filtered, preferredNumber);
+    }
+
+    private Set<Map.Entry<String, Index>> filterSimilarWord(String headword) {
+        SortedMap<String, Index> tailMap = cache.tailMap(headword);
+        return tailMap.entrySet();
+    }
+
+    private List<String> extractByPreferredNumber(Set<Map.Entry<String, Index>> filtered, int preferredNumber) {
+        List<String> result = new ArrayList<String>(preferredNumber);
         
-        if (foundInCache == false) {
-            Index findInFile = findInFile(word);
-            if (findInFile != null) {
-                cache(findInFile);
-                return true;
+        int count = 0;
+        for (Map.Entry<String, Index> entry : filtered) {
+            result.add(entry.getKey());
+            count++;
+            if (count == preferredNumber) {
+                break;
             }
         }
-        return foundInCache;
-    }    
-    
-    private Index findInFile(String headWord) {
-        Index foundIndex = reader.getIndexOf(headWord);
-        if (foundIndex != null) {
-            cache(foundIndex);
-            return foundIndex;
-        } else {
-            return null;
-        }
+        
+        return result;
     }
-    
-    private void cache(Index index) {
-        cache.put(index.getWord(), index);
-    }
-    
-    private static final int DEFAULT_CACHE_CAPACITY = 1000;
-    private Map<String, Index> cache = Collections.emptyMap();
-    private IndexFileReader reader;    
+
+    private TreeMap<String, Index> cache;
+    private IndexFileReader reader;
 }

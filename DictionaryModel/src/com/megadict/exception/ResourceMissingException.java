@@ -13,7 +13,7 @@ public class ResourceMissingException extends RuntimeException {
     }
     
     private static String makeMessage(Object resourceName) {
-        return resourceName.toString() + " is missing";
+        return resourceName.toString() + " does not exist.";
     }
     
     public ResourceMissingException(File resourceName, Exception rootCause) {
