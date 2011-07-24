@@ -10,7 +10,6 @@ import com.megadict.model.DictionaryInformation;
 
 public class ExternalReader {
 	private final List<DictionaryInformation> infos = new ArrayList<DictionaryInformation>();
-	private final List<String> logger = new ArrayList<String>();
 
 	public static final String NO_DICTIONARY = "There is no dictionary.";
 	public static final String INDEX_FILE_NOT_FOUND = "Index file not found.";
@@ -20,15 +19,11 @@ public class ExternalReader {
 		return infos;
 	}
 
-	public List<String> getLogger() {
-		return logger;
-	}
-
-	public ExternalReader(final File externalFile) {
+	public ExternalReader(final File externalFile) throws IndexFileNotFoundException, DataFileNotFoundException {
 		init(externalFile);
 	}
 
-	private void init(final File externalFile) {
+	private void init(final File externalFile) throws IndexFileNotFoundException, DataFileNotFoundException {
 		final File files[] = externalFile.listFiles();
 		if (files == null) throw new IllegalArgumentException("External storage is not a valid directory.");
 
@@ -36,15 +31,7 @@ public class ExternalReader {
 
 		for (final File file : files) {
 			if (file.isDirectory()) {
-				final String locationInfo = " Location: " + file.getAbsolutePath();
-
-				try {
-					info = createDictionaryInformation(file);
-				} catch (final IndexFileNotFoundException e) {
-					logger.add(INDEX_FILE_NOT_FOUND + locationInfo);
-				} catch (final DataFileNotFoundException e) {
-					logger.add(DATA_FILE_NOT_FOUND + locationInfo);
-				}
+				info = createDictionaryInformation(file);
 
 				// If index file or data file are not found, just silently ignore it.
 				if(info == null) continue;

@@ -22,7 +22,8 @@ public class MegaDictApp extends Application {
 
 	@Override
 	public void onCreate() {
-		dictionaryClient = new DictionaryClient(getString(R.string.noDefinition));
+		dictionaryClient = new DictionaryClient();
+		dictionaryClient.setNoDefinitionString(getString(R.string.noDefinition));
 	}
 
 }

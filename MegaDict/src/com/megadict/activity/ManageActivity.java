@@ -2,8 +2,7 @@ package com.megadict.activity;
 
 
 
-import java.util.List;
-
+import android.app.Activity;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -16,6 +15,8 @@ import com.megadict.R;
 import com.megadict.adapter.ChosenDictionaryCheckBoxAdapter;
 import com.megadict.application.MegaDictApp;
 import com.megadict.business.DictionaryClient;
+import com.megadict.exception.DataFileNotFoundException;
+import com.megadict.exception.IndexFileNotFoundException;
 import com.megadict.model.ChosenModel;
 import com.megadict.utility.DatabaseHelper;
 
@@ -57,14 +58,13 @@ public class ManageActivity extends BaseListActivity {
 	@Override
 	protected void onPause() {
 		super.onPause();
-		dictionaryClient.scanDatabase(this, database);
+		doScanningDatabase(this, database);
 	}
 
 	@Override
 	public boolean onMenuItemSelected(final int featureId, final MenuItem item) {
 		if (item.getItemId() == R.id.rescanMenuItem) {
-			dictionaryClient.scanStorage(database);
-			outputLog();
+			doScanningStorage(database);
 			// Refresh list view.
 			listViewCursor.requery();
 		}
@@ -79,10 +79,23 @@ public class ManageActivity extends BaseListActivity {
 	}
 
 	// ======================= Private functions =================== //
-	private void outputLog() {
-		final List<String> logger = dictionaryClient.getLogger();
-		for(final String log : logger) {
-			Log.e(TAG, log);
+	private void doScanningStorage(final SQLiteDatabase database) {
+		try {
+			dictionaryClient.scanStorage(database);
+		} catch (final IndexFileNotFoundException e) {
+			Log.d(TAG, e.getMessage());
+		} catch (final DataFileNotFoundException e) {
+			Log.d(TAG, e.getMessage());
+		}
+	}
+
+	private void doScanningDatabase(final Activity activity, final SQLiteDatabase database) {
+		try {
+			dictionaryClient.scanDatabase(activity, database);
+		} catch (final IndexFileNotFoundException e) {
+			Log.d(TAG, e.getMessage());
+		} catch (final DataFileNotFoundException e) {
+			Log.d(TAG, e.getMessage());
 		}
 	}
 }

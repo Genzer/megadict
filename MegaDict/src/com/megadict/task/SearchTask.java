@@ -2,22 +2,21 @@ package com.megadict.task;
 
 import java.util.List;
 
-import com.megadict.business.DictionaryClient;
-import com.megadict.business.ResultTextMaker;
-
 import android.os.AsyncTask;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.ProgressBar;
 
-// ============================ Search task inner class =============== //
+import com.megadict.business.DictionaryClient;
+import com.megadict.business.ResultTextMaker;
+
 public class SearchTask extends AsyncTask<String, Void, List<String>> {
 	private final ProgressBar progressBar;
-	private boolean searching = false;
 	private final DictionaryClient dictionaryClient;
 	private final ResultTextMaker resultTextMaker;
 	private final String noDictionaryString;
 	private final WebView resultView;
+	private boolean searching = false;
 
 	public SearchTask(final DictionaryClient dictionaryClient, final ResultTextMaker resultTextMaker, final ProgressBar progressBar, final WebView resultView, final String noDictionaryString) {
 		super();
@@ -26,6 +25,12 @@ public class SearchTask extends AsyncTask<String, Void, List<String>> {
 		this.progressBar = progressBar;
 		this.noDictionaryString = noDictionaryString;
 		this.resultView = resultView;
+
+	}
+
+	@Override
+	protected void onCancelled() {
+		dictionaryClient.stopSearching();
 	}
 
 	@Override
@@ -36,7 +41,7 @@ public class SearchTask extends AsyncTask<String, Void, List<String>> {
 
 	@Override
 	protected List<String> doInBackground(final String... params) {
-		return search(params[0]);
+		return dictionaryClient.lookup(params[0]);
 	}
 
 	@Override
@@ -46,25 +51,20 @@ public class SearchTask extends AsyncTask<String, Void, List<String>> {
 		searching = false;
 	}
 
-	private List<String> search(final String word) {
-		return dictionaryClient.lookup(word);
-	}
-
 	private void updateUI(final List<String> contents) {
 		upateResultView(contents, dictionaryClient.getDictionaryNames());
 	}
 
 	private void upateResultView(final List<String> contents, final List<String> dictionaryNames) {
 		String resultText;
+		if(contents == null)
+			return;
 		if(contents.isEmpty()) {
+			System.out.println("Contents are empty.");
 			resultText = resultTextMaker.getNoDictionaryHTML(noDictionaryString);
 		} else {
 			resultText = resultTextMaker.getResultHTML(contents, dictionaryNames);
 		}
 		resultView.loadDataWithBaseURL(ResultTextMaker.ASSET_URL, resultText, "text/html", "utf-8", null);
-	}
-
-	public boolean isSearching() {
-		return searching;
 	}
 }

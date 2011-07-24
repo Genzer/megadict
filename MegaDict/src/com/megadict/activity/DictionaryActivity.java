@@ -1,6 +1,7 @@
 package com.megadict.activity;
 
 
+import android.app.Activity;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.text.ClipboardManager;
@@ -12,8 +13,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -23,6 +24,10 @@ import com.megadict.R;
 import com.megadict.application.MegaDictApp;
 import com.megadict.business.DictionaryClient;
 import com.megadict.business.ResultTextMaker;
+import com.megadict.exception.DataFileNotFoundException;
+import com.megadict.exception.IndexFileNotFoundException;
+import com.megadict.listener.OnTextChangeListener;
+import com.megadict.task.RecommendTask;
 import com.megadict.task.SearchTask;
 import com.megadict.task.WordListTask;
 import com.megadict.task.WordListTask.OnClickWordListener;
@@ -31,11 +36,11 @@ import com.megadict.utility.Utility;
 import com.megadict.widget.ResultView;
 import com.megadict.widget.ResultView.OnSelectTextListener;
 
-public class DictionaryActivity extends BaseActivity implements OnClickListener, OnEditorActionListener, OnSelectTextListener, OnClickWordListener {
+public class DictionaryActivity extends BaseActivity implements OnClickListener, OnEditorActionListener, OnSelectTextListener {
 	private final String TAG = "DictionaryActivity";
 
 	// Activity control variables.
-	private EditText searchEditText;
+	private AutoCompleteTextView searchEditText;
 	private ResultView resultView;
 	private ProgressBar progressBar;
 	private ClipboardManager clipboardManager;
@@ -45,6 +50,7 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 	private SQLiteDatabase database;
 	private ResultTextMaker resultTextMaker;
 	private SearchTask searchTask;
+	private RecommendTask recommendTask;
 	private WordListTask task;
 	private boolean shouldSetStartPage = true;
 
@@ -105,14 +111,14 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 	public void onSelectText() {
 		final String text = clipboardManager.getText().toString();
 		task = new WordListTask(this, text);
-		task.setOnClickWordListener(this);
+		task.setOnClickWordListener(new OnClickWordListener() {
+			@Override
+			public void onClickWord() {
+				searchEditText.setText(task.getWord());
+				doSearching(searchEditText.getText().toString());
+			}
+		});
 		task.execute((Void [])null);
-	}
-
-	@Override
-	public void onClickWord() {
-		searchEditText.setText(task.getWord());
-		doSearching(searchEditText.getText().toString());
 	}
 
 	@Override
@@ -131,13 +137,29 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 		final Button searchButton = (Button) findViewById(R.id.searchButton);
 		searchButton.setOnClickListener(this);
 		searchButton.setOnEditorActionListener(this);
-		searchEditText = (EditText) findViewById(R.id.searchEditText);
+		searchEditText = (AutoCompleteTextView) findViewById(R.id.searchEditText);
+		searchEditText.addTextChangedListener(new OnTextChangeListener() {
+			@Override
+			public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
+				doRecommendWords(searchEditText.getText().toString());
+			}
+		});
 		// Init Result view.
 		resultView = new ResultView(this, clipboardManager);
 		resultView.setBackgroundColor(0x00000000);
 		resultView.setOnSelectTextListener(this);
 		final ScrollView resultScrollView = (ScrollView)findViewById(R.id.resultScrollView);
 		resultScrollView.addView(resultView);
+	}
+
+	private void doRecommendWords(final String word) {
+		//		if(recommendTask != null) {
+		//			if(recommendTask.isCancelled()) {
+		//				recommendTask.cancel(true);
+		//			}
+		//			recommendTask = new RecommendTask(this, dictionaryClient, progressBar, searchEditText);
+		//			recommendTask.execute(word);
+		//		}
 	}
 
 	private void initVariables() {
@@ -147,7 +169,7 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 		final DatabaseHelper helper = new DatabaseHelper(this);
 		database = helper.getReadableDatabase();
 		// Scan chosen databases when MegaDict opens.
-		dictionaryClient.scanDatabase(this, database);
+		doScanningDatabase(this, database);
 		// Init result text maker.
 		resultTextMaker = new ResultTextMaker(getAssets());
 		// Init clipboard manager.
@@ -155,15 +177,33 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 	}
 
 	private void doSearching(final String word) {
-		if(searchTask == null || !searchTask.isSearching()) {
-			searchTask = new SearchTask(dictionaryClient, resultTextMaker,
-					progressBar, resultView, getString(R.string.noDictionary));
+		if(searchTask == null) {
+			searchTask = new SearchTask(dictionaryClient, resultTextMaker, progressBar, resultView, getString(R.string.noDictionary));
 			searchTask.execute(word);
 			shouldSetStartPage = false;
 		} else {
-			Utility.messageBox(this, getString(R.string.searching));
+			if(!searchTask.isCancelled()) {
+				System.out.println("Cancel.");
+				searchTask.cancel(true);
+				searchTask = new SearchTask(dictionaryClient, resultTextMaker, progressBar, resultView, getString(R.string.noDictionary));
+				searchTask.execute(word);
+			} else {
+				searchTask = new SearchTask(dictionaryClient, resultTextMaker, progressBar, resultView, getString(R.string.noDictionary));
+				searchTask.execute(word);
+			}
 		}
 	}
+
+	//	private void doSearching(final String word) {
+	//		if(searchTask == null || !searchTask.isSearching()) {
+	//			searchTask = new SearchTask(dictionaryClient, resultTextMaker,
+	//					progressBar, resultView, getString(R.string.noDictionary));
+	//			searchTask.execute(word);
+	//			shouldSetStartPage = false;
+	//		} else {
+	//			Utility.messageBox(this, getString(R.string.searching));
+	//		}
+	//	}
 
 	private void setStartPage() {
 		final int dictCount = dictionaryClient.getDictionaryNames().size();
@@ -182,6 +222,17 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 		}
 		catch (final Exception e) {
 			Log.e(TAG, getString(R.string.canNotSelectText), e);
+		}
+	}
+
+	private void doScanningDatabase(final Activity activity, final SQLiteDatabase database) {
+		try {
+			System.out.println("doScanningDatabase");
+			dictionaryClient.scanDatabase(activity, database);
+		} catch (final IndexFileNotFoundException e) {
+			e.printStackTrace();
+		} catch (final DataFileNotFoundException e) {
+			e.printStackTrace();
 		}
 	}
 }
