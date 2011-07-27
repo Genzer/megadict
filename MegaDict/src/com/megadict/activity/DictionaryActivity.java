@@ -21,6 +21,7 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
 import com.megadict.R;
+import com.megadict.activity.base.BaseActivity;
 import com.megadict.application.MegaDictApp;
 import com.megadict.business.DictionaryClient;
 import com.megadict.business.ResultTextMaker;
@@ -141,7 +142,7 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 		searchEditText.addTextChangedListener(new OnTextChangeListener() {
 			@Override
 			public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
-				doRecommendWords(searchEditText.getText().toString());
+				//doRecommendWords(searchEditText.getText().toString());
 			}
 		});
 		// Init Result view.
@@ -153,13 +154,13 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 	}
 
 	private void doRecommendWords(final String word) {
-		//		if(recommendTask != null) {
-		//			if(recommendTask.isCancelled()) {
-		//				recommendTask.cancel(true);
-		//			}
-		//			recommendTask = new RecommendTask(this, dictionaryClient, progressBar, searchEditText);
-		//			recommendTask.execute(word);
-		//		}
+		if(recommendTask != null) {
+			if(recommendTask.isCancelled()) {
+				recommendTask.cancel(true);
+			}
+			recommendTask = new RecommendTask(this, dictionaryClient, progressBar, searchEditText);
+			recommendTask.execute(word);
+		}
 	}
 
 	private void initVariables() {
@@ -177,33 +178,15 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 	}
 
 	private void doSearching(final String word) {
-		if(searchTask == null) {
-			searchTask = new SearchTask(dictionaryClient, resultTextMaker, progressBar, resultView, getString(R.string.noDictionary));
+		if(searchTask == null || !searchTask.isSearching()) {
+			searchTask = new SearchTask(dictionaryClient, resultTextMaker,
+					progressBar, resultView, getString(R.string.noDictionary));
 			searchTask.execute(word);
 			shouldSetStartPage = false;
 		} else {
-			if(!searchTask.isCancelled()) {
-				System.out.println("Cancel.");
-				searchTask.cancel(true);
-				searchTask = new SearchTask(dictionaryClient, resultTextMaker, progressBar, resultView, getString(R.string.noDictionary));
-				searchTask.execute(word);
-			} else {
-				searchTask = new SearchTask(dictionaryClient, resultTextMaker, progressBar, resultView, getString(R.string.noDictionary));
-				searchTask.execute(word);
-			}
+			Utility.messageBox(this, getString(R.string.searching));
 		}
 	}
-
-	//	private void doSearching(final String word) {
-	//		if(searchTask == null || !searchTask.isSearching()) {
-	//			searchTask = new SearchTask(dictionaryClient, resultTextMaker,
-	//					progressBar, resultView, getString(R.string.noDictionary));
-	//			searchTask.execute(word);
-	//			shouldSetStartPage = false;
-	//		} else {
-	//			Utility.messageBox(this, getString(R.string.searching));
-	//		}
-	//	}
 
 	private void setStartPage() {
 		final int dictCount = dictionaryClient.getDictionaryNames().size();
@@ -227,7 +210,6 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 
 	private void doScanningDatabase(final Activity activity, final SQLiteDatabase database) {
 		try {
-			System.out.println("doScanningDatabase");
 			dictionaryClient.scanDatabase(activity, database);
 		} catch (final IndexFileNotFoundException e) {
 			e.printStackTrace();

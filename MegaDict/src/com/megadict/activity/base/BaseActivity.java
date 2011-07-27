@@ -1,14 +1,14 @@
-package com.megadict.activity;
+package com.megadict.activity.base;
 
-import android.app.ListActivity;
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.Window;
 
 import com.megadict.R;
 
-public abstract class BaseListActivity extends ListActivity {
+public abstract class BaseActivity extends Activity {
 	private final int layoutID;
-	public BaseListActivity(final int layoutID) {
+	public BaseActivity(final int layoutID) {
 		super();
 		this.layoutID = layoutID;
 	}
@@ -19,5 +19,6 @@ public abstract class BaseListActivity extends ListActivity {
 		requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
 		setContentView(layoutID);
 		getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.window_title);
+
 	}
 }

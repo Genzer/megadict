@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.megadict.exception.RecommendingException;
 import com.megadict.model.Dictionary;
 
 public class RecommendThread implements Runnable {
@@ -23,7 +24,7 @@ public class RecommendThread implements Runnable {
 		try {
 			thread.join();
 		} catch (final InterruptedException e) {
-			throw new RuntimeException("Couldn't join thread.");
+			throw new RecommendingException(e);
 		}
 	}
 

@@ -19,23 +19,19 @@ import com.megadict.model.Dictionary;
 import com.megadict.model.DictionaryInformation;
 
 public class DictionaryScanner {
-	private final List<Dictionary> dictionaryModels;
-	private final List<String> dictionaryNames;
-
-	public DictionaryScanner(final List<Dictionary> dictionaryModels, final List<String> dictionaryNames) {
-		this.dictionaryModels = dictionaryModels;
-		this.dictionaryNames = dictionaryNames;
-	}
+	private final List<Dictionary> dictionaryModels = new ArrayList<Dictionary>();
+	private final List<String> dictionaryNames = new ArrayList<String>();
 
 	public void scanDatabase(final Activity activity, final SQLiteDatabase database) throws IndexFileNotFoundException, DataFileNotFoundException {
-		final List<DictionaryInformation> infos = getChosenDictionaryInfos(activity, database);
-		resetClient(infos);
+		clearAllList();
+		final List<DictionaryInformation> infos = readFromDatabase(activity, database);
+		resetScanner(infos);
 	}
 
 	public void scanStorage(final SQLiteDatabase database) throws IndexFileNotFoundException, DataFileNotFoundException {
-		// Get dictionary infos.
-		final List<DictionaryInformation> infos = readExternalStorage();
-		resetClient(infos);
+		clearAllList();
+		final List<DictionaryInformation> infos = readFromExternalStorage();
+		resetScanner(infos);
 
 		// Truncate the table.
 		database.delete(ChosenModel.TABLE_NAME, null, null);
@@ -51,8 +47,7 @@ public class DictionaryScanner {
 	}
 
 	// ========================== Private functions ============================ //
-	private void resetClient(final List<DictionaryInformation> infos) {
-		clearAllList();
+	private void resetScanner(final List<DictionaryInformation> infos) {
 		for(final DictionaryInformation info : infos) {
 			// Create necessary files.
 			final IndexFile indexFile = IndexFile.makeFile(info.getIndexFile());
@@ -69,13 +64,13 @@ public class DictionaryScanner {
 		dictionaryModels.clear();
 	}
 
-	private List<DictionaryInformation> readExternalStorage() throws IndexFileNotFoundException, DataFileNotFoundException {
+	private List<DictionaryInformation> readFromExternalStorage() throws IndexFileNotFoundException, DataFileNotFoundException {
 		// Get external reader.
 		final ExternalReader reader = new ExternalReader(ExternalStorage.getExternalDirectory());
 		return reader.getInfos();
 	}
 
-	private List<DictionaryInformation> getChosenDictionaryInfos(final Activity activity, final SQLiteDatabase database) throws IndexFileNotFoundException, DataFileNotFoundException {
+	private List<DictionaryInformation> readFromDatabase(final Activity activity, final SQLiteDatabase database) throws IndexFileNotFoundException, DataFileNotFoundException {
 		// Select chosen dictionaries from database.
 		final Cursor cursor = ChosenModel.selectChosenDictionaries(database);
 		activity.startManagingCursor(cursor);
@@ -87,5 +82,13 @@ public class DictionaryScanner {
 			infos.add(info);
 		}
 		return infos;
+	}
+
+	public List<Dictionary> getDictionaryModels() {
+		return dictionaryModels;
+	}
+
+	public List<String> getDictionaryNames() {
+		return dictionaryNames;
 	}
 }

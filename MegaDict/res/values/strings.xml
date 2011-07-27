@@ -16,7 +16,7 @@
     <string name="selectTextMenuItemTitle">Select text</string>
     
     <!-- Common Strings -->
-    <string name="noDefinition">There is no definition. Don\'t be silly guy!</string>    
+    <string name="noDefinition">There is no definition. Don\'t be silly, guy!</string>    
     <string name="noDictionary">Please choose a dictionary.</string>
     <string name="noDictionary2">There is no dictionary. Please put dictionaries\' data 
     folders in SD card at the location <br>/mnt/sdcard/Download/megadict</br>.</string>    
@@ -32,4 +32,8 @@
     <string name="aboutContent"><b>This is the best dictionary in the world. The autor are Hieu and Hau.</b></string>
     <string name="aboutDialogLabel">About</string>
     <string name="storageLabel">Storage</string>
+    <string name="languagePrefTitle">Language</string>
+    <string name="mainPrefTitle">Settings</string>
+    <string name="ok">OK</string>
+    <string name="languagePrefKey">languagePrefKey</string>
 </resources>

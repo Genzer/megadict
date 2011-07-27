@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>    
+    <!-- Button labels -->
+    <string name="settingButtonLabel">Cấu hình</string>
+    <string name="dictionaryButtonLabel">Từ điển</string>
+    <string name="manageButtonLabel">Quản lý từ điển</string>
+    <string name="soundManageButtonLabel">Quản lý âm thanh</string>
+    <string name="helpButtonLabel">Giúp đỡ</string>
+    <string name="aboutButtonLabel">Thông tin</string>
+    
+    <!-- Menu items titles -->
+    <string name="rescanMenuItemTitle">Tìm từ điển trong kho lưu trữ</string>
+    <string name="settingMenuItemTitle">Cấu hình</string>
+    <string name="manageMenuItemTitle">Quản lý từ điển</string>
+    <string name="aboutMenuItemTitle">Thông tin</string>
+    <string name="selectTextMenuItemTitle">Chọn từ</string>
+    
+    <!-- Common Strings -->
+    <string name="noDefinition">Không tìm thấy nghĩa!</string>    
+    <string name="noDictionary">Làm ơn chọn từ điển.</string>
+    <string name="noDictionary2">Không có từ điểm. Làm ơn chép các thư mục từ điển vào thẻ nhớ tại vị trí
+     <br>/mnt/sdcard/Download/megadict</br>.</string>    
+    <string name="searching">Đang tìm... Làm ơn chờ.</string>
+    <string name="usingDictionary">Bạn đang dùng %1$d từ điển.</string>
+    <string name="usingDictionaryPlural">Bạn đang dùng %1$d từ điển.</string>
+    <string name="selectText">Có thể chọn từ được rồi.</string>
+    <string name="canNotSelectText">Không thể chọn từ</string>
+    <string name="cancel">Thoát</string>
+    
+    <!-- Others -->
+    <string name="appName">MegaDict</string>    
+    <string name="aboutContent"><b>Đây là từ điển tốt nhất thế giới. Tác giả là Hiếu và Hậu.</b></string>
+    <string name="aboutDialogLabel">Thông tin</string>
+    <string name="storageLabel">Kho chứa</string>
+</resources>

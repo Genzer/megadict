@@ -16,7 +16,7 @@ public class SearchTask extends AsyncTask<String, Void, List<String>> {
 	private final ResultTextMaker resultTextMaker;
 	private final String noDictionaryString;
 	private final WebView resultView;
-	private boolean searching = false;
+	private boolean searching;
 
 	public SearchTask(final DictionaryClient dictionaryClient, final ResultTextMaker resultTextMaker, final ProgressBar progressBar, final WebView resultView, final String noDictionaryString) {
 		super();
@@ -25,12 +25,6 @@ public class SearchTask extends AsyncTask<String, Void, List<String>> {
 		this.progressBar = progressBar;
 		this.noDictionaryString = noDictionaryString;
 		this.resultView = resultView;
-
-	}
-
-	@Override
-	protected void onCancelled() {
-		dictionaryClient.stopSearching();
 	}
 
 	@Override
@@ -57,14 +51,16 @@ public class SearchTask extends AsyncTask<String, Void, List<String>> {
 
 	private void upateResultView(final List<String> contents, final List<String> dictionaryNames) {
 		String resultText;
-		if(contents == null)
-			return;
-		if(contents.isEmpty()) {
-			System.out.println("Contents are empty.");
+		// The latter condition is special case. If the user searches a word then "rescan storage" at that time.
+		if(contents.isEmpty() || contents.size() != dictionaryNames.size()) {
 			resultText = resultTextMaker.getNoDictionaryHTML(noDictionaryString);
 		} else {
 			resultText = resultTextMaker.getResultHTML(contents, dictionaryNames);
 		}
 		resultView.loadDataWithBaseURL(ResultTextMaker.ASSET_URL, resultText, "text/html", "utf-8", null);
+	}
+
+	public boolean isSearching() {
+		return searching;
 	}
 }

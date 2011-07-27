@@ -9,31 +9,25 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import com.megadict.exception.SearchingException;
 import com.megadict.model.Dictionary;
 import com.megadict.thread.SearchThread;
 
 public class WordSearcher {
 	private String noDefinitionStr = "There is no definition.";
-	private final List<Dictionary> dictionaryModels;
-	//	private final List<String> contents = new ArrayList<String>();
 	private final List<Callable<String>> callables = new ArrayList<Callable<String>>();
+	final List<String> contents = new ArrayList<String>();
 	private ExecutorService service;
-
-	public WordSearcher(final List<Dictionary> dictionaryModels) {
-		this.dictionaryModels = dictionaryModels;
-	}
 
 	public void setNoDefinitionString(final String noDefinitionStr) {
 		this.noDefinitionStr = noDefinitionStr;
 	}
 
-	public List<String> lookup(final String word) {
-		// Reset contents.
-		//		contents.clear();
-		callables.clear();
+	public List<String> lookup(final String word, final List<Dictionary> dictionaryModels) {
+		clearAllLists();
 
-		List<String> contents = new ArrayList<String>();
-		service = Executors.newFixedThreadPool(dictionaryModels.size());
+		if(dictionaryModels.isEmpty()) return contents;
+
 		// Lower it. I am not sure if we should lower it.
 		final String searchedWord = word.toLowerCase(Locale.ENGLISH);
 		for(final Dictionary dict : dictionaryModels) {
@@ -41,30 +35,25 @@ public class WordSearcher {
 			callables.add(thread);
 		}
 
+		service = Executors.newFixedThreadPool(dictionaryModels.size());
 		try {
 			final List<Future<String>> futures = service.invokeAll(callables);
 			for(final Future<String> future : futures) {
-				System.out.println(future.get());
 				contents.add(future.get());
 			}
+			return contents;
 		} catch (final InterruptedException e) {
-			System.out.println("1" + e.getMessage());
-			contents = null;
-			//			throw new RuntimeException(e.getCause());
+			throw new SearchingException(e.getCause());
 		} catch (final ExecutionException e) {
-			System.out.println("2" + e.getMessage());
-			contents = null;
-			//			throw new RuntimeException(e.getCause());
+			throw new SearchingException(e.getCause());
+		} finally {
+			service.shutdown();
 		}
-		service.shutdown();
-		return contents;
 	}
 
-	public void stopAllTasks() {
-		if(service != null && !service.isShutdown()) {
-			System.out.println("StopAllTasks");
-			service.shutdownNow();
-		}
+	private void clearAllLists() {
+		contents.clear();
+		callables.clear();
 	}
 
 	//	public List<String> lookup(final String word) {
