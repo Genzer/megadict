@@ -14,27 +14,29 @@
                   android:label="@string/appName" 
                   android:windowSoftInputMode="stateAlwaysHidden" 
                   android:icon="@drawable/megadict_icon"
-                  android:theme="@style/MegaDictTheme">
-			<intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                  android:theme="@style/MegaDictTheme" android:configChanges="locale">
+
+        		  			<intent-filter>
+            <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         
         <activity android:name=".activity.SettingActivity" 
         		  android:icon="@drawable/megadict_icon"
-        		  android:theme="@style/MegaDictTheme">
+        		  android:theme="@style/MegaDictTheme" android:configChanges="locale">
+
         </activity>
         
         <activity android:name=".activity.ManageActivity" 
         		  android:icon="@drawable/megadict_icon"
-        		  android:theme="@style/MegaDictTheme">
+        		  android:theme="@style/MegaDictTheme" android:configChanges="locale">
 		</activity>
 		
         <activity android:name=".activity.AboutActivity" 
         		  android:theme="@android:style/Theme.Dialog" 
         		  android:label="@string/aboutDialogLabel" 
-        		  android:icon="@drawable/megadict_icon">
+        		  android:icon="@drawable/megadict_icon" android:configChanges="locale">
 		</activity>
 		
 		

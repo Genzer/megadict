@@ -25,6 +25,7 @@
     <string name="usingDictionaryPlural">Bạn đang dùng %1$d từ điển.</string>
     <string name="selectText">Có thể chọn từ được rồi.</string>
     <string name="canNotSelectText">Không thể chọn từ</string>
+    <string name="ok">Đồng ý</string>
     <string name="cancel">Thoát</string>
     
     <!-- Others -->
@@ -32,4 +33,9 @@
     <string name="aboutContent"><b>Đây là từ điển tốt nhất thế giới. Tác giả là Hiếu và Hậu.</b></string>
     <string name="aboutDialogLabel">Thông tin</string>
     <string name="storageLabel">Kho chứa</string>
+    
+    <!-- Language -->
+    <string name="languagePrefTitle">Ngôn ngữ</string>
+    <string name="mainPrefTitle">Cấu hình</string>
+    <string name="languagePrefKey">language</string>
 </resources>

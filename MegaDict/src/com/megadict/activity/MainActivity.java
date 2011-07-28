@@ -55,6 +55,9 @@ public class MainActivity extends ActivityGroup implements OnClickListener {
 			break;
 		case R.id.manageButton:
 			runActivity(packageName + ".ManageActivity");
+			break;
+		default:
+			break;
 		}
 	}
 
@@ -71,7 +74,6 @@ public class MainActivity extends ActivityGroup implements OnClickListener {
 
 	private String getCommonPackageName() {
 		final Package pack = MainActivity.this.getClass().getPackage();
-		final String packageName = pack.getName();
-		return packageName;
+		return pack.getName();
 	}
 }

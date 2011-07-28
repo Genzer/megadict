@@ -2,6 +2,7 @@ package com.megadict.activity;
 
 
 import android.app.Activity;
+import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.text.ClipboardManager;
@@ -13,10 +14,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
@@ -25,6 +27,7 @@ import com.megadict.activity.base.BaseActivity;
 import com.megadict.application.MegaDictApp;
 import com.megadict.business.DictionaryClient;
 import com.megadict.business.ResultTextMaker;
+import com.megadict.business.TextSelector;
 import com.megadict.exception.DataFileNotFoundException;
 import com.megadict.exception.IndexFileNotFoundException;
 import com.megadict.listener.OnTextChangeListener;
@@ -53,6 +56,7 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 	private SearchTask searchTask;
 	private RecommendTask recommendTask;
 	private WordListTask task;
+	private TextSelector textSelector;
 	private boolean shouldSetStartPage = true;
 
 	public DictionaryActivity() {
@@ -72,6 +76,11 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 		if(shouldSetStartPage) {
 			setStartPage();
 		}
+
+		if(Utility.isLocaleChanged()) {
+			// Change noDefinition string.
+			dictionaryClient.setNoDefinitionString(getString(R.string.noDefinition));
+		}
 	}
 
 	@Override
@@ -88,6 +97,17 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 	}
 
 	@Override
+	public boolean onPrepareOptionsMenu(final Menu menu) {
+		if(Utility.isLocaleChanged()) {
+			menu.clear();
+			final MenuInflater inflater = getMenuInflater();
+			inflater.inflate(R.menu.main_menu, menu);
+			Utility.setLocaleChanged(false);
+		}
+		return super.onPrepareOptionsMenu(menu);
+	}
+
+	@Override
 	public boolean onMenuItemSelected(final int featureId, final MenuItem item) {
 		if (item.getItemId() == R.id.settingMenuItem) {
 			Utility.startActivity(this, "com.megadict.activity.SettingActivity");
@@ -96,7 +116,7 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 		} else if(item.getItemId() == R.id.aboutMenuItem) {
 			Utility.startActivity(this, "com.megadict.activity.AboutActivity");
 		} else if(item.getItemId() == R.id.selectTextMenuItem) {
-			selectText(resultView);
+			textSelector.selectText(this, resultView, TAG);
 		}
 		return true;
 	}
@@ -145,22 +165,15 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 				//doRecommendWords(searchEditText.getText().toString());
 			}
 		});
+		// Disable soft keyboard.
+		final InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+		imm.hideSoftInputFromWindow(searchEditText.getWindowToken(), 0);
 		// Init Result view.
 		resultView = new ResultView(this, clipboardManager);
 		resultView.setBackgroundColor(0x00000000);
 		resultView.setOnSelectTextListener(this);
-		final ScrollView resultScrollView = (ScrollView)findViewById(R.id.resultScrollView);
-		resultScrollView.addView(resultView);
-	}
-
-	private void doRecommendWords(final String word) {
-		if(recommendTask != null) {
-			if(recommendTask.isCancelled()) {
-				recommendTask.cancel(true);
-			}
-			recommendTask = new RecommendTask(this, dictionaryClient, progressBar, searchEditText);
-			recommendTask.execute(word);
-		}
+		final LinearLayout resultPanel = (LinearLayout)findViewById(R.id.resultPanel);
+		resultPanel.addView(resultView);
 	}
 
 	private void initVariables() {
@@ -175,6 +188,18 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 		resultTextMaker = new ResultTextMaker(getAssets());
 		// Init clipboard manager.
 		clipboardManager = (ClipboardManager)getSystemService(CLIPBOARD_SERVICE);
+		// Init text selector.
+		textSelector = new TextSelector();
+	}
+
+	private void doRecommendWords(final String word) {
+		if(recommendTask != null) {
+			if(recommendTask.isCancelled()) {
+				recommendTask.cancel(true);
+			}
+			recommendTask = new RecommendTask(this, dictionaryClient, progressBar, searchEditText);
+			recommendTask.execute(word);
+		}
 	}
 
 	private void doSearching(final String word) {
@@ -195,26 +220,13 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 		resultView.loadDataWithBaseURL(ResultTextMaker.ASSET_URL, welcomeHTML, "text/html", "utf-8", null);
 	}
 
-	private void selectText(final ResultView resultView) {
-		try
-		{
-			final KeyEvent shiftPressEvent = new KeyEvent(0, 0, KeyEvent.ACTION_DOWN,
-					KeyEvent.KEYCODE_SHIFT_LEFT, 0, 0);
-			shiftPressEvent.dispatch(resultView);
-			Utility.messageBox(this, getString(R.string.selectText));
-		}
-		catch (final Exception e) {
-			Log.e(TAG, getString(R.string.canNotSelectText), e);
-		}
-	}
-
 	private void doScanningDatabase(final Activity activity, final SQLiteDatabase database) {
 		try {
 			dictionaryClient.scanDatabase(activity, database);
 		} catch (final IndexFileNotFoundException e) {
-			e.printStackTrace();
+			Log.d(TAG, e.getMessage());
 		} catch (final DataFileNotFoundException e) {
-			e.printStackTrace();
+			Log.d(TAG, e.getMessage());
 		}
 	}
 }
