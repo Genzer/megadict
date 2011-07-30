@@ -12,19 +12,17 @@ import com.megadict.R;
 
 public class WordListTask extends AsyncTask<Void, Void, String[]> {
 	private final String text;
-	private final Context context;
 	protected OnClickWordListener clickWordListener;
 	private String word;
 	private AlertDialog.Builder builder;
 
 	public WordListTask(final Context context, final String text) {
 		super();
-		this.context = context;
 		this.text = text;
-		builder = createBuilder();
+		builder = createBuilder(context);
 	}
 
-	private AlertDialog.Builder createBuilder() {
+	private AlertDialog.Builder createBuilder(final Context context) {
 		builder = new AlertDialog.Builder(context);
 		builder.setTitle("Pick a word");
 		builder.setNegativeButton(context.getString(R.string.cancel), new DialogInterface.OnClickListener() {

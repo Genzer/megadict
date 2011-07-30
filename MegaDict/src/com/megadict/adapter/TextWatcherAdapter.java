@@ -1,9 +1,9 @@
-package com.megadict.listener;
+package com.megadict.adapter;
 
 import android.text.Editable;
 import android.text.TextWatcher;
 
-public class OnTextChangeListener implements TextWatcher {
+public class TextWatcherAdapter implements TextWatcher {
 
 	@Override
 	public void afterTextChanged(final Editable arg0) {

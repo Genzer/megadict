@@ -24,13 +24,13 @@ import android.widget.TextView.OnEditorActionListener;
 
 import com.megadict.R;
 import com.megadict.activity.base.BaseActivity;
+import com.megadict.adapter.TextWatcherAdapter;
 import com.megadict.application.MegaDictApp;
 import com.megadict.business.DictionaryClient;
 import com.megadict.business.ResultTextMaker;
 import com.megadict.business.TextSelector;
 import com.megadict.exception.DataFileNotFoundException;
 import com.megadict.exception.IndexFileNotFoundException;
-import com.megadict.listener.OnTextChangeListener;
 import com.megadict.task.RecommendTask;
 import com.megadict.task.SearchTask;
 import com.megadict.task.WordListTask;
@@ -159,7 +159,7 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 		searchButton.setOnClickListener(this);
 		searchButton.setOnEditorActionListener(this);
 		searchEditText = (AutoCompleteTextView) findViewById(R.id.searchEditText);
-		searchEditText.addTextChangedListener(new OnTextChangeListener() {
+		searchEditText.addTextChangedListener(new TextWatcherAdapter() {
 			@Override
 			public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
 				//doRecommendWords(searchEditText.getText().toString());

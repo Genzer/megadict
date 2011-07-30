@@ -11,7 +11,7 @@ public final class ExternalStorage {
 
 	private ExternalStorage(){}
 
-	public final static File getExternalDirectory() {
+	public static File getExternalDirectory() {
 		if (!isExternalStorageAvailable() && isExternalStorageReadOnly()) {
 			throw new CouldNotCreateExternalDirectoryException();
 		}
