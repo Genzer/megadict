@@ -5,7 +5,7 @@ import java.io.UnsupportedEncodingException;
 import com.megadict.format.dict.index.Index;
 import com.megadict.format.dict.reader.DictFileReader;
 
-class DefinitionFinder {
+public class DefinitionFinder {
     
     public DefinitionFinder(DictFileReader reader) {
         this.fileReader = reader;
@@ -28,14 +28,14 @@ class DefinitionFinder {
     }
 
     private byte[] readContentAtIndex(Index index) {
-        return fileReader.read(index.getByteOffset(), index.getByteLenght());
+        return fileReader.read(index.getByteOffset(), index.getByteLength());
     }
 
     private void cleanUp() {
         fileReader.close();
     }
 
-    public static String newUnicodeStringFrom(byte[] octets) {
+    private static String newUnicodeStringFrom(byte[] octets) {
         String unicodeString = null;
         try {
             unicodeString = new String(octets, CHARSET_UNICODE);

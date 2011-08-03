@@ -18,7 +18,7 @@ public class Index implements Serializable {
         return this.byteOffset;
     }
     
-    public int getByteLenght() {
+    public int getByteLength() {
         return this.byteLength;
     }
     

@@ -10,7 +10,7 @@ public class DictionaryFile {
     }
     
     public static DictionaryFile makeRandomAccessFile(File dictFile) {
-        RandomDictFileReader randomReader = new RandomDictFileReader(dictFile);
+        DictFileReader randomReader = new MappedDictFileReader(dictFile);
         return new DictionaryFile(dictFile, randomReader);
     }
     
@@ -19,7 +19,7 @@ public class DictionaryFile {
     }
     
     public static DictionaryFile makeBufferedFile(File dictFile) {
-        BufferedDictFileReader bufferedReader = new BufferedDictFileReader(dictFile);
+        DictFileReader bufferedReader = new MappedDictFileReader(dictFile);
         return new DictionaryFile(dictFile, bufferedReader);
     }
     
@@ -28,7 +28,7 @@ public class DictionaryFile {
     }
     
     public static DictionaryFile makeGZipFile(File gzipFile) {
-        GZipDictFileReader gzipReader = new GZipDictFileReader(gzipFile);
+        DictFileReader gzipReader = new GZipDictFileReader(gzipFile);
         return new DictionaryFile(gzipFile, gzipReader);
     }
     

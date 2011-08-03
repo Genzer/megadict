@@ -4,17 +4,15 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.util.*;
 
-import com.megadict.exception.OperationFailedException;
-import com.megadict.exception.ResourceMissingException;
-import com.megadict.format.dict.parser.IndexParser;
-import com.megadict.format.dict.parser.IndexTabDilimeterParser;
+import com.megadict.exception.*;
+import com.megadict.format.dict.parser.*;
 
 public class IndexFileReader {
 
     public IndexFileReader(File indexFile) {
         this.indexFile = indexFile;
     }
-    
+
     public Index getIndexOf(String headword) {
         String indexString = findInFile(headword);
         if (indexString != null) {
@@ -23,23 +21,23 @@ public class IndexFileReader {
             return null;
         }
     }
-    
+
     public Set<Index> getIndexesStartFrom(String headword) {
-        
+
         Set<Index> indexes = new HashSet<Index>();
-        
+
         String[] indexStrings = retrieveIndexStringsFrom(headword);
-        
+
         for (String indexString : indexStrings) {
             Index newIndex = makeNewIndex(indexString);
             if (newIndex != null) {
                 indexes.add(newIndex);
             }
         }
-        
+
         return indexes;
     }
-    
+
     private Index makeNewIndex(String indexString) {
         return INDEX_PARSER.parse(indexString);
     }
@@ -59,11 +57,11 @@ public class IndexFileReader {
             closeReader();
         }
     }
-    
+
     private String[] retrieveIndexStringsFrom(String headword) {
         try {
             makeReader();
-            String customedheadword = createFuzzyMatching(headword); 
+            String customedheadword = createFuzzyMatching(headword);
             int foundPosition = locateIndexStringOf(customedheadword);
             return readAsManyIndexStringAsPossible(foundPosition);
         } catch (FileNotFoundException fnf) {
@@ -75,10 +73,11 @@ public class IndexFileReader {
         }
     }
 
-    private void makeReader() throws FileNotFoundException {
+    private void makeReader() throws FileNotFoundException, IOException {
         FileInputStream rawStream = new FileInputStream(indexFile);
         reader = new BufferedReader(newUnicodeStream(rawStream), INNER_READER_BUFFER_SIZE);
     }
+
 
     private InputStreamReader newUnicodeStream(FileInputStream rawStream) {
         return new InputStreamReader(rawStream, UTF8_CHARSET);
@@ -101,9 +100,9 @@ public class IndexFileReader {
         }
         return -1;
     }
-    
+
     private static String createFuzzyMatching(String headword) {
-       return HEAD_WORD_PREFIX + headword;
+        return HEAD_WORD_PREFIX + headword;
     }
 
     private static String createExactMatching(String headword) {
@@ -126,7 +125,7 @@ public class IndexFileReader {
             return null;
         }
     }
-    
+
     private String[] readAsManyIndexStringAsPossible(int startPosition) {
         if (startPosition == -1) {
             return EMPTY_STRING_ARRAY;
@@ -174,9 +173,9 @@ public class IndexFileReader {
      * CHAR_BUFFER is determined from BufferedReader buffer size;
      */
     private static final int CHAR_BUFFER_SIZE = INNER_READER_BUFFER_SIZE / 2;
-    
+
     private static final int NUM_OF_CHAR_TO_BE_READ_ON = 1000;
-    
+
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
     private static final String HEAD_WORD_PREFIX = "\n";
@@ -190,4 +189,3 @@ public class IndexFileReader {
     private BufferedReader reader;
     private final File indexFile;
 }
-

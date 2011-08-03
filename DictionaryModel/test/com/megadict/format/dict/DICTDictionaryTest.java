@@ -28,7 +28,7 @@ public class DICTDictionaryTest {
         sampleTest = TestSamples.getCurrentDictionarySample();
 
         IndexFile indexFile = IndexFile.makeFile(sampleTest.getIndexFile());
-        DictionaryFile dictFile = DictionaryFile.makeBufferedFile(sampleTest.getDictionaryFile());
+        DictionaryFile dictFile = DictionaryFile.makeRandomAccessFile(sampleTest.getDictionaryFile());
 
         testee = new DICTDictionary(indexFile, dictFile);
     }
@@ -49,7 +49,6 @@ public class DICTDictionaryTest {
         
         String word = "a";
         List<String> actualSimilarWords = testee.recommendWord(word);
-        System.out.println(actualSimilarWords);
         
         assertEveryItemInActualListEqualsExpected(actualSimilarWords, Arrays.asList(expectedSimilarWords));
     }

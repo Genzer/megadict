@@ -13,13 +13,16 @@ class IndexStore {
         buildCache();
     }
 
-    private void buildCache() {
-        cache = new TreeMap<String, Index>();
-    }
-
     private void initializeReader(IndexFile indexFile) {
         reader = indexFile.getReader();
     }
+    
+    private void buildCache() {
+        cache = new TreeMap<String, Index>();
+    }
+    
+    
+    
 
     public Index getIndexOf(String headword) {
         if (containsWord(headword)) {
@@ -59,27 +62,27 @@ class IndexStore {
         return cache.get(headword);
     }
 
-    public List<String> getSimiliarWord(String headword, int preferredNumber) {
+    
+    
+    
+    public List<String> getSimilarWord(String headword, int preferredNumber) {
         findInFileAndCacheEverythingFound(headword);
         Set<Map.Entry<String, Index>> filtered = filterSimilarWord(headword);
         return extractByPreferredNumber(filtered, preferredNumber);
     }
 
     private Set<Map.Entry<String, Index>> filterSimilarWord(String headword) {
-        SortedMap<String, Index> tailMap = cache.tailMap(headword);
-        return tailMap.entrySet();
+        return cache.tailMap(headword).entrySet();
     }
 
     private List<String> extractByPreferredNumber(Set<Map.Entry<String, Index>> filtered, int preferredNumber) {
         List<String> result = new ArrayList<String>(preferredNumber);
         
-        int count = 0;
-        for (Map.Entry<String, Index> entry : filtered) {
-            result.add(entry.getKey());
-            count++;
-            if (count == preferredNumber) {
-                break;
-            }
+        Iterator<Map.Entry<String, Index>> iterator = filtered.iterator();
+        
+        for(int numOfItem = 0;
+                numOfItem < preferredNumber && iterator.hasNext(); numOfItem++) {
+            result.add(iterator.next().getKey());
         }
         
         return result;

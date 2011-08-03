@@ -60,7 +60,7 @@ public class DICTDictionary implements Dictionary {
 
     @Override
     public List<String> recommendWord(String word) {
-        return supportedWords.getSimiliarWord(word, 20);
+        return supportedWords.getSimilarWord(word, 20);
     }
 
     @Override
