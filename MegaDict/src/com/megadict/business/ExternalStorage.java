@@ -16,7 +16,8 @@ public final class ExternalStorage {
 			throw new CouldNotCreateExternalDirectoryException();
 		}
 
-		final File downloadDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+		//final File downloadDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+		final File downloadDirectory = new File("/sdcard/Download");
 		// Create "Download" directory if it doesn't exist.
 		if (!downloadDirectory.exists()) {
 			downloadDirectory.mkdir();

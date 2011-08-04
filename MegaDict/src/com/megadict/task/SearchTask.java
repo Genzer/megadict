@@ -1,66 +1,69 @@
 package com.megadict.task;
 
-import java.util.List;
-
-import android.os.AsyncTask;
 import android.view.View;
-import android.webkit.WebView;
-import android.widget.ProgressBar;
 
-import com.megadict.business.DictionaryClient;
+import com.megadict.bean.SearchComponent;
 import com.megadict.business.ResultTextMaker;
+import com.megadict.business.WordSearcher;
+import com.megadict.model.Definition;
+import com.megadict.model.Dictionary;
+import com.megadict.task.base.BaseSearchTask;
 
-public class SearchTask extends AsyncTask<String, Void, List<String>> {
-	private final ProgressBar progressBar;
-	private final DictionaryClient dictionaryClient;
-	private final ResultTextMaker resultTextMaker;
-	private final String noDictionaryString;
-	private final WebView resultView;
+public class SearchTask extends BaseSearchTask {
+	private final Dictionary dictionary;
+	private final SearchComponent searchComponent;
+	private String dictionaryName = "<Dictionary name>";
+	private String noDefinitionStr = "There is no definition.";
 	private boolean searching;
 
-	public SearchTask(final DictionaryClient dictionaryClient, final ResultTextMaker resultTextMaker, final ProgressBar progressBar, final WebView resultView, final String noDictionaryString) {
-		super();
-		this.dictionaryClient = dictionaryClient;
-		this.resultTextMaker = resultTextMaker;
-		this.progressBar = progressBar;
-		this.noDictionaryString = noDictionaryString;
-		this.resultView = resultView;
+	public SearchTask(final Dictionary dictionary, final SearchComponent searchComponent) {
+		this.dictionary = dictionary;
+		this.searchComponent = searchComponent;
 	}
 
 	@Override
 	protected void onPreExecute() {
-		progressBar.setVisibility(View.VISIBLE);
+		searchComponent.progressBar.setVisibility(View.VISIBLE);
 		searching = true;
 	}
 
 	@Override
-	protected List<String> doInBackground(final String... params) {
-		return dictionaryClient.lookup(params[0]);
+	protected String doInBackground(final String... words) {
+		final Definition d = dictionary.lookUp(words[0]);
+		String content;
+		if(d == Definition.NOT_FOUND) {
+			content = noDefinitionStr;
+		} else {
+			content = d.getContent();
+		}
+		return content;
 	}
 
 	@Override
-	protected void onPostExecute(final List<String> list) {
-		updateUI(list);
-		progressBar.setVisibility(View.INVISIBLE);
+	protected void onPostExecute(final String content) {
 		searching = false;
-	}
+		searchComponent.resultTextMaker.appendContent(content, dictionaryName);
+		searchComponent.resultView.loadDataWithBaseURL(ResultTextMaker.ASSET_URL, searchComponent.resultTextMaker.getResultHTML(), "text/html", "utf-8", null);
 
-	private void updateUI(final List<String> contents) {
-		upateResultView(contents, dictionaryClient.getDictionaryNames());
-	}
-
-	private void upateResultView(final List<String> contents, final List<String> dictionaryNames) {
-		String resultText;
-		// The latter condition is special case. If the user searches a word then "rescan storage" at that time.
-		if(contents.isEmpty() || contents.size() != dictionaryNames.size()) {
-			resultText = resultTextMaker.getNoDictionaryHTML(noDictionaryString);
-		} else {
-			resultText = resultTextMaker.getResultHTML(contents, dictionaryNames);
+		// Hide progress bar if all tasks finished.
+		if(WordSearcher.didAllTasksFinish()) {
+			searchComponent.progressBar.setVisibility(View.INVISIBLE);
 		}
-		resultView.loadDataWithBaseURL(ResultTextMaker.ASSET_URL, resultText, "text/html", "utf-8", null);
+	}
+
+	public void setDictionaryName(final String dictionaryName) {
+		this.dictionaryName = dictionaryName;
+	}
+
+	public void setNoDefinitionStr(final String noDefinitionStr) {
+		this.noDefinitionStr = noDefinitionStr;
 	}
 
 	public boolean isSearching() {
 		return searching;
+	}
+
+	public Dictionary getDictionary() {
+		return dictionary;
 	}
 }

@@ -19,8 +19,9 @@
     <string name="noDefinition">There is no definition. Don\'t be silly, guy!</string>    
     <string name="noDictionary">Please choose a dictionary.</string>
     <string name="noDictionary2">There is no dictionary. Please put dictionaries\' data 
-    folders in SD card at the location <br>/mnt/sdcard/Download/megadict</br>.</string>    
-    <string name="searching">Searching... Please wait</string>
+    folders in SD card at the location <b>/mnt/sdcard/Download/megadict</b>.</string>    
+    <string name="searching">Searching... Please wait.</string>
+    <string name="recommending">Recommending.. Please wait.</string>
     <string name="usingDictionary">You are using %1$d dictionary.</string>
     <string name="usingDictionaryPlural">You are using %1$d dictionaries.</string>
     <string name="selectText">Select text now</string>

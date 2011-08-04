@@ -5,6 +5,8 @@ import java.util.Locale;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.Toast;
 
 public class Utility {
@@ -50,5 +52,10 @@ public class Utility {
 
 	public static boolean isLocaleChanged() {
 		return localChanged;
+	}
+
+	public static void disableSoftKeyboard(final Context context, final EditText editText) {
+		final InputMethodManager imm = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
+		imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
 	}
 }

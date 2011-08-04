@@ -2,7 +2,7 @@
 <manifest package="com.megadict"
       android:versionCode="1"
       android:versionName="1.0" xmlns:android="http://schemas.android.com/apk/res/android">
-    <uses-sdk android:minSdkVersion="8" />
+    <uses-sdk android:minSdkVersion="4" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
     <uses-permission android:name="android.permission.INTERNET"></uses-permission>
 
@@ -15,11 +15,11 @@
                   android:windowSoftInputMode="stateAlwaysHidden" 
                   android:icon="@drawable/megadict_icon"
                   android:theme="@style/MegaDictTheme" android:configChanges="locale">
-
-        		  			<intent-filter>
-            <action android:name="android.intent.action.MAIN" />
+        	<intent-filter>
+            	<action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
         
         <activity android:name=".activity.SettingActivity" 
@@ -37,6 +37,12 @@
         		  android:theme="@android:style/Theme.Dialog" 
         		  android:label="@string/aboutDialogLabel" 
         		  android:icon="@drawable/megadict_icon" android:configChanges="locale">
+		</activity>
+		
+		<activity android:name=".activity.TestActivity" 
+        		  android:icon="@drawable/megadict_icon"
+        		  android:theme="@style/MegaDictTheme" android:configChanges="locale">
+
 		</activity>
 		
 		

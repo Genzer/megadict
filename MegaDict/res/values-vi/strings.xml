@@ -21,6 +21,7 @@
     <string name="noDictionary2">Không có từ điểm. Làm ơn chép các thư mục từ điển vào thẻ nhớ tại vị trí
      <br>/mnt/sdcard/Download/megadict</br>.</string>    
     <string name="searching">Đang tìm... Làm ơn chờ.</string>
+    <string name="recommending">Đang tìm từ gần đúng... Làm ơn chờ.</string>
     <string name="usingDictionary">Bạn đang dùng %1$d từ điển.</string>
     <string name="usingDictionaryPlural">Bạn đang dùng %1$d từ điển.</string>
     <string name="selectText">Có thể chọn từ được rồi.</string>

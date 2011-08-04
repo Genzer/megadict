@@ -2,10 +2,10 @@ package com.megadict.activity;
 
 
 import android.app.Activity;
-import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.text.ClipboardManager;
+import android.text.Editable;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -13,8 +13,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -26,13 +27,13 @@ import com.megadict.R;
 import com.megadict.activity.base.BaseActivity;
 import com.megadict.adapter.TextWatcherAdapter;
 import com.megadict.application.MegaDictApp;
+import com.megadict.bean.RecommendComponent;
+import com.megadict.bean.SearchComponent;
 import com.megadict.business.DictionaryClient;
 import com.megadict.business.ResultTextMaker;
 import com.megadict.business.TextSelector;
 import com.megadict.exception.DataFileNotFoundException;
 import com.megadict.exception.IndexFileNotFoundException;
-import com.megadict.task.RecommendTask;
-import com.megadict.task.SearchTask;
 import com.megadict.task.WordListTask;
 import com.megadict.task.WordListTask.OnClickWordListener;
 import com.megadict.utility.DatabaseHelper;
@@ -40,7 +41,7 @@ import com.megadict.utility.Utility;
 import com.megadict.widget.ResultView;
 import com.megadict.widget.ResultView.OnSelectTextListener;
 
-public class DictionaryActivity extends BaseActivity implements OnClickListener, OnEditorActionListener, OnSelectTextListener {
+public class DictionaryActivity extends BaseActivity implements OnClickListener, OnSelectTextListener {
 	private final String TAG = "DictionaryActivity";
 
 	// Activity control variables.
@@ -51,13 +52,14 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 
 	// Member variables
 	private DictionaryClient dictionaryClient;
-	private SQLiteDatabase database;
+	private SearchComponent searchComponent;
+	private RecommendComponent recommendComponent;
 	private ResultTextMaker resultTextMaker;
-	private SearchTask searchTask;
-	private RecommendTask recommendTask;
+	private SQLiteDatabase database;
 	private WordListTask task;
 	private TextSelector textSelector;
-	private boolean shouldSetStartPage = true;
+	private final boolean shouldSetStartPage = true;
+	private long time;
 
 	public DictionaryActivity() {
 		super(R.layout.search);
@@ -76,7 +78,6 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 		if(shouldSetStartPage) {
 			setStartPage();
 		}
-
 		if(Utility.isLocaleChanged()) {
 			// Change noDefinition string.
 			dictionaryClient.setNoDefinitionString(getString(R.string.noDefinition));
@@ -142,36 +143,18 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 		task.execute((Void [])null);
 	}
 
-	@Override
-	public boolean onEditorAction(final TextView v, final int actionId, final KeyEvent event) {
-		if (actionId == EditorInfo.IME_ACTION_SEARCH
-				|| actionId == EditorInfo.IME_ACTION_DONE
-				|| event.getAction() == KeyEvent.ACTION_DOWN
-				&& event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
-		}
-		return true;
-	}
-
 	// ========================= Private functions ======================= //
 	private void initLayout() {
 		progressBar = (ProgressBar)findViewById(R.id.progressBar);
 		final Button searchButton = (Button) findViewById(R.id.searchButton);
 		searchButton.setOnClickListener(this);
-		searchButton.setOnEditorActionListener(this);
-		searchEditText = (AutoCompleteTextView) findViewById(R.id.searchEditText);
-		searchEditText.addTextChangedListener(new TextWatcherAdapter() {
-			@Override
-			public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
-				//doRecommendWords(searchEditText.getText().toString());
-			}
-		});
-		// Disable soft keyboard.
-		final InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-		imm.hideSoftInputFromWindow(searchEditText.getWindowToken(), 0);
+		initSearchBar();
 		// Init Result view.
 		resultView = new ResultView(this, clipboardManager);
+		resultView.setLayoutParams(new ViewGroup.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 		resultView.setBackgroundColor(0x00000000);
 		resultView.setOnSelectTextListener(this);
+		// Init result panel.
 		final LinearLayout resultPanel = (LinearLayout)findViewById(R.id.resultPanel);
 		resultPanel.addView(resultView);
 	}
@@ -186,30 +169,64 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 		doScanningDatabase(this, database);
 		// Init result text maker.
 		resultTextMaker = new ResultTextMaker(getAssets());
+		// Init useful components.
+		searchComponent = new SearchComponent(resultView, resultTextMaker, progressBar);
+		recommendComponent = new RecommendComponent(searchEditText, resultView, progressBar);
 		// Init clipboard manager.
 		clipboardManager = (ClipboardManager)getSystemService(CLIPBOARD_SERVICE);
 		// Init text selector.
 		textSelector = new TextSelector();
 	}
 
-	private void doRecommendWords(final String word) {
-		if(recommendTask != null) {
-			if(recommendTask.isCancelled()) {
-				recommendTask.cancel(true);
+	private void initSearchBar() {
+		searchEditText = (AutoCompleteTextView) findViewById(R.id.searchEditText);
+		searchEditText.setOnEditorActionListener(new OnEditorActionListener() {
+			@Override
+			public boolean onEditorAction(final TextView v, final int actionId, final KeyEvent event) {
+				if (actionId == EditorInfo.IME_ACTION_SEARCH
+						|| actionId == EditorInfo.IME_ACTION_DONE
+						|| event.getAction() == KeyEvent.ACTION_DOWN
+						&& event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+					doSearching(searchEditText.getText().toString());
+				}
+				return true;
 			}
-			recommendTask = new RecommendTask(this, dictionaryClient, progressBar, searchEditText);
-			recommendTask.execute(word);
-		}
+		});
+		searchEditText.setThreshold(1);
+		searchEditText.addTextChangedListener(new TextWatcherAdapter() {
+			@Override
+			public void afterTextChanged(final Editable arg0) {
+				if(time == 0) {
+					time = System.currentTimeMillis();
+				}
+				final long currentTime = System.currentTimeMillis();
+				final long diff = currentTime - time;
+				time = currentTime;
+				if(diff > 500) {
+					doRecommendWords(searchEditText.getText().toString());
+				}
+			}
+		});
+		// Disable soft keyboard.
+		Utility.disableSoftKeyboard(this, searchEditText);
+	}
+
+	private void doRecommendWords(final String word) {
+		if(!dictionaryClient.recommend(this, word, recommendComponent)) {}
 	}
 
 	private void doSearching(final String word) {
-		if(searchTask == null || !searchTask.isSearching()) {
-			searchTask = new SearchTask(dictionaryClient, resultTextMaker,
-					progressBar, resultView, getString(R.string.noDictionary));
-			searchTask.execute(word);
-			shouldSetStartPage = false;
+		// THE OUTER IF MAKES SURE THAT NO CRASH IN MEGADICT.
+		/// I'M NOT SATISFIED WITH THIS BECAUSE THE DICTIONARY MODEL CAN'T BE USED BY MULTIPLE THREADS.
+		/// IT MEANS THAT WHEN RECOMMENDING IS RUNNING,
+		/// WE CAN'T RUN ANOTHER THREAD TO SEARCH WORD ON THE SAME DICTIONARY MODEL.
+		/// NEED TO FIX THE DICTIONARY MODEL.
+		if(!dictionaryClient.isRecommending()) {
+			if(!dictionaryClient.lookup(word, searchComponent)) {
+				Utility.messageBox(this, getString(R.string.searching));
+			}
 		} else {
-			Utility.messageBox(this, getString(R.string.searching));
+			Utility.messageBox(this, getString(R.string.recommending));
 		}
 	}
 
@@ -229,4 +246,6 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 			Log.d(TAG, e.getMessage());
 		}
 	}
+
+
 }

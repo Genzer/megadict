@@ -12,6 +12,7 @@ import java.io.File;
 
 import android.app.Application;
 
+import com.megadict.R;
 import com.megadict.business.DictionaryClient;
 import com.megadict.business.ExternalStorage;
 
@@ -23,5 +24,7 @@ public class MegaDictApp extends Application {
 	public void onCreate()
 	{
 		super.onCreate();
+		dictionaryClient.setNoDefinitionString(getString(R.string.noDefinition));
+		dictionaryClient.setNoDictionaryString(getString(R.string.noDictionary));
 	}
 }

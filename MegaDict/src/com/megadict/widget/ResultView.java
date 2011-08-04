@@ -5,6 +5,7 @@ import android.text.ClipboardManager;
 import android.util.AttributeSet;
 import android.webkit.WebView;
 
+
 public class ResultView extends WebView {
 	private final ClipboardManager manager;
 	protected OnSelectTextListener selectTextListner;

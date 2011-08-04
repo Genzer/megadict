@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
-  android:layout_width="match_parent"
-  android:layout_height="match_parent" android:orientation="horizontal">
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent" android:orientation="horizontal">
     <TextView android:layout_weight="1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/dictionaryName" android:text="TextView" android:textSize="16dip"></TextView>
     <CheckBox android:layout_weight="0" android:layout_marginRight="5dip" android:layout_marginLeft="5dip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/dictionaryEnabled"></CheckBox>
     

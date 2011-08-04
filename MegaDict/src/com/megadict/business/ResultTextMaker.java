@@ -1,72 +1,72 @@
 package com.megadict.business;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import android.content.res.AssetManager;
+
+import com.megadict.exception.ResourceNotFoundException;
 
 public class ResultTextMaker {
 	public static final String ASSET_URL = "file:///android_asset/";
 	private final AssetManager assetManager;
-	private final List<String> logger = new ArrayList<String>();
-	private final String headTag;
+
+	private final String middleWelcomeBlock = "<div class=\"welcomeBlock\">";
+	private final String rightWelcomeBlock = "</div></body></html>";
+
+	private final String middleNoDictBlock = "<div class=\"noDictionaryBlock\">";
+	private final String rightNoDictBlock = "</div></body></html>";
+
+	private final StringBuilder leftBlock = new StringBuilder();
+	private final StringBuffer middleBlock = new StringBuffer();
+	private final String rightBlock = "</body></html>";
 
 	public ResultTextMaker(final AssetManager assetManager) {
 		this.assetManager = assetManager;
-		headTag = createHeadTag();
+		initLefltBlock();
 	}
 
-	private String createHeadTag() {
-		final StringBuilder headTagContent = new StringBuilder();
+	private void initLefltBlock() {
 		try {
+			leftBlock.append("<html>");
 			// Append stylesheets.
 			final String []cssNames = assetManager.list("css");
-			headTagContent.append("<head>");
+			leftBlock.append("<head>");
 			for(final String cssName : cssNames) {
-				headTagContent.append("<link href=\"css/" + cssName + "\" rel=\"stylesheet\" type=\"text/css\" />");
+				leftBlock.append("<link href=\"css/" + cssName + "\" rel=\"stylesheet\" type=\"text/css\" />");
+
 			}
 			// Append JQuery.
 			final String []scriptNames = assetManager.list("scripts");
 			for(final String scriptName : scriptNames) {
-				headTagContent.append("<script src=\"scripts/" + scriptName + "\" type=\"text/javascript\"></script>");
+				leftBlock.append("<script src=\"scripts/" + scriptName + "\" type=\"text/javascript\"></script>");
 			}
-			headTagContent.append("</head>");
+			leftBlock.append("</head><body>");
 		} catch (final IOException e) {
-			logger.add(e.getMessage());
+			// Because it's a programming exception, we don't need to catch it.
+			/// Just throw unchecked exception.
+			throw new ResourceNotFoundException(e.getCause());
 		}
-		return headTagContent.toString();
 	}
 
-	public String getWelcomeHTML(final String welcomStr) {
-		final String welcomeHTML = "<html>" + headTag + "<body>" + welcomStr + "</body></html>";
-		return welcomeHTML;
+	public void appendContent(final String content, final String dictionaryName) {
+		final String formattedContent = content.trim().replace("\n", "<br/>");
+		middleBlock.append("<div class=\"dictionaryBlock\"><div class=\"dictionaryContent\">" + formattedContent + "</div>" +
+				"<div class=\"dictionaryName\">" + dictionaryName + "</div></div>");
 	}
 
-	public String getResultHTML(final List<String> contents, final List<String> dictionaryNames) {
-		final int contentSize = contents.size(), dictionaryNameSize = dictionaryNames.size();
-		if(contentSize != dictionaryNameSize) {
-			throw new IllegalArgumentException("content size must equal to dictionaryNames size.");
-		}
-
-		final StringBuilder resultText = new StringBuilder();
-		resultText.append("<html>" + headTag + "<body>");
-
-		// Create dictionary blocks.
-		for(int i = 0; i < contentSize; ++i) {
-			final String formattedContent = contents.get(i).trim().replace("\n", "<br/>");
-			resultText.append("<div class=\"dictionaryBlock\"><div class=\"dictionaryContent\">" + formattedContent + "</div>" +
-					"<div class=\"dictionaryName\">" + dictionaryNames.get(i) + "</div></div>");
-		}
-		resultText.append("</body></html>");
-		return resultText.toString();
+	public String getResultHTML() {
+		return leftBlock.toString() + middleBlock.toString() + rightBlock;
 	}
 
-	public String getNoDictionaryHTML(final String content) {
-		final StringBuilder resultText = new StringBuilder();
-		resultText.append("<html>" + headTag + "<body>");
-		resultText.append("<div class=\"dictionaryBlock\"><div class=\"noDictionaryContent\">" + content + "</div>" +
-		"</div></body></html>");
-		return resultText.toString();
+	public String getWelcomeHTML(final String welcomeStr) {
+		return leftBlock.toString() + middleWelcomeBlock + welcomeStr + rightWelcomeBlock;
+	}
+
+	public String getNoDictionaryHTML(final String noDictContent) {
+		return leftBlock.toString() + middleNoDictBlock + noDictContent + rightNoDictBlock;
+	}
+
+	public void resetMiddleBlock() {
+		middleBlock.setLength(0);
 	}
 }

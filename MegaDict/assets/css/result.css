@@ -18,16 +18,20 @@ body {
 	margin-bottom: 0.8em;
 }
 
-.dictionaryContent {
-	font-size: 1em;
-	color: black;
-	margin-bottom: 0.8em;
+.welcomeBlock {
+	fonrt-size: 1em;
+	color: green;
 }
 
-.noDictionaryContent {
+.noDictionaryBlock {
 	font-size: 1em;
 	color: red;
+}
+
+.dictionaryContent {
+	font-size: 1em;	
 	margin-bottom: 0.8em;
+	color: black;
 }
 
 .dictionaryName {
