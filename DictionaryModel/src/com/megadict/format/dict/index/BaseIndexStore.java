@@ -1,29 +1,19 @@
-package com.megadict.format.dict;
+package com.megadict.format.dict.index;
 
 import java.util.*;
 
-import com.megadict.format.dict.index.Index;
-import com.megadict.format.dict.index.IndexFile;
-import com.megadict.format.dict.index.IndexFileReader;
+class BaseIndexStore implements IndexStore {
 
-class IndexStore {
-
-    public IndexStore(IndexFile indexFile) {
-        initializeReader(indexFile);
+    public BaseIndexStore(IndexFile indexFile) {
+        this.indexFile = indexFile;
         buildCache();
     }
 
-    private void initializeReader(IndexFile indexFile) {
-        reader = indexFile.getReader();
-    }
-    
     private void buildCache() {
         cache = new TreeMap<String, Index>();
     }
-    
-    
-    
 
+    @Override
     public Index getIndexOf(String headword) {
         if (containsWord(headword)) {
             return getFromCache(headword);
@@ -32,6 +22,7 @@ class IndexStore {
         }
     }
 
+    @Override
     public boolean containsWord(String word) {
         if (findInCache(word) == false) {
             findInFileAndCacheEverythingFound(word);
@@ -48,7 +39,8 @@ class IndexStore {
         cacheAll(foundIndexes);
     }
 
-    private Set<Index> findInFile(String headword) {
+    protected Set<Index> findInFile(String headword) {
+        IndexFileReader reader = new IndexFileReader(indexFile.asRawFile());
         return reader.getIndexesStartFrom(headword);
     }
 
@@ -62,9 +54,7 @@ class IndexStore {
         return cache.get(headword);
     }
 
-    
-    
-    
+    @Override
     public List<String> getSimilarWord(String headword, int preferredNumber) {
         findInFileAndCacheEverythingFound(headword);
         Set<Map.Entry<String, Index>> filtered = filterSimilarWord(headword);
@@ -77,17 +67,16 @@ class IndexStore {
 
     private List<String> extractByPreferredNumber(Set<Map.Entry<String, Index>> filtered, int preferredNumber) {
         List<String> result = new ArrayList<String>(preferredNumber);
-        
+
         Iterator<Map.Entry<String, Index>> iterator = filtered.iterator();
-        
-        for(int numOfItem = 0;
-                numOfItem < preferredNumber && iterator.hasNext(); numOfItem++) {
+
+        for (int numOfItem = 0; numOfItem < preferredNumber && iterator.hasNext(); numOfItem++) {
             result.add(iterator.next().getKey());
         }
-        
+
         return result;
     }
 
+    protected final IndexFile indexFile;
     private TreeMap<String, Index> cache;
-    private IndexFileReader reader;
 }

@@ -9,14 +9,39 @@ import com.megadict.model.*;
 import com.megadict.model.Dictionary;
 
 public class DICTDictionary implements Dictionary {
+    
+    public static class Builder {
+        IndexFile indexFile;
+        DictionaryFile dictFile;
+        boolean segmentEnabled;
+        
+        public Builder(IndexFile indexFile, DictionaryFile dictionaryFile) {
+            this.indexFile = indexFile;
+            this.dictFile = dictionaryFile;
+        }
+        
+        public Builder enableSplittingIndexFile() {
+            segmentEnabled = true;
+            return this;
+        }
+        
+        public DICTDictionary build() {
+            return new DICTDictionary(this);
+        }
+    }
+    
+    private DICTDictionary(Builder builder) {
+        this.indexFile = builder.indexFile;
+        this.dictFile  = builder.dictFile;
+        checkFileExistence();
+        prepareIndexStoreWithSegment();
+        prepareDefinitions();
+        loadDictionaryMetadata();
+    }
 
     public DICTDictionary(IndexFile indexFile, DictionaryFile dictFile) {
         this.indexFile = indexFile;
         this.dictFile = dictFile;
-        initialize();
-    }
-
-    private void initialize() {
         checkFileExistence();
         prepareIndexStore();
         prepareDefinitions();
@@ -34,7 +59,11 @@ public class DICTDictionary implements Dictionary {
     }
 
     private void prepareIndexStore() {
-        supportedWords = new IndexStore(indexFile);
+        supportedWords = IndexStoreFactory.newDefaultIndexStore(indexFile);
+    }
+    
+    private void prepareIndexStoreWithSegment() {
+        supportedWords = IndexStoreFactory.newIndexStoreSupportSegment(indexFile);
     }
 
     private void prepareDefinitions() {

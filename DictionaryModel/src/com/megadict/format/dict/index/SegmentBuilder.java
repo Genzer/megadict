@@ -2,10 +2,16 @@ package com.megadict.format.dict.index;
 
 import java.util.List;
 
-public interface SegmentBuilder {
+interface SegmentBuilder {
+    
+    boolean findSegmentMainIndexIfExists();
+    
+    void saveSegmentMainIndex();
+    
+    void loadSavedSegmentMainIndex();
 
-    public List<Segment> builtSegments();
+    List<Segment> builtSegments();
 
-    public void build();
+    void build();
 
 }

@@ -2,11 +2,10 @@ package com.megadict.format.dict.index;
 
 import java.io.File;
 
-
 public class IndexFile {
     
     protected IndexFile(String indexFilePath) {
-        this.indexFile = new File(indexFilePath);
+        this(new File(indexFilePath));
     }
     
     protected IndexFile(File indexFile) {
@@ -20,7 +19,7 @@ public class IndexFile {
     public static IndexFile makeFile(File indexFile) {
         return new IndexFile(indexFile);
     }
-    
+
     public boolean exists() {
         return indexFile.exists();
     }
@@ -29,8 +28,8 @@ public class IndexFile {
         return indexFile.getAbsolutePath();
     }
     
-    public IndexFileReader getReader() {
-        return new IndexFileReader(indexFile);
+    public File asRawFile() {
+        return indexFile;
     }
     
     @Override
@@ -38,6 +37,5 @@ public class IndexFile {
         return indexFile.toString();
     }
         
-    private final File indexFile;
-    
+    private final File indexFile;   
 }

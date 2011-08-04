@@ -4,26 +4,10 @@ import java.io.*;
 import java.util.*;
 import com.megadict.exception.*;
 
-public class ReadLineSegmentBuilder implements SegmentBuilder {
+class ReadLineSegmentBuilder extends BaseSegmentBuilder implements SegmentBuilder {
 
     public ReadLineSegmentBuilder(File indexFile) {
-        this.indexFile = indexFile;
-        this.parentSegmentFolder = computeSegmentFolderPath();
-        createSegmentFolderIfDoesNotExist();
-    }
-
-    private String computeSegmentFolderPath() {
-        return indexFile.getParent() + File.separator + FOLDER_NAME;
-    }
-
-    private void createSegmentFolderIfDoesNotExist() {
-        File folder = new File(parentSegmentFolder);
-        if (!folder.exists()) {
-            boolean folderCreated = folder.mkdir();
-            if (folderCreated == false) {
-                throw new OperationFailedException("creating index segment folder");
-            }
-        }
+        super(indexFile);
     }
 
     public List<Segment> builtSegments() {
@@ -39,15 +23,23 @@ public class ReadLineSegmentBuilder implements SegmentBuilder {
             while ((line = reader.readLine()) != null) {
                 lines.add(line);
                 if (lines.size() == LINE_PER_SEGMENT) {
-                    currentSegmentNumber++;
+                    countCreatedSegment();
                     Segment segment = createSegment(lines);
                     segments.add(segment);
                     saveSegmentToFile(segment, lines);
                     lines = makeLinesBuffer();
                 }
             }
+            
+            if (lines.size() > 0 ) {
+                countCreatedSegment();
+                Segment segment = createSegment(lines);
+                segments.add(segment);
+                saveSegmentToFile(segment, lines);
+                lines = makeLinesBuffer();
+            }
         } catch (FileNotFoundException fnf) {
-            throw new ResourceMissingException(indexFile);
+            throw new ResourceMissingException(getIndexFile());
         } catch (IOException ioe) {
             throw new OperationFailedException("reading file", ioe);
         } finally {
@@ -62,7 +54,7 @@ public class ReadLineSegmentBuilder implements SegmentBuilder {
     }
 
     private BufferedReader makeReader() throws FileNotFoundException {
-        return new BufferedReader(new FileReader(indexFile), BUFFER_SIZE);
+        return new BufferedReader(new FileReader(getIndexFile()), BUFFER_SIZE);
     }
 
     private Segment createSegment(List<String> lines) {
@@ -86,10 +78,6 @@ public class ReadLineSegmentBuilder implements SegmentBuilder {
 
     private File makeCurrentSegmentFile() {
         return new File(computeCurrentSegmentPath());
-    }
-
-    private String computeCurrentSegmentPath() {
-        return String.format(SEGMENT_FULL_PATH_PATTERN, parentSegmentFolder, currentSegmentNumber);
     }
 
     private void saveSegmentToFile(Segment segment, List<String> lines) {
@@ -135,17 +123,6 @@ public class ReadLineSegmentBuilder implements SegmentBuilder {
         }
     }
 
-    // private static final String LINE_SEPARATOR =
-    // System.getProperty("line.separator");
     private static final String LINE_SEPARATOR = "\n";
-    private static final String FOLDER_NAME = "splitted";
-    private static final String SEGMENT_FULL_PATH_PATTERN = "%s\\s%d.index";
-    private static final int BUFFER_SIZE = 8 * 1024;
     private static final int LINE_PER_SEGMENT = 200;
-
-    private final File indexFile;
-    private final String parentSegmentFolder;
-
-    private int currentSegmentNumber = 0;
-    private List<Segment> segments = new ArrayList<Segment>();
 }

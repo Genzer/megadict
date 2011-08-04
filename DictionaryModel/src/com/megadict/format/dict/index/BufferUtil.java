@@ -2,7 +2,7 @@ package com.megadict.format.dict.index;
 
 import java.util.Arrays;
 
-public class BufferUtil {
+class BufferUtil {
 
     private BufferUtil() {}    
     

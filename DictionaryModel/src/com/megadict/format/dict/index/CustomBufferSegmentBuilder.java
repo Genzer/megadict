@@ -4,28 +4,11 @@ import java.io.*;
 import java.util.*;
 import com.megadict.exception.*;
 
-public class CustomBufferSegmentBuilder implements SegmentBuilder {
+class CustomBufferSegmentBuilder extends BaseSegmentBuilder implements SegmentBuilder {
 
     public CustomBufferSegmentBuilder(File indexFile) {
-        this.indexFile = indexFile;
-        parentSegmentFolder = computeSegmentFolderPath();
-        createSegmentFolderIfDoesNotExist();
+        super(indexFile);
     }
-
-    private String computeSegmentFolderPath() {
-        return indexFile.getParent() + File.separator + FOLDER_NAME;
-    }
-
-    private void createSegmentFolderIfDoesNotExist() {
-        File folder = new File(parentSegmentFolder);
-        if (!folder.exists()) {
-            boolean folderCreated = folder.mkdir();
-            if (folderCreated == false) {
-                throw new OperationFailedException("creating index segment folder");
-            }
-        }
-    }
-
     
     @Override
     public List<Segment> builtSegments() {
@@ -47,7 +30,7 @@ public class CustomBufferSegmentBuilder implements SegmentBuilder {
                 resetBuffer();
             }
         } catch (FileNotFoundException fnf) {
-            throw new ResourceMissingException(indexFile);
+            throw new ResourceMissingException(getIndexFile());
         } catch (IOException ioe) {
             throw new OperationFailedException("reading index file", ioe);
         } finally {
@@ -58,11 +41,11 @@ public class CustomBufferSegmentBuilder implements SegmentBuilder {
     }
 
     private DataInputStream makeReader() throws FileNotFoundException {
-        return new DataInputStream(new FileInputStream(indexFile));
+        return new DataInputStream(new FileInputStream(getIndexFile()));
     }
 
     private Segment createSegment() {
-        currentSegmentNumber++;
+        countCreatedSegment();
         String lowerbound = firstWordInBlock();
         String upperbound = lastWordInBlock();
         File currentSegmentFile = makeCurrentSegmentFile();
@@ -71,10 +54,6 @@ public class CustomBufferSegmentBuilder implements SegmentBuilder {
 
     private File makeCurrentSegmentFile() {
         return new File(computeCurrentSegmentPath());
-    }
-
-    private String computeCurrentSegmentPath() {
-        return String.format(SEGMENT_FULL_PATH_PATTERN, parentSegmentFolder, currentSegmentNumber);
     }
 
     private String firstWordInBlock() {
@@ -120,14 +99,5 @@ public class CustomBufferSegmentBuilder implements SegmentBuilder {
         Arrays.fill(buffer, (byte) '\n');
     }
 
-    private static final String FOLDER_NAME = "splitted";
-    private static final String SEGMENT_FULL_PATH_PATTERN = "%s\\s%d.index";
-    private static final int BUFFER_SIZE = 8 * 1024;
-
-    private final File indexFile;
-    private final String parentSegmentFolder;
-
     private byte[] buffer = new byte[BUFFER_SIZE];
-    private int currentSegmentNumber = 0;
-    List<Segment> segments = new ArrayList<Segment>();
 }
