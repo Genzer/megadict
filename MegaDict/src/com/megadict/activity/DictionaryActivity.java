@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.text.ClipboardManager;
-import android.text.Editable;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -16,6 +15,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -60,6 +60,7 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 	private TextSelector textSelector;
 	private final boolean shouldSetStartPage = true;
 	private long time;
+	private boolean itemSelected;
 
 	public DictionaryActivity() {
 		super(R.layout.search);
@@ -148,6 +149,7 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 		progressBar = (ProgressBar)findViewById(R.id.progressBar);
 		final Button searchButton = (Button) findViewById(R.id.searchButton);
 		searchButton.setOnClickListener(this);
+		//searchEditText = (AutoCompleteTextView) findViewById(R.id.searchEditText);
 		initSearchBar();
 		// Init Result view.
 		resultView = new ResultView(this, clipboardManager);
@@ -180,6 +182,7 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 
 	private void initSearchBar() {
 		searchEditText = (AutoCompleteTextView) findViewById(R.id.searchEditText);
+
 		searchEditText.setOnEditorActionListener(new OnEditorActionListener() {
 			@Override
 			public boolean onEditorAction(final TextView v, final int actionId, final KeyEvent event) {
@@ -194,8 +197,14 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 		});
 		searchEditText.setThreshold(1);
 		searchEditText.addTextChangedListener(new TextWatcherAdapter() {
+
 			@Override
-			public void afterTextChanged(final Editable arg0) {
+			public void onTextChanged(final CharSequence arg0, final int arg1, final int arg2, final int arg3) {
+				if(itemSelected) {
+					itemSelected = false;
+					return;
+				}
+				doRecommendWords(searchEditText.getText().toString());
 				if(time == 0) {
 					time = System.currentTimeMillis();
 				}
@@ -207,6 +216,13 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 				}
 			}
 		});
+		searchEditText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
+				itemSelected = true;
+			}
+		});
+
 		// Disable soft keyboard.
 		Utility.disableSoftKeyboard(this, searchEditText);
 	}
@@ -215,7 +231,7 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 		if(!dictionaryClient.recommend(this, word, recommendComponent)) {}
 	}
 
-	private void doSearching(final String word) {
+	public void doSearching(final String word) {
 		// THE OUTER IF MAKES SURE THAT NO CRASH IN MEGADICT.
 		/// I'M NOT SATISFIED WITH THIS BECAUSE THE DICTIONARY MODEL CAN'T BE USED BY MULTIPLE THREADS.
 		/// IT MEANS THAT WHEN RECOMMENDING IS RUNNING,

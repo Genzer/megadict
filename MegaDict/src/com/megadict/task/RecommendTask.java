@@ -22,7 +22,7 @@ import com.megadict.model.Dictionary;
 import com.megadict.task.base.BaseRecommendTask;
 
 public class RecommendTask extends BaseRecommendTask {
-	private final int RECOMMENDED_WORD_COUNT = 10;
+	private final int RECOMMENDED_WORD_COUNT = 3;
 	private final int TIMEOUT_IN_SECONDS = 3;
 	private final Context context;
 	private final List<Dictionary> dictionaryModels;
@@ -74,14 +74,18 @@ public class RecommendTask extends BaseRecommendTask {
 		final int neededWordCount = Math.min(RECOMMENDED_WORD_COUNT, tempList.size());
 		// Get a number of needed recommended words from the set.
 		final List<String> recommendWords = Arrays.asList(tempList.toArray(new String[neededWordCount]));
-		final List<String> subList = recommendWords.subList(0, neededWordCount);
-		return subList;
+		return recommendWords.subList(0, neededWordCount);
 	}
 
 	@Override
 	protected void onPostExecute(final List<String> list) {
+		System.out.println("=====================");
+		for(final String s : list) {
+			System.out.println(s);
+		}
+		//final String []a = {"w", "word", "wobble", "wit", "work", "why", "wet"};
 		recommendComponent.searchBar.setAdapter(new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, list));
-		//recommendComponent.searchBar.showDropDown();
+		recommendComponent.searchBar.showDropDown();
 		recommendComponent.progressBar.setVisibility(View.INVISIBLE);
 		recommending = false;
 	}
