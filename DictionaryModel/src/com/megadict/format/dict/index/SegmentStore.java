@@ -1,12 +1,12 @@
 package com.megadict.format.dict.index;
 
 import java.util.Collection;
-import java.util.NavigableMap;
+import java.util.SortedMap;
 import java.util.TreeMap;
 
-class SegmentStore {
+public class SegmentStore {
 
-    public SegmentStore(NavigableMap<String, Segment> sortedMapOfSegments) {
+    public SegmentStore(SortedMap<String, Segment> sortedMapOfSegments) {
         if (sortedMapOfSegments.isEmpty()) {
             throw new IllegalArgumentException("The map must not be empty");
         }
@@ -33,11 +33,10 @@ class SegmentStore {
     }
 
     private Segment extract(String word) {
-        NavigableMap<String, Segment> lessOrEqual = map.headMap(word, INCLUSIVE);
-        String keyOfFirstMatch = lessOrEqual.lastKey();
+        SortedMap<String, Segment> lessOrEqual = map.tailMap(word);
+        String keyOfFirstMatch = lessOrEqual.firstKey();
         return lessOrEqual.get(keyOfFirstMatch);
     }
 
-    private static final boolean INCLUSIVE = true;
-    private NavigableMap<String, Segment> map;
+    private SortedMap<String, Segment> map;
 }

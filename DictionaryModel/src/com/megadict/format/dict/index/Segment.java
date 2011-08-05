@@ -3,7 +3,7 @@ package com.megadict.format.dict.index;
 import java.io.File;
 import java.io.Serializable;
 
-class Segment implements Serializable {
+public class Segment implements Serializable {
 
     public Segment(String lowerbound, String upperbound, File segmentFile) {
         this.lowerbound = lowerbound;

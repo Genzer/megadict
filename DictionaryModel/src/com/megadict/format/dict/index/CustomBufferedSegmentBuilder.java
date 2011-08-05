@@ -4,9 +4,9 @@ import java.io.*;
 import java.util.*;
 import com.megadict.exception.*;
 
-class CustomBufferSegmentBuilder extends BaseSegmentBuilder implements SegmentBuilder {
+class CustomBufferedSegmentBuilder extends BaseSegmentBuilder implements SegmentBuilder {
 
-    public CustomBufferSegmentBuilder(File indexFile) {
+    public CustomBufferedSegmentBuilder(File indexFile) {
         super(indexFile);
     }
     
@@ -42,6 +42,10 @@ class CustomBufferSegmentBuilder extends BaseSegmentBuilder implements SegmentBu
 
     private DataInputStream makeReader() throws FileNotFoundException {
         return new DataInputStream(new FileInputStream(getIndexFile()));
+    }
+    
+    private void clearBuffer() {
+        
     }
 
     private Segment createSegment() {
@@ -100,4 +104,7 @@ class CustomBufferSegmentBuilder extends BaseSegmentBuilder implements SegmentBu
     }
 
     private byte[] buffer = new byte[BUFFER_SIZE];
+    private byte[] secondBuffer = new byte[BUFFER_SIZE];
+    private byte[] leftOver = new byte[500];
 }
+
