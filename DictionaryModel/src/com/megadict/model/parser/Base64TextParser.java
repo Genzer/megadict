@@ -9,10 +9,22 @@ package com.megadict.model.parser;
  */
 public class Base64TextParser  {
     
-    public static int parse(String text) {
+    public static int parseString(String text) {
         validateText(text);
-        return decodeTextToInt(text);
-    }    
+        return textToInt(text);
+    }
+    
+    public static int parseByteArray(byte[] octets) {
+        if (octets == null) {
+            throw new NullPointerException();
+        }
+        
+        if (!isBase64Encoded(octets)) {
+            throw new IllegalArgumentException("The text is not encoded with base64");
+        }
+        
+        return byteArrayToInt(octets);
+    }
 
     private static void validateText(String text) {
         if (isNull(text)) {
@@ -27,12 +39,33 @@ public class Base64TextParser  {
     private static boolean isNull(String text) {
         return text == null;
     }
+    
+    public static boolean isBase64Encoded(String text) {
+        return isBase64Encoded(text.getBytes());
+    }
+    
+    public static boolean isBase64Encoded(byte[] octets) {
+        for (byte octet : octets) {
+            if (!isBase64Encoded(octet)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private static boolean isBase64Encoded(byte octet) {
+        return isInDecodeTable(octet);
+    }
+    
+    private static boolean isInDecodeTable(byte octet) {
+        return (octet >= 38 && octet <= 123) && DECODE_TABLE[octet - OFFSET_IN_ASCII_TABLE] != -1;
+    }
 
-    private static int decodeTextToInt(String text) {
+    private static int textToInt(String text) {
         return convertBase64ByteArrayToInt(text.getBytes());        
     }
     
-    public static int toInt(byte[] octets) {
+    private static int byteArrayToInt(byte[] octets) {
         return convertBase64ByteArrayToInt(octets);
     }
     
@@ -60,27 +93,6 @@ public class Base64TextParser  {
     
     private static byte lookUpValueInDecodeTable(byte octet) {
         return DECODE_TABLE[octet - OFFSET_IN_ASCII_TABLE];
-    }
-    
-    public static boolean isBase64Encoded(String text) {
-        return isBase64Encoded(text.getBytes());
-    }
-    
-    private static boolean isBase64Encoded(byte[] octets) {
-        for (byte octet : octets) {
-            if (!isBase64Encoded(octet)) {
-                return false;
-            }
-        }
-        return true;
-    }
-    
-    private static boolean isBase64Encoded(byte octet) {
-        return isInDecodeTable(octet);
-    }
-    
-    private static boolean isInDecodeTable(byte octet) {
-        return (octet >= 38 && octet <= 123) && DECODE_TABLE[octet - OFFSET_IN_ASCII_TABLE] != -1;
     }
     
     /**

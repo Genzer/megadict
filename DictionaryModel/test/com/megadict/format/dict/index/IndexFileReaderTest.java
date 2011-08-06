@@ -5,10 +5,8 @@ import org.junit.*;
 
 import java.util.*;
 
-import com.megadict.format.dict.parser.IndexParser;
-import com.megadict.format.dict.parser.IndexTabDilimeterParser;
-import com.megadict.format.dict.sample.IndexTestSample;
-import com.megadict.format.dict.sample.TestSamples;
+import com.megadict.format.dict.parser.*;
+import com.megadict.format.dict.sample.*;
 
 public class IndexFileReaderTest {
 
@@ -18,9 +16,8 @@ public class IndexFileReaderTest {
 
     @Before
     public void prepareTests() {
-        parser = new IndexTabDilimeterParser();
+        parser = IndexParsers.newInstance();
         sampleSet = TestSamples.getCurrentIndexSample();
-
         testee = new IndexFileReader(sampleSet.getIndexFile());
     }
 

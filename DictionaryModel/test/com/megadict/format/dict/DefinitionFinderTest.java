@@ -7,10 +7,8 @@ import java.io.File;
 import org.junit.Test;
 
 import com.megadict.format.dict.index.Index;
-import com.megadict.format.dict.parser.IndexParser;
-import com.megadict.format.dict.parser.IndexTabDilimeterParser;
+import com.megadict.format.dict.parser.*;
 import com.megadict.format.dict.reader.DictionaryFile;
-import com.megadict.model.Definition;
 
 public class DefinitionFinderTest {
 
@@ -48,7 +46,7 @@ public class DefinitionFinderTest {
                 "Z-score\tsmpF\tm",
         };
         
-        IndexParser parser = new IndexTabDilimeterParser();
+        IndexParser parser = IndexParsers.newInstance();
         
         Index[] result = new Index[indexStrings.length];
         

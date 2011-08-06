@@ -1,25 +1,25 @@
 package com.megadict.format.dict.parser;
 
+import com.megadict.exception.ParseIndexException;
 import com.megadict.format.dict.index.Index;
 import com.megadict.model.parser.Base64TextParser;
 
-public class IndexTabDilimeterParser implements IndexParser {
+class BackedByStringParser implements IndexParser {
 
     @Override
     public Index parse(String text) {
         extractValues(text);
-        if (checkExtractedValues()) {
-            return newIndex();
-        } else {
-            return null;
+        if (!inputIsValid()) {
+            throwException(text);
         }
+        return newIndex();
     }
 
     private void extractValues(String text) {
         splittedValues = text.split(TAB_DELEMITER);
     }
 
-    private boolean checkExtractedValues() {
+    private boolean inputIsValid() {
         return isEnoughElements() && bothIntValuesIsBase64Encoded();
     }
     
@@ -33,14 +33,23 @@ public class IndexTabDilimeterParser implements IndexParser {
     }
 
     private Index newIndex() {
-        String word = splittedValues[WORD];
+        String word = new String(splittedValues[WORD]);
         int offset = toInt(splittedValues[OFFSET]);
         int length = toInt(splittedValues[LENGTH]);
         return new Index(word, offset, length);
     }
 
     private int toInt(String intValueInString) {
-        return Base64TextParser.parse(intValueInString);
+        return Base64TextParser.parseString(intValueInString);
+    }
+    
+    private void throwException(String invalidString) {
+        String formattedMessage = formatMessage(invalidString);
+        throw new ParseIndexException(formattedMessage, invalidString); 
+    }
+    
+    private static String formatMessage(String invalidString) {
+        return String.format("The input string is in invalid format: \"%s\".", invalidString);
     }
 
     private final int WORD = 0;

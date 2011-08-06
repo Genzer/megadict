@@ -10,7 +10,7 @@ public class Base64TextParserTest {
 
     @Test(expected = NullPointerException.class)
     public void testNullString() throws NullPointerException {
-        Base64TextParser.parse(null);
+        Base64TextParser.parseString(null);
     }
 
     @Test
@@ -47,7 +47,7 @@ public class Base64TextParserTest {
          };
         
          for (int numCase = 0; numCase < VALID_ENCODED.length; numCase++) {
-             int decodedInt = Base64TextParser.parse(VALID_ENCODED[numCase]);
+             int decodedInt = Base64TextParser.parseString(VALID_ENCODED[numCase]);
              assertEquals(VALID_DECODED[numCase], decodedInt);
          }
     }
@@ -57,7 +57,7 @@ public class Base64TextParserTest {
         String valid = "tE35";
         int expected = 11816441;
         
-        int actual = Base64TextParser.toInt(valid.getBytes());
+        int actual = Base64TextParser.parseByteArray(valid.getBytes());
         
         assertEquals(expected, actual);
     }
@@ -65,6 +65,6 @@ public class Base64TextParserTest {
     @Test(expected = IllegalArgumentException.class)
     public void testParsingNotBase64Text() throws IllegalArgumentException {
         String invalidCase = "sa s?3 3400=+";
-        Base64TextParser.parse(invalidCase);
+        Base64TextParser.parseString(invalidCase);
     }
 }

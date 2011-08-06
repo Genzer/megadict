@@ -15,11 +15,7 @@ public class IndexFileReader {
 
     public Index getIndexOf(String headword) {
         String indexString = findInFile(headword);
-        if (indexString != null) {
-            return makeNewIndex(indexString);
-        } else {
-            return null;
-        }
+        return (indexString != null) ? makeNewIndex(indexString) : null;
     }
 
     public Set<Index> getIndexesStartFrom(String headword) {
@@ -39,7 +35,11 @@ public class IndexFileReader {
     }
 
     private Index makeNewIndex(String indexString) {
-        return INDEX_PARSER.parse(indexString);
+        try {
+            return INDEX_PARSER.parse(indexString);
+        } catch (ParseIndexException pie) {
+            return null;
+        }
     }
 
     private String findInFile(String headword) {
@@ -47,8 +47,7 @@ public class IndexFileReader {
             makeReader();
             String customedHeadword = createExactMatching(headword);
             int foundPosition = locateIndexStringOf(customedHeadword);
-            String indexString = readWholeLineAt(foundPosition);
-            return indexString;
+            return readWholeLineAt(foundPosition);
         } catch (FileNotFoundException fnf) {
             throw new ResourceMissingException(indexFile, fnf);
         } catch (IOException ioException) {
@@ -75,9 +74,8 @@ public class IndexFileReader {
 
     private void makeReader() throws FileNotFoundException, IOException {
         FileInputStream rawStream = new FileInputStream(indexFile);
-        reader = new BufferedReader(newUnicodeStream(rawStream), INNER_READER_BUFFER_SIZE);
+        reader = new BufferedReader(newUnicodeStream(rawStream), READER_BUFFER_SIZE_IN_BYTES);
     }
-
 
     private InputStreamReader newUnicodeStream(FileInputStream rawStream) {
         return new InputStreamReader(rawStream, UTF8_CHARSET);
@@ -133,7 +131,6 @@ public class IndexFileReader {
         // Ignore heading new line character "\n".
         startPosition++;
 
-        // Choose 100 because lines are often no longer than 100 characters.
         int endPosition = startPosition + NUM_OF_CHAR_TO_BE_READ_ON;
 
         int currentBufferLength = builder.length();
@@ -162,30 +159,23 @@ public class IndexFileReader {
         }
     }
 
-    /*
-     * Set the size of BufferedReader inner buffer to 8KB according to Android
-     * recommendation.
-     */
-    private static final int INNER_READER_BUFFER_SIZE = 8 * 1024;
+    private static final int READER_BUFFER_SIZE_IN_BYTES = 8 * 1024;
+    private static final int SIZE_OF_CHAR_IN_BYTES = 2;
+    private static final int CHAR_BUFFER_SIZE = READER_BUFFER_SIZE_IN_BYTES / SIZE_OF_CHAR_IN_BYTES;
 
-    /*
-     * Every char in java consumes 2 bytes (16-bit). The number of characters in
-     * CHAR_BUFFER is determined from BufferedReader buffer size;
-     */
-    private static final int CHAR_BUFFER_SIZE = INNER_READER_BUFFER_SIZE / 2;
-
-    private static final int NUM_OF_CHAR_TO_BE_READ_ON = 1000;
-
+    private static final int NUM_OF_CHAR_PER_WORD = 100;
+    private static final int NUM_OF_WORDS_SHOULD_BE_READ = 10;
+    private static final int NUM_OF_CHAR_TO_BE_READ_ON = NUM_OF_WORDS_SHOULD_BE_READ * NUM_OF_CHAR_PER_WORD;
+    
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
-
     private static final String HEAD_WORD_PREFIX = "\n";
     private static final String HEAD_WORD_SUFFIX = "\t";
+    
     private static final Charset UTF8_CHARSET = Charset.forName("UTF-8");
-
-    private static final IndexParser INDEX_PARSER = new IndexTabDilimeterParser();
 
     private final char[] CHAR_BUFFER = new char[CHAR_BUFFER_SIZE];
     private final StringBuilder builder = new StringBuilder(CHAR_BUFFER_SIZE);
+    private final IndexParser INDEX_PARSER = IndexParsers.newInstance();
     private BufferedReader reader;
     private final File indexFile;
 }
