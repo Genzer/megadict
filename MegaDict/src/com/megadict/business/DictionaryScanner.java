@@ -3,65 +3,76 @@ package com.megadict.business;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 import android.app.Activity;
-import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.megadict.bean.RescanComponent;
+import com.megadict.bean.ScanStorageComponent;
 import com.megadict.exception.DataFileNotFoundException;
 import com.megadict.exception.IndexFileNotFoundException;
-import com.megadict.format.dict.DICTDictionary;
-import com.megadict.format.dict.index.IndexFile;
-import com.megadict.format.dict.reader.DictionaryFile;
 import com.megadict.model.ChosenModel;
 import com.megadict.model.Dictionary;
 import com.megadict.model.DictionaryInformation;
+import com.megadict.singletask.base.BaseScanTask;
+import com.megadict.task.RescanAllTask;
+import com.megadict.task.ScanStorageAllTask;
+import com.megadict.task.base.BaseScanAllTask;
 
 public class DictionaryScanner {
-	private final List<Dictionary> dictionaryModels = new ArrayList<Dictionary>();
-	private final List<String> dictionaryNames = new ArrayList<String>();
+	private static final List<Dictionary> MODELS = new Vector<Dictionary>();
+	private BaseScanAllTask task = null;
+	@Deprecated
+	private static final List<BaseScanTask> TASKS = new Vector<BaseScanTask>();
 
-	public void scanDatabase(final Activity activity, final SQLiteDatabase database) throws IndexFileNotFoundException, DataFileNotFoundException {
-		clearAllList();
-		final List<DictionaryInformation> infos = readFromDatabase(activity, database);
-		resetScanner(infos);
+	public static void addModel(final Dictionary dictionaryModel) {
+		MODELS.add(dictionaryModel);
 	}
 
-	public void scanStorage(final SQLiteDatabase database) throws IndexFileNotFoundException, DataFileNotFoundException {
-		clearAllList();
-		final List<DictionaryInformation> infos = readFromExternalStorage();
-		resetScanner(infos);
+	public static int getDictionaryCount() {
+		return MODELS.size();
+	}
 
-		// Truncate the table.
-		database.delete(ChosenModel.TABLE_NAME, null, null);
-
-		// Insert dictionary infos to database.
-		final ContentValues value = new ContentValues();
-		for(int i = 0; i < infos.size(); ++i) {
-			value.put(ChosenModel.DICTIONARY_NAME_COLUMN, dictionaryNames.get(i));
-			value.put(ChosenModel.DICTIONARY_PATH_COLUMN, infos.get(i).getParentFile().getAbsolutePath());
-			value.put(ChosenModel.ENABLED_COLUMN, 0);
-			database.insert(ChosenModel.TABLE_NAME, null, value);
+	public boolean scanStorageNew(final Activity activity, final SQLiteDatabase database, final ScanStorageComponent scanStorageComponent) throws IndexFileNotFoundException, DataFileNotFoundException {
+		if(task == null || !task.isScanning()) {
+			MODELS.clear();
+			final List<DictionaryInformation> infos = readFromDatabase(activity, database);
+			task = new ScanStorageAllTask(infos, scanStorageComponent);
+			task.execute();
+			return true;
 		}
+		return false;
+	}
+
+	public boolean rescanNew(final RescanComponent rescanComponent) throws IndexFileNotFoundException, DataFileNotFoundException {
+		if(task == null || !task.isScanning()) {
+			MODELS.clear();
+			final List<DictionaryInformation> infos = readFromExternalStorage();
+			task = new RescanAllTask(infos, rescanComponent);
+			task.execute();
+			return true;
+		}
+		return false;
 	}
 
 	// ========================== Private functions ============================ //
-	private void resetScanner(final List<DictionaryInformation> infos) {
-		for(final DictionaryInformation info : infos) {
-			// Create necessary files.
-			final IndexFile indexFile = IndexFile.makeFile(info.getIndexFile());
-			final DictionaryFile dictFile = DictionaryFile.makeRandomAccessFile( info.getDataFile());
-			// Create model and add it to list.
-			final DICTDictionary model = new DICTDictionary(indexFile, dictFile);
-			dictionaryModels.add(model);
-			dictionaryNames.add(model.getName());
+	@Deprecated
+	private void executeTasks() {
+		for(final BaseScanTask task : TASKS) {
+			task.execute();
 		}
 	}
 
-	private void clearAllList() {
-		dictionaryNames.clear();
-		dictionaryModels.clear();
+	@Deprecated
+	public static boolean didAllTasksFinish() {
+		for(final BaseScanTask task : TASKS) {
+			if(task.isScanning()) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private List<DictionaryInformation> readFromExternalStorage() throws IndexFileNotFoundException, DataFileNotFoundException {
@@ -85,10 +96,26 @@ public class DictionaryScanner {
 	}
 
 	public List<Dictionary> getDictionaryModels() {
-		return dictionaryModels;
+		return MODELS;
 	}
 
-	public List<String> getDictionaryNames() {
-		return dictionaryNames;
-	}
+
+
+
+
+
+
+
+
+	//		if(!infos.isEmpty()) {
+	//			final DictionaryInformation info = infos.get(0);
+	//			System.out.println(info.getIndexFile().getAbsolutePath());
+	//			System.out.println(info.getDataFile().getAbsolutePath());
+	//			// Create necessary files.
+	//			final IndexFile indexFile = IndexFile.makeFile(info.getIndexFile());
+	//			final DictionaryFile dictFile = DictionaryFile.makeRandomAccessFile( info.getDataFile());
+	//			// Create model and add it to list.
+	//			final Dictionary model = new DICTDictionary(indexFile, dictFile);
+	//			System.out.println(model.getName());
+	//		}
 }

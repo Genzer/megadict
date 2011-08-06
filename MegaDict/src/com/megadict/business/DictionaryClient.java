@@ -8,6 +8,8 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.megadict.bean.RecommendComponent;
+import com.megadict.bean.RescanComponent;
+import com.megadict.bean.ScanStorageComponent;
 import com.megadict.bean.SearchComponent;
 import com.megadict.exception.DataFileNotFoundException;
 import com.megadict.exception.IndexFileNotFoundException;
@@ -43,16 +45,18 @@ public class DictionaryClient {
 		return recommender.recommend(context, word, getAllModels(), recommendComponent);
 	}
 
-	public void scanStorage(final SQLiteDatabase database) throws IndexFileNotFoundException, DataFileNotFoundException {
-		scanner.scanStorage(database);
+	public boolean rescan(final RescanComponent rescanComponent) throws IndexFileNotFoundException, DataFileNotFoundException {
+		//return scanner.rescan(database, dialog, cursor);
+		return scanner.rescanNew(rescanComponent);
 	}
 
-	public void scanDatabase(final Activity activity, final SQLiteDatabase database) throws IndexFileNotFoundException, DataFileNotFoundException {
-		scanner.scanDatabase(activity, database);
+	public boolean scanStorage(final Activity activity, final SQLiteDatabase database, final ScanStorageComponent scanStorageComponent) throws IndexFileNotFoundException, DataFileNotFoundException {
+		//		scanner.scanStorage(activity, database);
+		return scanner.scanStorageNew(activity, database, scanStorageComponent);
 	}
 
-	public List<String> getDictionaryNames() {
-		return scanner.getDictionaryNames();
+	public void scanDatabase() {
+		// Working
 	}
 
 	private List<Dictionary> getAllModels() {
@@ -64,5 +68,9 @@ public class DictionaryClient {
 
 	public boolean isRecommending() {
 		return recommender.isRecommending();
+	}
+
+	public int getDictitionaryCount() {
+		return scanner.getDictionaryCount();
 	}
 }

@@ -1,7 +1,6 @@
 package com.megadict.activity;
 
 
-import android.app.Activity;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.text.ClipboardManager;
@@ -28,8 +27,10 @@ import com.megadict.activity.base.BaseActivity;
 import com.megadict.adapter.TextWatcherAdapter;
 import com.megadict.application.MegaDictApp;
 import com.megadict.bean.RecommendComponent;
+import com.megadict.bean.ScanStorageComponent;
 import com.megadict.bean.SearchComponent;
 import com.megadict.business.DictionaryClient;
+import com.megadict.business.DictionaryScanner;
 import com.megadict.business.ResultTextMaker;
 import com.megadict.business.TextSelector;
 import com.megadict.exception.DataFileNotFoundException;
@@ -46,21 +47,22 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 
 	// Activity control variables.
 	private AutoCompleteTextView searchEditText;
-	private ResultView resultView;
-	private ProgressBar progressBar;
+	public ResultView resultView;
+	public ProgressBar progressBar;
 	private ClipboardManager clipboardManager;
 
 	// Member variables
 	private DictionaryClient dictionaryClient;
 	private SearchComponent searchComponent;
 	private RecommendComponent recommendComponent;
+	private ScanStorageComponent scanStorageComponent;
 	private ResultTextMaker resultTextMaker;
 	private SQLiteDatabase database;
 	private WordListTask task;
 	private TextSelector textSelector;
-	private final boolean shouldSetStartPage = true;
 	private long time;
 	private boolean itemSelected;
+	private boolean shouldSetStartPage = true;
 
 	public DictionaryActivity() {
 		super(R.layout.search);
@@ -76,13 +78,12 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 	@Override
 	protected void onStart() {
 		super.onStart();
-		if(shouldSetStartPage) {
-			setStartPage();
-		}
 		if(Utility.isLocaleChanged()) {
 			// Change noDefinition string.
 			dictionaryClient.setNoDefinitionString(getString(R.string.noDefinition));
 		}
+		if(shouldSetStartPage)
+			setStartPage();
 	}
 
 	@Override
@@ -127,6 +128,7 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 	public void onClick(final View view) {
 		if (view.getId() == R.id.searchButton) {
 			doSearching(searchEditText.getText().toString());
+			shouldSetStartPage = false;
 		}
 	}
 
@@ -149,7 +151,6 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 		progressBar = (ProgressBar)findViewById(R.id.progressBar);
 		final Button searchButton = (Button) findViewById(R.id.searchButton);
 		searchButton.setOnClickListener(this);
-		//searchEditText = (AutoCompleteTextView) findViewById(R.id.searchEditText);
 		initSearchBar();
 		// Init Result view.
 		resultView = new ResultView(this, clipboardManager);
@@ -167,17 +168,18 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 		// Create and open database.
 		final DatabaseHelper helper = new DatabaseHelper(this);
 		database = helper.getReadableDatabase();
-		// Scan chosen databases when MegaDict opens.
-		doScanningDatabase(this, database);
 		// Init result text maker.
 		resultTextMaker = new ResultTextMaker(getAssets());
 		// Init useful components.
 		searchComponent = new SearchComponent(resultView, resultTextMaker, progressBar);
 		recommendComponent = new RecommendComponent(searchEditText, resultView, progressBar);
+		scanStorageComponent = new ScanStorageComponent(resultView, resultTextMaker, this);
 		// Init clipboard manager.
 		clipboardManager = (ClipboardManager)getSystemService(CLIPBOARD_SERVICE);
 		// Init text selector.
 		textSelector = new TextSelector();
+		// Scan chosen databases when MegaDict opens.
+		doScanningStorage();
 	}
 
 	private void initSearchBar() {
@@ -246,16 +248,11 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 		}
 	}
 
-	private void setStartPage() {
-		final int dictCount = dictionaryClient.getDictionaryNames().size();
-		final String welcomeStr = (dictCount > 1 ? getString(R.string.usingDictionaryPlural, dictCount) : getString(R.string.usingDictionary, dictCount));
-		final String welcomeHTML = resultTextMaker.getWelcomeHTML(welcomeStr);
-		resultView.loadDataWithBaseURL(ResultTextMaker.ASSET_URL, welcomeHTML, "text/html", "utf-8", null);
-	}
-
-	private void doScanningDatabase(final Activity activity, final SQLiteDatabase database) {
+	private void doScanningStorage() {
 		try {
-			dictionaryClient.scanDatabase(activity, database);
+			if(!dictionaryClient.scanStorage(this, database, scanStorageComponent)) {
+				Utility.messageBox(this, getString(R.string.scanning));
+			}
 		} catch (final IndexFileNotFoundException e) {
 			Log.d(TAG, e.getMessage());
 		} catch (final DataFileNotFoundException e) {
@@ -263,5 +260,16 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 		}
 	}
 
+	private void setStartPage() {
+		final int dictCount = DictionaryScanner.getDictionaryCount();
+		System.out.println(dictCount);
+		try {
+			final String welcomeStr = (dictCount > 1 ? scanStorageComponent.context.getString(R.string.usingDictionaryPlural, dictCount) : scanStorageComponent.context.getString(R.string.usingDictionary, dictCount));
+			final String welcomeHTML = scanStorageComponent.resultTextMaker.getWelcomeHTML(welcomeStr);
+			scanStorageComponent.resultView.loadDataWithBaseURL(ResultTextMaker.ASSET_URL, welcomeHTML, "text/html", "utf-8", null);
+		} catch (final Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
 
 }

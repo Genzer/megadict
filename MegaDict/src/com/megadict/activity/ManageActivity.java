@@ -2,7 +2,7 @@ package com.megadict.activity;
 
 
 
-import android.app.Activity;
+import android.app.ProgressDialog;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -15,17 +15,21 @@ import com.megadict.R;
 import com.megadict.activity.base.BaseListActivity;
 import com.megadict.adapter.ChosenDictionaryCheckBoxAdapter;
 import com.megadict.application.MegaDictApp;
+import com.megadict.bean.RescanComponent;
 import com.megadict.business.DictionaryClient;
 import com.megadict.exception.DataFileNotFoundException;
 import com.megadict.exception.IndexFileNotFoundException;
 import com.megadict.model.ChosenModel;
 import com.megadict.utility.DatabaseHelper;
+import com.megadict.utility.Utility;
 
 public class ManageActivity extends BaseListActivity {
 	private final String TAG = "ManageActivity";
 	private Cursor listViewCursor;
 	private SQLiteDatabase database;
 	private DictionaryClient dictionaryClient;
+	private ProgressDialog progressDialog;
+	private RescanComponent rescanComponent;
 
 	public ManageActivity() {
 		super(R.layout.manage);
@@ -48,6 +52,11 @@ public class ManageActivity extends BaseListActivity {
 		final ChosenDictionaryCheckBoxAdapter adapter =
 			new ChosenDictionaryCheckBoxAdapter(this, listViewCursor, database);
 		setListAdapter(adapter);
+
+		progressDialog = new ProgressDialog(this);
+		progressDialog.setMessage("Scanning storage... ");
+
+		rescanComponent = new RescanComponent(progressDialog, database, listViewCursor);
 	}
 
 	@Override
@@ -57,17 +66,9 @@ public class ManageActivity extends BaseListActivity {
 	}
 
 	@Override
-	protected void onPause() {
-		super.onPause();
-		doScanningDatabase(this, database);
-	}
-
-	@Override
 	public boolean onMenuItemSelected(final int featureId, final MenuItem item) {
 		if (item.getItemId() == R.id.rescanMenuItem) {
-			doScanningStorage(database);
-			// Refresh list view.
-			listViewCursor.requery();
+			doRescanning(database, listViewCursor);
 		}
 		return true;
 	}
@@ -80,19 +81,11 @@ public class ManageActivity extends BaseListActivity {
 	}
 
 	// ======================= Private functions =================== //
-	private void doScanningStorage(final SQLiteDatabase database) {
+	private void doRescanning(final SQLiteDatabase database, final Cursor cursor) {
 		try {
-			dictionaryClient.scanStorage(database);
-		} catch (final IndexFileNotFoundException e) {
-			Log.d(TAG, e.getMessage());
-		} catch (final DataFileNotFoundException e) {
-			Log.d(TAG, e.getMessage());
-		}
-	}
-
-	private void doScanningDatabase(final Activity activity, final SQLiteDatabase database) {
-		try {
-			dictionaryClient.scanDatabase(activity, database);
+			if(!dictionaryClient.rescan(rescanComponent)) {
+				Utility.messageBox(this, getString(R.string.scanning));
+			}
 		} catch (final IndexFileNotFoundException e) {
 			Log.d(TAG, e.getMessage());
 		} catch (final DataFileNotFoundException e) {
