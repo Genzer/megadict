@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import android.app.Activity;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
@@ -25,22 +26,26 @@ import com.megadict.model.UsedDictionary;
 import com.megadict.task.base.BaseScanTask;
 
 public class UpdateModelTask extends BaseScanTask {
+	private final Activity activity;
 	private final SQLiteDatabase database;
 	private final ModelMap models;
 	private final ScanStorageComponent scanStorageComponent;
 
-	public UpdateModelTask(final ModelMap models, final SQLiteDatabase database, final ScanStorageComponent scanStorageComponent) {
+	public UpdateModelTask(final ModelMap models, final Activity activity, final SQLiteDatabase database, final ScanStorageComponent scanStorageComponent) {
+		super();
 		this.models = models;
+		this.activity = activity;
 		this.database = database;
 		this.scanStorageComponent = scanStorageComponent;
 	}
 
 	@Override
 	protected Void doInBackground(final Void... params) {
-		System.out.println("UpdateModelTask::doInBackground.");
 		final Set<Integer> IDSet = models.keySet();
 
 		final Cursor cursor = ChosenModel.selectChosenDictionaryIDsAndPaths(database);
+		activity.startManagingCursor(cursor);
+
 		final List<Integer> IDListFromCursor = new ArrayList<Integer>();
 		final Map<Integer, Dictionary> newModels = new HashMap<Integer, Dictionary>();
 
@@ -53,7 +58,7 @@ public class UpdateModelTask extends BaseScanTask {
 					final DictionaryInformation info = DictionaryInformation.newInstance(cursor.getString(cursor.getColumnIndex(ChosenModel.DICTIONARY_PATH_COLUMN)));
 					final IndexFile indexFile = IndexFile.makeFile(info.getIndexFile());
 					final DictionaryFile dictionaryFile = DictionaryFile.makeRandomAccessFile(info.getDataFile());
-					final Dictionary model = new UsedDictionary(indexFile, dictionaryFile);
+					final Dictionary model = UsedDictionary.newInstance(indexFile, dictionaryFile);
 					newModels.put(dictID, model);
 				} catch (final IndexFileNotFoundException e) {
 					DictionaryScanner.log(e.getMessage());
@@ -83,7 +88,6 @@ public class UpdateModelTask extends BaseScanTask {
 	}
 
 	private void setStartPage() {
-		System.out.println("UpdateModelTask::setStartPage");
 		final int dictCount = models.size();
 		final String welcomeStr = (dictCount > 1 ? scanStorageComponent.context.getString(R.string.usingDictionaryPlural, dictCount) : scanStorageComponent.context.getString(R.string.usingDictionary, dictCount));
 		final String welcomeHTML = scanStorageComponent.resultTextMaker.getWelcomeHTML(welcomeStr);

@@ -64,7 +64,7 @@ public final class DictionaryActivity extends BaseActivity {
 	@Override
 	protected void onRestart() {
 		super.onRestart();
-		dictionaryClient.updateDictionaryModels(database, scanStorageComponent);
+		dictionaryClient.updateDictionaryModels(this, database, scanStorageComponent);
 	}
 
 	@Override

@@ -18,7 +18,6 @@ public class ResultView extends WebView {
 	public void invalidate() {
 		super.invalidate();
 
-		System.out.println("Invalidated.");
 		if (manager != null && manager.hasText() && selectTextListner != null) {
 			selectTextListner.onSelectText();
 			manager.setText(null);

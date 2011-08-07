@@ -30,14 +30,6 @@ public class DictionaryScanner {
 		LOGGER.addHandler(new ConsoleHandler());
 	}
 
-	//	public static void addModel(final int dictionaryID, final Dictionary dictionaryModel) {
-	//		MODELS.put(dictionaryID, dictionaryModel);
-	//	}
-	//
-	//	public static void removeModel(final int dictionaryID) {
-	//		MODELS.remove(dictionaryID);
-	//	}
-	//
 	public int getDictionaryCount() {
 		return models.size();
 	}
@@ -64,9 +56,9 @@ public class DictionaryScanner {
 		return false;
 	}
 
-	public boolean updateDictonaryModels(final SQLiteDatabase database, final ScanStorageComponent scanStorageComponent) {
+	public boolean updateDictonaryModels(final Activity activity, final SQLiteDatabase database, final ScanStorageComponent scanStorageComponent) {
 		if(task == null || !task.isScanning()) {
-			task = new UpdateModelTask(models, database, scanStorageComponent);
+			task = new UpdateModelTask(models, activity, database, scanStorageComponent);
 			task.execute();
 			return true;
 		}

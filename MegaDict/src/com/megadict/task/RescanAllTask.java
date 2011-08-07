@@ -21,6 +21,7 @@ public class RescanAllTask extends BaseScanTask {
 	private final ModelMap models;
 
 	public RescanAllTask(final ModelMap models, final ExternalReader externalReader, final RescanComponent rescanComponent) {
+		super();
 		this.externalReader = externalReader;
 		this.rescanComponent = rescanComponent;
 		this.models = models;
@@ -48,6 +49,7 @@ public class RescanAllTask extends BaseScanTask {
 			final DictionaryFile dictFile = DictionaryFile.makeRandomAccessFile( info.getDataFile());
 			// Create model.
 			final Dictionary model = UsedDictionary.newInstance(indexFile, dictFile);
+			//final Dictionary model = new DICTDictionary.Builder(indexFile, dictFile).enableSplittingIndexFile().build();
 			// Insert dictionary infos to database.
 			final ContentValues value = new ContentValues();
 			value.put(ChosenModel.DICTIONARY_NAME_COLUMN, model.getName());

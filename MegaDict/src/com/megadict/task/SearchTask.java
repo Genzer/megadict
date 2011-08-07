@@ -17,6 +17,7 @@ public class SearchTask extends BaseSearchTask {
 	private boolean searching;
 
 	public SearchTask(final Dictionary dictionary, final SearchComponent searchComponent) {
+		super();
 		this.dictionary = dictionary;
 		this.searchComponent = searchComponent;
 	}

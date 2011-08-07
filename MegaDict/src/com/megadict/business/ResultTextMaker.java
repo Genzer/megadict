@@ -10,15 +10,15 @@ public class ResultTextMaker {
 	public static final String ASSET_URL = "file:///android_asset/";
 	private final AssetManager assetManager;
 
-	private final String middleWelcomeBlock = "<div class=\"welcomeBlock\">";
-	private final String rightWelcomeBlock = "</div></body></html>";
+	private static final String MIDDLE_WELCOME_BLOCK = "<div class=\"welcomeBlock\">";
+	private static final String RIGHT_WELCOME_BLOKC = "</div></body></html>";
 
-	private final String middleNoDictBlock = "<div class=\"noDictionaryBlock\">";
-	private final String rightNoDictBlock = "</div></body></html>";
+	private static final String MIDDLE_NO_DICT_BLOCK = "<div class=\"noDictionaryBlock\">";
+	private static final String RIGHT_NO_DICT_BLOCK = "</div></body></html>";
 
-	private final StringBuilder leftBlock = new StringBuilder();
-	private final StringBuffer middleBlock = new StringBuffer();
-	private final String rightBlock = "</body></html>";
+	private static final StringBuilder LEFT_BLOCK = new StringBuilder();
+	private static final StringBuffer MIDDLE_BLOCK = new StringBuffer();
+	private static final String RIGHT_BLOCK = "</body></html>";
 
 	public ResultTextMaker(final AssetManager assetManager) {
 		this.assetManager = assetManager;
@@ -27,20 +27,20 @@ public class ResultTextMaker {
 
 	private void initLefltBlock() {
 		try {
-			leftBlock.append("<html>");
+			LEFT_BLOCK.append("<html>");
 			// Append stylesheets.
 			final String []cssNames = assetManager.list("css");
-			leftBlock.append("<head>");
+			LEFT_BLOCK.append("<head>");
 			for(final String cssName : cssNames) {
-				leftBlock.append("<link href=\"css/" + cssName + "\" rel=\"stylesheet\" type=\"text/css\" />");
+				LEFT_BLOCK.append("<link href=\"css/" + cssName + "\" rel=\"stylesheet\" type=\"text/css\" />");
 
 			}
 			// Append JQuery.
 			final String []scriptNames = assetManager.list("scripts");
 			for(final String scriptName : scriptNames) {
-				leftBlock.append("<script src=\"scripts/" + scriptName + "\" type=\"text/javascript\"></script>");
+				LEFT_BLOCK.append("<script src=\"scripts/" + scriptName + "\" type=\"text/javascript\"></script>");
 			}
-			leftBlock.append("</head><body>");
+			LEFT_BLOCK.append("</head><body>");
 		} catch (final IOException e) {
 			// Because it's a programming exception, we don't need to catch it.
 			/// Just throw unchecked exception.
@@ -50,23 +50,23 @@ public class ResultTextMaker {
 
 	public void appendContent(final String content, final String dictionaryName) {
 		final String formattedContent = content.trim().replace("\n", "<br/>");
-		middleBlock.append("<div class=\"dictionaryBlock\"><div class=\"dictionaryContent\">" + formattedContent + "</div>" +
+		MIDDLE_BLOCK.append("<div class=\"dictionaryBlock\"><div class=\"dictionaryContent\">" + formattedContent + "</div>" +
 				"<div class=\"dictionaryName\">" + dictionaryName + "</div></div>");
 	}
 
 	public String getResultHTML() {
-		return leftBlock.toString() + middleBlock.toString() + rightBlock;
+		return LEFT_BLOCK.toString() + MIDDLE_BLOCK.toString() + RIGHT_BLOCK;
 	}
 
 	public String getWelcomeHTML(final String welcomeStr) {
-		return leftBlock.toString() + middleWelcomeBlock + welcomeStr + rightWelcomeBlock;
+		return LEFT_BLOCK.toString() + MIDDLE_WELCOME_BLOCK + welcomeStr + RIGHT_WELCOME_BLOKC;
 	}
 
 	public String getNoDictionaryHTML(final String noDictContent) {
-		return leftBlock.toString() + middleNoDictBlock + noDictContent + rightNoDictBlock;
+		return LEFT_BLOCK.toString() + MIDDLE_NO_DICT_BLOCK + noDictContent + RIGHT_NO_DICT_BLOCK;
 	}
 
 	public void resetMiddleBlock() {
-		middleBlock.setLength(0);
+		MIDDLE_BLOCK.setLength(0);
 	}
 }

@@ -24,20 +24,18 @@ public final class ResultViewInitializer {
 		searchComponent.resultView.setLayoutParams(new ViewGroup.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 		searchComponent.resultView.setBackgroundColor(0x00000000);
 
-		// Prepare WordListTask.
-		final String text = clipboardManager.getText().toString();
-		final WordListTask task = new WordListTask(activity, text);
-		task.setOnClickWordListener(new OnClickWordListener() {
-			@Override
-			public void onClickWord() {
-				searchBar.setText(task.getWord());
-				doSearching(activity, dictionaryClient, searchBar.getText().toString(), searchComponent);
-			}
-		});
-
 		searchComponent.resultView.setOnSelectTextListener(new OnSelectTextListener() {
 			@Override
 			public void onSelectText() {
+				final String text = clipboardManager.getText().toString();
+				final WordListTask task = new WordListTask(activity, text);
+				task.setOnClickWordListener(new OnClickWordListener() {
+					@Override
+					public void onClickWord() {
+						searchBar.setText(task.getWord());
+						doSearching(activity, dictionaryClient, searchBar.getText().toString(), searchComponent);
+					}
+				});
 				task.execute((Void [])null);
 			}
 		});

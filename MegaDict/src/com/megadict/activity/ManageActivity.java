@@ -21,11 +21,8 @@ import com.megadict.utility.DatabaseHelper;
 import com.megadict.utility.Utility;
 
 public class ManageActivity extends BaseListActivity {
-	private final String TAG = "ManageActivity";
-	private Cursor listViewCursor;
 	private SQLiteDatabase database;
 	private DictionaryClient dictionaryClient;
-	private ProgressDialog progressDialog;
 	private RescanComponent rescanComponent;
 
 	public ManageActivity() {
@@ -43,14 +40,14 @@ public class ManageActivity extends BaseListActivity {
 		final DatabaseHelper databaseHelper = new DatabaseHelper(this);
 		database = databaseHelper.getWritableDatabase();
 
-		listViewCursor =
+		final Cursor listViewCursor =
 			database.query(ChosenModel.TABLE_NAME, null, null, null, null, null, null);
 		startManagingCursor(listViewCursor);
 		final ChosenDictionaryCheckBoxAdapter adapter =
 			new ChosenDictionaryCheckBoxAdapter(this, listViewCursor, database);
 		setListAdapter(adapter);
 
-		progressDialog = new ProgressDialog(this);
+		final ProgressDialog progressDialog = new ProgressDialog(this);
 		progressDialog.setMessage("Scanning storage... ");
 
 		rescanComponent = new RescanComponent(progressDialog, database, listViewCursor);
@@ -65,7 +62,7 @@ public class ManageActivity extends BaseListActivity {
 	@Override
 	public boolean onMenuItemSelected(final int featureId, final MenuItem item) {
 		if (item.getItemId() == R.id.rescanMenuItem) {
-			doRescanning(database, listViewCursor);
+			doRescanning();
 		}
 		return true;
 	}
@@ -78,7 +75,7 @@ public class ManageActivity extends BaseListActivity {
 	}
 
 	// ======================= Private functions =================== //
-	private void doRescanning(final SQLiteDatabase database, final Cursor cursor) {
+	private void doRescanning() {
 		if(!dictionaryClient.rescan(rescanComponent)) {
 			Utility.messageBox(this, getString(R.string.scanning));
 		}

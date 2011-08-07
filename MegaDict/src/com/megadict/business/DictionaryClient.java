@@ -51,8 +51,8 @@ public class DictionaryClient {
 		return scanner.scanStorage(activity, database, scanStorageComponent);
 	}
 
-	public boolean updateDictionaryModels(final SQLiteDatabase database, final ScanStorageComponent scanStorageComponent) {
-		return scanner.updateDictonaryModels(database, scanStorageComponent);
+	public boolean updateDictionaryModels(final Activity activity, final SQLiteDatabase database, final ScanStorageComponent scanStorageComponent) {
+		return scanner.updateDictonaryModels(activity, database, scanStorageComponent);
 	}
 
 	private List<Dictionary> getAllModels() {

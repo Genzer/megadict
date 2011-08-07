@@ -22,7 +22,7 @@ import com.megadict.model.Dictionary;
 import com.megadict.task.base.BaseRecommendTask;
 
 public class RecommendTask extends BaseRecommendTask {
-	private final int RECOMMENDED_WORD_COUNT = 3;
+	private final int RECOMMENDED_WORD_COUNT = 10;
 	private final int TIMEOUT_IN_SECONDS = 3;
 	private final Context context;
 	private final List<Dictionary> dictionaryModels;
@@ -45,9 +45,6 @@ public class RecommendTask extends BaseRecommendTask {
 	protected List<String> doInBackground(final String... params) {
 		final String word = params[0];
 
-		// Create thread pool.
-		final ExecutorService service = Executors.newFixedThreadPool(dictionaryModels.size());
-
 		// Create callable list.
 		final List<Callable<List<String>>> callables = new ArrayList<Callable<List<String>>>();
 		for(final Dictionary model : dictionaryModels) {
@@ -58,6 +55,9 @@ public class RecommendTask extends BaseRecommendTask {
 		// Invoke callables.
 		final SortedSet<String> tempList = new TreeSet<String>();
 		try {
+			// Create thread pool.
+			final ExecutorService service = Executors.newFixedThreadPool(Math.max(1, dictionaryModels.size()));
+			// Invoke all callables.
 			final List<Future<List<String>>> futures = service.invokeAll(callables);
 			service.awaitTermination(TIMEOUT_IN_SECONDS, TimeUnit.SECONDS);
 			// Add all recommend words of every dictionaries to a sorted set.
@@ -65,6 +65,7 @@ public class RecommendTask extends BaseRecommendTask {
 				final List<String> words = future.get();
 				tempList.addAll(words);
 			}
+			service.shutdown();
 		} catch (final InterruptedException e) {
 			throw new RecommendingException(e);
 		} catch (final ExecutionException e) {
@@ -79,10 +80,10 @@ public class RecommendTask extends BaseRecommendTask {
 
 	@Override
 	protected void onPostExecute(final List<String> list) {
-		System.out.println("=====================");
-		for(final String s : list) {
-			System.out.println(s);
-		}
+		//		System.out.println("=====================");
+		//		for(final String s : list) {
+		//			System.out.println(s);
+		//		}
 		//final String []a = {"w", "word", "wobble", "wit", "work", "why", "wet"};
 		recommendComponent.searchBar.setAdapter(new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, list));
 		recommendComponent.searchBar.showDropDown();
