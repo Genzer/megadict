@@ -1,44 +1,24 @@
 package com.megadict.initializer;
 
 import android.app.Activity;
-import android.content.Context;
-import android.text.ClipboardManager;
-import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 
 import com.megadict.R;
 import com.megadict.bean.SearchComponent;
 import com.megadict.business.DictionaryClient;
-import com.megadict.task.WordListTask;
-import com.megadict.task.WordListTask.OnClickWordListener;
 import com.megadict.utility.Utility;
-import com.megadict.widget.ResultView.OnSelectTextListener;
 
-public final class ResultViewInitializer {
-	private ResultViewInitializer() {}
-
+public class SearchButtonInitializer {
 	public static void init(final Activity activity, final DictionaryClient dictionaryClient,
-			final AutoCompleteTextView searchBar, final SearchComponent searchComponent) {
-		final ClipboardManager clipboardManager = (ClipboardManager)activity.getSystemService(Context.CLIPBOARD_SERVICE);
-		searchComponent.resultView.setLayoutParams(new ViewGroup.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
-		searchComponent.resultView.setBackgroundColor(0x00000000);
-
-		// Prepare WordListTask.
-		final String text = clipboardManager.getText().toString();
-		final WordListTask task = new WordListTask(activity, text);
-		task.setOnClickWordListener(new OnClickWordListener() {
+			final Button searchButton, final AutoCompleteTextView searchBar,
+			final SearchComponent searchComponent) {
+		searchButton.setOnClickListener(new OnClickListener() {
 			@Override
-			public void onClickWord() {
-				searchBar.setText(task.getWord());
+			public void onClick(final View v) {
 				doSearching(activity, dictionaryClient, searchBar.getText().toString(), searchComponent);
-			}
-		});
-
-		searchComponent.resultView.setOnSelectTextListener(new OnSelectTextListener() {
-			@Override
-			public void onSelectText() {
-				task.execute((Void [])null);
 			}
 		});
 	}

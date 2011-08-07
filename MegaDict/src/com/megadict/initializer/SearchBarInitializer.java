@@ -16,41 +16,26 @@ import com.megadict.bean.SearchComponent;
 import com.megadict.business.DictionaryClient;
 import com.megadict.utility.Utility;
 
-public class SearchBarInitializer {
-	// Aggregation variables.
-	private final Activity activity;
-	private final DictionaryClient dictionaryClient;
-	private final AutoCompleteTextView searchBar;
+public final class SearchBarInitializer {
+	private static long time;
+	private static boolean itemSelected;
 
-	// Composition variables.
-	private final SearchComponent searchComponent;
-	private final RecommendComponent recommendComponent;
+	private SearchBarInitializer() {}
 
-	// Member variables.
-	private long time;
-	private boolean itemSelected;
-
-	public SearchBarInitializer(final Activity activity, final DictionaryClient dictionaryClient,
-			final SearchComponent searchComponent, final RecommendComponent recommendComponent) {
-		this.activity = activity;
-		this.dictionaryClient = dictionaryClient;
-		this.searchBar = recommendComponent.searchBar;
-		this.searchComponent = searchComponent;
-		this.recommendComponent = recommendComponent;
-		initSearchBar();
-	}
-
-	private void initSearchBar() {
-		setOnEditorActionListener();
-		addTextChangedListener();
-		setOnItemClickListener();
+	public static void init(final Activity activity, final DictionaryClient dictionaryClient,
+			final AutoCompleteTextView searchBar, final SearchComponent searchComponent,
+			final RecommendComponent recommendComponent) {
+		setOnEditorActionListener(activity, dictionaryClient, searchBar, searchComponent);
+		addTextChangedListener(activity, dictionaryClient, searchBar, recommendComponent);
+		setOnItemClickListener(searchBar);
 		searchBar.setThreshold(1);
 
 		// Disable soft keyboard.
 		Utility.disableSoftKeyboard(activity, searchBar);
 	}
 
-	private void setOnEditorActionListener() {
+	private static void setOnEditorActionListener(final Activity activity, final DictionaryClient dictionaryClient,
+			final AutoCompleteTextView searchBar, final SearchComponent searchComponent) {
 		searchBar.setOnEditorActionListener(new OnEditorActionListener() {
 			@Override
 			public boolean onEditorAction(final TextView v, final int actionId, final KeyEvent event) {
@@ -58,14 +43,15 @@ public class SearchBarInitializer {
 						|| actionId == EditorInfo.IME_ACTION_DONE
 						|| event.getAction() == KeyEvent.ACTION_DOWN
 						&& event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
-					doSearching(searchBar.getText().toString());
+					doSearching(activity, dictionaryClient, searchBar.getText().toString(), searchComponent);
 				}
 				return true;
 			}
 		});
 	}
 
-	private void addTextChangedListener() {
+	private static void addTextChangedListener(final Activity activity, final DictionaryClient dictionaryClient,
+			final AutoCompleteTextView searchBar, final RecommendComponent recommendComponent) {
 		searchBar.addTextChangedListener(new TextWatcherAdapter() {
 			@Override
 			public void onTextChanged(final CharSequence arg0, final int arg1, final int arg2, final int arg3) {
@@ -75,13 +61,13 @@ public class SearchBarInitializer {
 				}
 				final long diff = calculateIntervalBetweenTwoActions();
 				if(diff > 500) {
-					doRecommendWords(dictionaryClient, searchBar.getText().toString());
+					doRecommendWords(activity, dictionaryClient, searchBar.getText().toString(), recommendComponent);
 				}
 			}
 		});
 	}
 
-	private void setOnItemClickListener() {
+	private static void setOnItemClickListener(final AutoCompleteTextView searchBar) {
 		searchBar.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
@@ -90,7 +76,22 @@ public class SearchBarInitializer {
 		});
 	}
 
-	private void doSearching(final String word) {
+	private static void doRecommendWords(final Activity activity, final DictionaryClient dictionaryClient, final String word, final RecommendComponent recommendComponent) {
+		if(!dictionaryClient.recommend(activity, word, recommendComponent)) {}
+	}
+
+	private static long calculateIntervalBetweenTwoActions() {
+		if(time == 0) {
+			time = System.currentTimeMillis();
+		}
+		final long currentTime = System.currentTimeMillis();
+		final long diff = currentTime - time;
+		time = currentTime;
+		return diff;
+	}
+
+	private static void doSearching(final Activity activity, final DictionaryClient dictionaryClient,
+			final String word, final SearchComponent searchComponent) {
 		// THE OUTER IF MAKES SURE THAT NO CRASH IN MEGADICT.
 		/// I'M NOT SATISFIED WITH THIS BECAUSE THE DICTIONARY MODEL CAN'T BE USED BY MULTIPLE THREADS.
 		/// IT MEANS THAT WHEN RECOMMENDING IS RUNNING,
@@ -103,19 +104,5 @@ public class SearchBarInitializer {
 				Utility.messageBox(activity, activity.getString(R.string.searching));
 			}
 		}
-	}
-
-	private void doRecommendWords(final DictionaryClient dictionaryClient, final String word) {
-		if(!dictionaryClient.recommend(activity, word, recommendComponent)) {}
-	}
-
-	private long calculateIntervalBetweenTwoActions() {
-		if(time == 0) {
-			time = System.currentTimeMillis();
-		}
-		final long currentTime = System.currentTimeMillis();
-		final long diff = currentTime - time;
-		time = currentTime;
-		return diff;
 	}
 }
