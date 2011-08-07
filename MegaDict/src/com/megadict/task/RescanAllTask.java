@@ -5,23 +5,25 @@ import java.util.List;
 import android.content.ContentValues;
 
 import com.megadict.bean.RescanComponent;
-import com.megadict.business.DictionaryScanner;
 import com.megadict.business.ExternalReader;
 import com.megadict.format.dict.index.IndexFile;
 import com.megadict.format.dict.reader.DictionaryFile;
 import com.megadict.model.ChosenModel;
 import com.megadict.model.Dictionary;
 import com.megadict.model.DictionaryInformation;
+import com.megadict.model.ModelMap;
 import com.megadict.model.UsedDictionary;
 import com.megadict.task.base.BaseScanTask;
 
 public class RescanAllTask extends BaseScanTask {
 	private final ExternalReader externalReader;
 	private final RescanComponent rescanComponent;
+	private final ModelMap models;
 
-	public RescanAllTask(final ExternalReader externalReader, final RescanComponent rescanComponent) {
+	public RescanAllTask(final ModelMap models, final ExternalReader externalReader, final RescanComponent rescanComponent) {
 		this.externalReader = externalReader;
 		this.rescanComponent = rescanComponent;
+		this.models = models;
 	}
 
 	@Override
@@ -32,6 +34,9 @@ public class RescanAllTask extends BaseScanTask {
 
 	@Override
 	protected Void doInBackground(final Void... params) {
+		// Remove old dicts.
+		models.clear();
+		// Read from external storage.
 		final List<DictionaryInformation> infos = externalReader.getInfos();
 
 		// Truncate the table.
@@ -51,7 +56,8 @@ public class RescanAllTask extends BaseScanTask {
 			final int dictID = (int)rescanComponent.database.insert(ChosenModel.TABLE_NAME, null, value);
 
 			// Store model.
-			DictionaryScanner.addModel(dictID, model);
+			//DictionaryScanner.addModel(dictID, model);
+			models.put(dictID, model);
 		}
 		return null;
 	}

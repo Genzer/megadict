@@ -2,9 +2,7 @@ package com.megadict.business;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Vector;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Logger;
 
@@ -14,13 +12,15 @@ import android.database.sqlite.SQLiteDatabase;
 import com.megadict.bean.RescanComponent;
 import com.megadict.bean.ScanStorageComponent;
 import com.megadict.model.Dictionary;
+import com.megadict.model.ModelMap;
 import com.megadict.task.RescanAllTask;
 import com.megadict.task.ScanStorageAllTask;
+import com.megadict.task.UpdateModelTask;
 import com.megadict.task.base.BaseScanTask;
 
 public class DictionaryScanner {
 	private final ExternalReader externalReader = new ExternalReader(ExternalStorage.getExternalDirectory());
-	private static final Map<Integer, Dictionary> MODELS = new ConcurrentHashMap<Integer, Dictionary>();
+	private final ModelMap models = new ModelMap();
 	private BaseScanTask task = null;
 	private static final Logger LOGGER = Logger.getLogger("DictionaryScanner");
 	@Deprecated
@@ -30,16 +30,16 @@ public class DictionaryScanner {
 		LOGGER.addHandler(new ConsoleHandler());
 	}
 
-	public static void addModel(final int dictionaryID, final Dictionary dictionaryModel) {
-		MODELS.put(dictionaryID, dictionaryModel);
-	}
-
-	public static void removeModel(final int dictionaryID) {
-		MODELS.remove(dictionaryID);
-	}
-
-	public static int getDictionaryCount() {
-		return MODELS.size();
+	//	public static void addModel(final int dictionaryID, final Dictionary dictionaryModel) {
+	//		MODELS.put(dictionaryID, dictionaryModel);
+	//	}
+	//
+	//	public static void removeModel(final int dictionaryID) {
+	//		MODELS.remove(dictionaryID);
+	//	}
+	//
+	public int getDictionaryCount() {
+		return models.size();
 	}
 
 	public static void log(final String message) {
@@ -48,8 +48,7 @@ public class DictionaryScanner {
 
 	public boolean scanStorage(final Activity activity, final SQLiteDatabase database, final ScanStorageComponent scanStorageComponent) {
 		if(task == null || !task.isScanning()) {
-			MODELS.clear();
-			task = new ScanStorageAllTask(activity, database, scanStorageComponent);
+			task = new ScanStorageAllTask(models, activity, database, scanStorageComponent);
 			task.execute();
 			return true;
 		}
@@ -58,18 +57,21 @@ public class DictionaryScanner {
 
 	public boolean rescan(final RescanComponent rescanComponent) {
 		if(task == null || !task.isScanning()) {
-			MODELS.clear();
-			task = new RescanAllTask(externalReader, rescanComponent);
+			task = new RescanAllTask(models, externalReader, rescanComponent);
 			task.execute();
 			return true;
 		}
 		return false;
 	}
 
-	//	public boolean updateDictonaryModels(final SQLiteDatabase database) {
-	//		final Cursor cursor = ChosenModel.selectChosenDictionaryIDs(database);
-	//
-	//	}
+	public boolean updateDictonaryModels(final SQLiteDatabase database, final ScanStorageComponent scanStorageComponent) {
+		if(task == null || !task.isScanning()) {
+			task = new UpdateModelTask(models, database, scanStorageComponent);
+			task.execute();
+			return true;
+		}
+		return false;
+	}
 
 	// ========================== Private functions ============================ //
 	@Deprecated
@@ -90,7 +92,7 @@ public class DictionaryScanner {
 	}
 
 	public List<Dictionary> getDictionaryModels() {
-		return new ArrayList<Dictionary>(MODELS.values());
+		return new ArrayList<Dictionary>(models.values());
 	}
 
 

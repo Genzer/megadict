@@ -15,6 +15,7 @@ import com.megadict.format.dict.reader.DictionaryFile;
 import com.megadict.model.ChosenModel;
 import com.megadict.model.Dictionary;
 import com.megadict.model.DictionaryInformation;
+import com.megadict.model.ModelMap;
 import com.megadict.model.UsedDictionary;
 import com.megadict.task.base.BaseScanTask;
 
@@ -22,9 +23,11 @@ public class ScanStorageAllTask extends BaseScanTask {
 	private final ScanStorageComponent scanStorageComponent;
 	private final Activity activity;
 	private final SQLiteDatabase database;
+	private final ModelMap models;
 
-	public ScanStorageAllTask(final Activity activity, final SQLiteDatabase database, final ScanStorageComponent scanStorageComponent) {
+	public ScanStorageAllTask(final ModelMap models, final Activity activity, final SQLiteDatabase database, final ScanStorageComponent scanStorageComponent) {
 		super();
+		this.models = models;
 		this.activity = activity;
 		this.database = database;
 		this.scanStorageComponent = scanStorageComponent;
@@ -32,6 +35,9 @@ public class ScanStorageAllTask extends BaseScanTask {
 
 	@Override
 	protected Void doInBackground(final Void... params) {
+		// Remove old dicts.
+		models.clear();
+		// Read from database.
 		final Cursor cursor = ChosenModel.selectChosenDictionaryIDsAndPaths(database);
 		activity.startManagingCursor(cursor);
 
@@ -47,7 +53,7 @@ public class ScanStorageAllTask extends BaseScanTask {
 				// Get dictionary ID.
 				final int dictID = (int)cursor.getLong(cursor.getColumnIndex(ChosenModel.ID_COLUMN));
 				// Store model.
-				DictionaryScanner.addModel(dictID, model);
+				models.put(dictID, model);
 			} catch (final IndexFileNotFoundException e) {
 				DictionaryScanner.log(e.getMessage());
 			} catch (final DataFileNotFoundException e) {
@@ -60,12 +66,11 @@ public class ScanStorageAllTask extends BaseScanTask {
 	@Override
 	protected void onPostExecute(final Void result) {
 		super.onPostExecute(result);
-		// Set start page.
 		setStartPage();
 	}
 
 	private void setStartPage() {
-		final int dictCount = DictionaryScanner.getDictionaryCount();
+		final int dictCount = models.size();
 		final String welcomeStr = (dictCount > 1 ? scanStorageComponent.context.getString(R.string.usingDictionaryPlural, dictCount) : scanStorageComponent.context.getString(R.string.usingDictionary, dictCount));
 		final String welcomeHTML = scanStorageComponent.resultTextMaker.getWelcomeHTML(welcomeStr);
 		scanStorageComponent.resultView.loadDataWithBaseURL(ResultTextMaker.ASSET_URL, welcomeHTML, "text/html", "utf-8", null);

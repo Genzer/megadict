@@ -29,7 +29,6 @@ import com.megadict.bean.RecommendComponent;
 import com.megadict.bean.ScanStorageComponent;
 import com.megadict.bean.SearchComponent;
 import com.megadict.business.DictionaryClient;
-import com.megadict.business.DictionaryScanner;
 import com.megadict.business.ResultTextMaker;
 import com.megadict.business.TextSelector;
 import com.megadict.task.WordListTask;
@@ -39,27 +38,25 @@ import com.megadict.utility.Utility;
 import com.megadict.widget.ResultView;
 import com.megadict.widget.ResultView.OnSelectTextListener;
 
-public class DictionaryActivity extends BaseActivity implements OnClickListener, OnSelectTextListener {
+public final class DictionaryActivity extends BaseActivity implements OnClickListener {
 	private final String TAG = "DictionaryActivity";
 
 	// Activity control variables.
-	private AutoCompleteTextView searchEditText;
+	public AutoCompleteTextView searchBar;
 	public ResultView resultView;
 	public ProgressBar progressBar;
 	private ClipboardManager clipboardManager;
 
 	// Member variables
-	private DictionaryClient dictionaryClient;
-	private SearchComponent searchComponent;
-	private RecommendComponent recommendComponent;
-	private ScanStorageComponent scanStorageComponent;
-	private ResultTextMaker resultTextMaker;
-	private SQLiteDatabase database;
-	private WordListTask task;
-	private TextSelector textSelector;
+	public DictionaryClient dictionaryClient;
+	public SearchComponent searchComponent;
+	public RecommendComponent recommendComponent;
+	public ScanStorageComponent scanStorageComponent;
+	public SQLiteDatabase database;
+	public TextSelector textSelector;
+
 	private long time;
 	private boolean itemSelected;
-	private boolean shouldSetStartPage = true;
 
 	public DictionaryActivity() {
 		super(R.layout.search);
@@ -79,8 +76,12 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 			// Change noDefinition string.
 			dictionaryClient.setNoDefinitionString(getString(R.string.noDefinition));
 		}
-		//		if(shouldSetStartPage)
-		//			setStartPage();
+	}
+
+	@Override
+	protected void onRestart() {
+		super.onRestart();
+		dictionaryClient.updateDictionaryModels(database, scanStorageComponent);
 	}
 
 	@Override
@@ -124,23 +125,8 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 	@Override
 	public void onClick(final View view) {
 		if (view.getId() == R.id.searchButton) {
-			doSearching(searchEditText.getText().toString());
-			shouldSetStartPage = false;
+			doSearching(searchBar.getText().toString());
 		}
-	}
-
-	@Override
-	public void onSelectText() {
-		final String text = clipboardManager.getText().toString();
-		task = new WordListTask(this, text);
-		task.setOnClickWordListener(new OnClickWordListener() {
-			@Override
-			public void onClickWord() {
-				searchEditText.setText(task.getWord());
-				doSearching(searchEditText.getText().toString());
-			}
-		});
-		task.execute((Void [])null);
 	}
 
 	// ========================= Private functions ======================= //
@@ -150,10 +136,7 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 		searchButton.setOnClickListener(this);
 		initSearchBar();
 		// Init Result view.
-		resultView = new ResultView(this, clipboardManager);
-		resultView.setLayoutParams(new ViewGroup.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
-		resultView.setBackgroundColor(0x00000000);
-		resultView.setOnSelectTextListener(this);
+		initResultView();
 		// Init result panel.
 		final LinearLayout resultPanel = (LinearLayout)findViewById(R.id.resultPanel);
 		resultPanel.addView(resultView);
@@ -166,10 +149,10 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 		final DatabaseHelper helper = new DatabaseHelper(this);
 		database = helper.getReadableDatabase();
 		// Init result text maker.
-		resultTextMaker = new ResultTextMaker(getAssets());
+		final ResultTextMaker resultTextMaker = new ResultTextMaker(getAssets());
 		// Init useful components.
 		searchComponent = new SearchComponent(resultView, resultTextMaker, progressBar);
-		recommendComponent = new RecommendComponent(searchEditText, resultView, progressBar);
+		recommendComponent = new RecommendComponent(searchBar, resultView, progressBar);
 		scanStorageComponent = new ScanStorageComponent(resultView, resultTextMaker, this);
 		// Init clipboard manager.
 		clipboardManager = (ClipboardManager)getSystemService(CLIPBOARD_SERVICE);
@@ -179,44 +162,56 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 		doScanningStorage();
 	}
 
-	private void initSearchBar() {
-		searchEditText = (AutoCompleteTextView) findViewById(R.id.searchEditText);
+	private void initResultView() {
+		resultView = new ResultView(this, clipboardManager);
+		resultView.setLayoutParams(new ViewGroup.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+		resultView.setBackgroundColor(0x00000000);
+		resultView.setOnSelectTextListener(new OnSelectTextListener() {
+			@Override
+			public void onSelectText() {
+				final String text = clipboardManager.getText().toString();
+				final WordListTask task = new WordListTask(DictionaryActivity.this, text);
+				task.setOnClickWordListener(new OnClickWordListener() {
+					@Override
+					public void onClickWord() {
+						searchBar.setText(task.getWord());
+						doSearching(searchBar.getText().toString());
+					}
+				});
+				task.execute((Void [])null);
+			}
+		});
+	}
 
-		searchEditText.setOnEditorActionListener(new OnEditorActionListener() {
+	private void initSearchBar() {
+		searchBar = (AutoCompleteTextView) findViewById(R.id.searchEditText);
+		searchBar.setOnEditorActionListener(new OnEditorActionListener() {
 			@Override
 			public boolean onEditorAction(final TextView v, final int actionId, final KeyEvent event) {
 				if (actionId == EditorInfo.IME_ACTION_SEARCH
 						|| actionId == EditorInfo.IME_ACTION_DONE
 						|| event.getAction() == KeyEvent.ACTION_DOWN
 						&& event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
-					doSearching(searchEditText.getText().toString());
+					doSearching(searchBar.getText().toString());
 				}
 				return true;
 			}
 		});
-		searchEditText.setThreshold(1);
-		searchEditText.addTextChangedListener(new TextWatcherAdapter() {
-
+		searchBar.setThreshold(1);
+		searchBar.addTextChangedListener(new TextWatcherAdapter() {
 			@Override
 			public void onTextChanged(final CharSequence arg0, final int arg1, final int arg2, final int arg3) {
 				if(itemSelected) {
 					itemSelected = false;
 					return;
 				}
-				doRecommendWords(searchEditText.getText().toString());
-				if(time == 0) {
-					time = System.currentTimeMillis();
-				}
-				final long currentTime = System.currentTimeMillis();
-				final long diff = currentTime - time;
-				time = currentTime;
+				final long diff = calculateIntervalBetweenTwoActions();
 				if(diff > 500) {
-					System.out.println("Recommending");
-					doRecommendWords(searchEditText.getText().toString());
+					doRecommendWords(searchBar.getText().toString());
 				}
 			}
 		});
-		searchEditText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+		searchBar.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
 				itemSelected = true;
@@ -224,11 +219,13 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 		});
 
 		// Disable soft keyboard.
-		Utility.disableSoftKeyboard(this, searchEditText);
+		Utility.disableSoftKeyboard(this, searchBar);
 	}
 
-	private void doRecommendWords(final String word) {
-		if(!dictionaryClient.recommend(this, word, recommendComponent)) {}
+	private void doScanningStorage() {
+		if(!dictionaryClient.scanStorage(this, database, scanStorageComponent)) {
+			Utility.messageBox(this, getString(R.string.scanning));
+		}
 	}
 
 	public void doSearching(final String word) {
@@ -246,22 +243,17 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 		}
 	}
 
-	private void doScanningStorage() {
-		if(!dictionaryClient.scanStorage(this, database, scanStorageComponent)) {
-			Utility.messageBox(this, getString(R.string.scanning));
-		}
+	private void doRecommendWords(final String word) {
+		if(!dictionaryClient.recommend(this, word, recommendComponent)) {}
 	}
 
-	private void setStartPage() {
-		final int dictCount = DictionaryScanner.getDictionaryCount();
-		System.out.println("Dict count: " + dictCount);
-		try {
-			final String welcomeStr = (dictCount > 1 ? scanStorageComponent.context.getString(R.string.usingDictionaryPlural, dictCount) : scanStorageComponent.context.getString(R.string.usingDictionary, dictCount));
-			final String welcomeHTML = scanStorageComponent.resultTextMaker.getWelcomeHTML(welcomeStr);
-			scanStorageComponent.resultView.loadDataWithBaseURL(ResultTextMaker.ASSET_URL, welcomeHTML, "text/html", "utf-8", null);
-		} catch (final Exception e) {
-			System.out.println(e.getMessage());
+	private long calculateIntervalBetweenTwoActions() {
+		if(time == 0) {
+			time = System.currentTimeMillis();
 		}
+		final long currentTime = System.currentTimeMillis();
+		final long diff = currentTime - time;
+		time = currentTime;
+		return diff;
 	}
-
 }

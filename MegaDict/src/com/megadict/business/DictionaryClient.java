@@ -51,9 +51,8 @@ public class DictionaryClient {
 		return scanner.scanStorage(activity, database, scanStorageComponent);
 	}
 
-	public void updateDictionaryModels() {
-
-		//		return scanner.updateDictonaryModels();
+	public boolean updateDictionaryModels(final SQLiteDatabase database, final ScanStorageComponent scanStorageComponent) {
+		return scanner.updateDictonaryModels(database, scanStorageComponent);
 	}
 
 	private List<Dictionary> getAllModels() {
@@ -67,7 +66,7 @@ public class DictionaryClient {
 		return recommender.isRecommending();
 	}
 
-	public int getDictitionaryCount() {
+	public int getDictionaryCount() {
 		return scanner.getDictionaryCount();
 	}
 }
