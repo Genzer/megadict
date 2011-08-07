@@ -11,7 +11,7 @@ class ReadLineSegmentBuilder extends BaseSegmentBuilder implements SegmentBuilde
     }
 
     public List<Segment> builtSegments() {
-        return segments;
+        return createdSegments;
     }
 
     public void build() {
@@ -25,7 +25,7 @@ class ReadLineSegmentBuilder extends BaseSegmentBuilder implements SegmentBuilde
                 if (lines.size() == LINE_PER_SEGMENT) {
                     countCreatedSegment();
                     Segment segment = createSegment(lines);
-                    segments.add(segment);
+                    createdSegments.add(segment);
                     saveSegmentToFile(segment, lines);
                     lines = makeLinesBuffer();
                 }
@@ -34,7 +34,7 @@ class ReadLineSegmentBuilder extends BaseSegmentBuilder implements SegmentBuilde
             if (lines.size() > 0 ) {
                 countCreatedSegment();
                 Segment segment = createSegment(lines);
-                segments.add(segment);
+                createdSegments.add(segment);
                 saveSegmentToFile(segment, lines);
                 lines = makeLinesBuffer();
             }

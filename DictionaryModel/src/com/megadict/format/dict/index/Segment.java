@@ -55,16 +55,22 @@ public class Segment implements Serializable {
     
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) {
-            return true;
-        }
-        
-        if (!(obj instanceof Segment)) {
-            return false;
-        }
-        
-        Segment other = (Segment) obj;
-        
+        return ifSameIdentity(obj) ? true : checkCriticalValuesIf(obj, isSameClass(obj));        
+    }
+    
+    private boolean ifSameIdentity(Object obj) {
+        return this == obj;
+    }
+    
+    private boolean isSameClass(Object obj) {
+        return obj instanceof Segment;
+    }
+    
+    private boolean checkCriticalValuesIf(Object obj, boolean isSameClass) {
+        return isSameClass ? compareCriticalValues((Segment) obj) : false;
+    }
+    
+    private boolean compareCriticalValues(Segment other) {
         boolean lowerboundEquals = this.lowerbound.equals(other.lowerbound);
         boolean upperboundEquals = this.upperbound.equals(other.upperbound);
         

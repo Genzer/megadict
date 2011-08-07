@@ -9,25 +9,21 @@ class CustomBufferedSegmentBuilder extends BaseSegmentBuilder implements Segment
     public CustomBufferedSegmentBuilder(File indexFile) {
         super(indexFile);
     }
-    
+
     @Override
     public List<Segment> builtSegments() {
-        return segments;
+        return createdSegments;
     }
-
 
     @Override
     public void build() {
-        
+
         DataInputStream reader = null;
         try {
             reader = makeReader();
-
             while (reader.read(buffer) != -1) {
-                Segment segment = createSegment();
-                segments.add(segment);
-                saveSegmentToFile(segment);  
-                resetBuffer();
+                processLeftOverFromPreviousReadIfAny();
+                createAndSaveSegmentToFile();
             }
         } catch (FileNotFoundException fnf) {
             throw new ResourceMissingException(getIndexFile());
@@ -44,28 +40,49 @@ class CustomBufferedSegmentBuilder extends BaseSegmentBuilder implements Segment
         return new DataInputStream(new FileInputStream(getIndexFile()));
     }
     
-    private void clearBuffer() {
-        
+
+    private void processLeftOverFromPreviousReadIfAny() {
+        appendPreviousLeftOverIfAny();
+        cleanLeftOverIfAny();
+    }
+    
+    private void appendPreviousLeftOverIfAny() {
+        buffer = (leftOver.length == 0) ? buffer : BufferTool.concatenate(leftOver, buffer);
+    }
+    
+    private void cleanLeftOverIfAny() {
+        leftOver = BufferTool.extractBufferLeftOver(buffer);        
+        buffer = (leftOver.length == 0) ? buffer : BufferTool.cleanLeftOver(buffer);
     }
 
-    private Segment createSegment() {
+    private void createAndSaveSegmentToFile() {
+        Segment newSegment = createAndCountSegment();
+        recordCreatedSegment(newSegment);
+        saveSegmentToFile(newSegment);
+    }
+
+    private Segment createAndCountSegment() {
         countCreatedSegment();
+        return createSegmentWithCurrentBuffer();
+    }
+
+    private Segment createSegmentWithCurrentBuffer() {
         String lowerbound = firstWordInBlock();
         String upperbound = lastWordInBlock();
         File currentSegmentFile = makeCurrentSegmentFile();
         return new Segment(lowerbound, upperbound, currentSegmentFile);
     }
 
-    private File makeCurrentSegmentFile() {
-        return new File(computeCurrentSegmentPath());
-    }
-
     private String firstWordInBlock() {
-        return BufferUtil.firstWordInBlock(buffer);
+        return BufferTool.firstHeadWordIn(buffer);
     }
 
     private String lastWordInBlock() {
-        return BufferUtil.lastWordInBlock(buffer);
+        return BufferTool.lastHeadWordIn(buffer);
+    }
+
+    private File makeCurrentSegmentFile() {
+        return new File(computeCurrentSegmentPath());
     }
 
     private void saveSegmentToFile(Segment segment) {
@@ -82,7 +99,7 @@ class CustomBufferedSegmentBuilder extends BaseSegmentBuilder implements Segment
             closeWriter(writer);
         }
     }
-    
+
     private void closeReader(DataInputStream reader) {
         try {
             reader.close();
@@ -98,13 +115,8 @@ class CustomBufferedSegmentBuilder extends BaseSegmentBuilder implements Segment
             throw new OperationFailedException("closing writer", ioe);
         }
     }
-    
-    private void resetBuffer() {
-        Arrays.fill(buffer, (byte) '\n');
-    }
 
+    private static final byte[] EMPTY_BUFFER = new byte[0];
     private byte[] buffer = new byte[BUFFER_SIZE];
-    private byte[] secondBuffer = new byte[BUFFER_SIZE];
-    private byte[] leftOver = new byte[500];
+    private byte[] leftOver = EMPTY_BUFFER;
 }
-

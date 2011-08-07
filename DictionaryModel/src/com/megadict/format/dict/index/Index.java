@@ -29,16 +29,22 @@ public class Index implements Serializable {
     
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        
-        if ( !(obj instanceof Index) ) {
-            return false;
-        }
-        
-        Index other = (Index) obj;
-        
+        return isSameIdentity(obj) ? true : checkCriticalValueIf(obj, isSameClass(obj));
+    }
+    
+    private boolean isSameIdentity(Object obj) {
+        return this == obj;
+    }
+    
+    private boolean isSameClass(Object obj) {
+        return (obj instanceof Index);
+    }
+    
+    private boolean checkCriticalValueIf(Object obj, boolean isSameClass) {        
+        return isSameClass ? compareCriticalValue((Index) obj) : false;
+    }
+    
+    private boolean compareCriticalValue(Index other) {
         boolean contentEqual = this.word.equals(other.word);
         boolean offsetEqual = this.byteOffset == other.byteOffset;
         boolean lengthEqual = this.byteLength == other.byteLength;

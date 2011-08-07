@@ -36,5 +36,40 @@ public class SegmentTest {
         
         assertFalse(segment.contains(null));
     }
+    
+    @Test
+    public void testEqualsReflectivity() {
+        Segment a = new Segment("absolute", "awake");
+        assertTrue(a.equals(a));
+    }
+    
+    @Test
+    public void testEqualsSymmetry() {
+        Segment a = new Segment("absolute", "awake");
+        Segment b = new Segment("absolute", "awake");
+        assertTrue(a.equals(b));
+        assertTrue(b.equals(a));
+    }
+    
+    @Test
+    public void testEqualsNullity() {
+        Segment a = new Segment("a", "b");
+        assertFalse(a.equals(null));
+    }
+    
+    @Test
+    public void testEqualsWithAnotherClass() {
+        Segment a = new Segment("a", "b");
+        Object b = new Object();
+        assertFalse(a.equals(b));
+    }
+    
+    @Test
+    public void testEqualsWithNonEquals() {
+        Segment a = new Segment("a", "b");
+        Segment b = new Segment("a", "c");
+        assertFalse(a.equals(b));
+        assertFalse(b.equals(a));
+    }
 
 }

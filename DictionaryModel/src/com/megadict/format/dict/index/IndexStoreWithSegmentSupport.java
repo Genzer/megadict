@@ -11,7 +11,7 @@ class IndexStoreWithSegmentSupport extends BaseIndexStore implements IndexStore 
     }  
 
     private void buildSegments() {
-        SegmentBuilder builder = new ReadLineSegmentBuilder(indexFile.asRawFile());
+        SegmentBuilder builder = new CustomBufferedSegmentBuilder(indexFile.asRawFile());
         if (builder.findSegmentMainIndexIfExists()) {
             builder.loadSavedSegmentMainIndex();
         } else {

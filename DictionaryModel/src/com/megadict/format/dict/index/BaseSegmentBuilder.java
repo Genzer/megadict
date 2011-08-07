@@ -20,7 +20,7 @@ public abstract class BaseSegmentBuilder implements SegmentBuilder {
     public BaseSegmentBuilder(File indexFile) {
         this.indexFile = indexFile;
         parentSegmentFolder = computeSegmentFolderPath();
-        segmentMainIndexFile = determineMainSegmentIndex();
+        segmentMainIndexFile = createSegmentMap();
         createSegmentFolderIfDoesNotExist();
     }
 
@@ -28,9 +28,9 @@ public abstract class BaseSegmentBuilder implements SegmentBuilder {
         return indexFile.getParent() + File.separator + FOLDER_NAME;
     }
 
-    private File determineMainSegmentIndex() {
-        String mainSegmentIndexPath = computeCurrentSegmentPath();
-        return new File(mainSegmentIndexPath);
+    private File createSegmentMap() {
+        String segmentMapPath = computeCurrentSegmentPath();
+        return new File(segmentMapPath);
     }
 
     private void createSegmentFolderIfDoesNotExist() {
@@ -42,17 +42,26 @@ public abstract class BaseSegmentBuilder implements SegmentBuilder {
             }
         }
     }
+    
+    protected String computeCurrentSegmentPath() {
+        return String.format(SEGMENT_FULL_PATH_PATTERN, parentSegmentFolder, numOfCreatedSegment);
+    }
 
     protected File getIndexFile() {
         return indexFile;
     }
 
-    protected String computeCurrentSegmentPath() {
-        return String.format(SEGMENT_FULL_PATH_PATTERN, parentSegmentFolder, currentSegmentNumber);
+    
+    public List<Segment> builtSegments() {
+        return createdSegments;
+    }
+    
+    protected void recordCreatedSegment(Segment segment) {
+        createdSegments.add(segment);
     }
 
     protected void countCreatedSegment() {
-        currentSegmentNumber++;
+        numOfCreatedSegment++;
     }
 
     @Override
@@ -65,7 +74,7 @@ public abstract class BaseSegmentBuilder implements SegmentBuilder {
         ObjectOutputStream writer = makeObjectWriter(segmentMainIndexFile);
 
         try {
-            writer.writeObject(segments);
+            writer.writeObject(createdSegments);
             writer.flush();
         } catch (IOException ioe) {
             throw new OperationFailedException("writing segment main index", ioe);
@@ -99,7 +108,7 @@ public abstract class BaseSegmentBuilder implements SegmentBuilder {
     public void loadSavedSegmentMainIndex() {
         ObjectInputStream reader = makeObjectReader(segmentMainIndexFile);
         try {
-            segments = (List<Segment>) reader.readObject();
+            createdSegments = (List<Segment>) reader.readObject();
         } catch (IOException ioe) {
             throw new OperationFailedException("reading segment main index", ioe);
         } catch (ClassNotFoundException cnf) {
@@ -136,6 +145,7 @@ public abstract class BaseSegmentBuilder implements SegmentBuilder {
     private final File indexFile;
     private final File segmentMainIndexFile;
     private final String parentSegmentFolder;
-    private int currentSegmentNumber = 0;
-    protected List<Segment> segments = new ArrayList<Segment>();
+    
+    private int numOfCreatedSegment = 0;
+    protected List<Segment> createdSegments = new ArrayList<Segment>();
 }
