@@ -23,7 +23,7 @@ public class SegmentStore {
     private void putAllToMap(Collection<Segment> segments) {
         map = new TreeMap<String, Segment>();
         for (Segment segment : segments) {
-            map.put(segment.lowerbound(), segment);
+            map.put(segment.upperbound(), segment);
         }
     }
     

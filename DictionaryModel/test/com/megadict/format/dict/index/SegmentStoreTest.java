@@ -27,8 +27,8 @@ public class SegmentStoreTest {
     public void testGetSegmentContains() {
         SegmentStore store = new SegmentStore(Arrays.asList(segments));
 
-        String testWord = "abaction";
-        Segment expectedSegment = new Segment("abaction", "abase");
+        String testWord = "abasement";
+        Segment expectedSegment = new Segment("abasement", "abbey");
         Segment foundSegment = store.getSegmentContains(testWord);
 
         assertEquals(expectedSegment, foundSegment);

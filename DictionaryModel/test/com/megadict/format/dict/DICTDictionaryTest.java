@@ -31,7 +31,7 @@ public class DICTDictionaryTest {
         IndexFile indexFile = IndexFile.makeFile(sampleTest.getIndexFile());
         DictionaryFile dictFile = DictionaryFile.makeRandomAccessFile(sampleTest.getDictionaryFile());
 
-        testee = new DICTDictionary(indexFile, dictFile);
+        testee = new DICTDictionary.Builder(indexFile, dictFile).enableSplittingIndexFile().build();
     }
 
     @Test
