@@ -1,36 +1,44 @@
 package com.megadict.format.dict;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
+import java.util.*;
+import java.util.concurrent.*;
+
+import org.junit.*;
 
 import com.megadict.format.dict.index.IndexFile;
 import com.megadict.format.dict.reader.DictionaryFile;
 import com.megadict.model.Definition;
 import com.megadict.model.Dictionary;
+import com.megadict.test.toolbox.TaskExecutor;
 
 public class DICTDictionaryTestWithThreading {
 
     @Test
-    public void testTwoDictionarySimultaneously() {
-       IndexFile packOneIndex =
-           IndexFile.makeFile("D:/Workspace/@MainProjects/OU/MegaDict/Project/DictionaryModel/testset/hnd/ev/ev.index");
-       DictionaryFile packOneDict = 
-           DictionaryFile.makeRandomAccessFile("D:/Workspace/@MainProjects/OU/MegaDict/Project/DictionaryModel/testset/hnd/ev/ev.dict");
-       
-       IndexFile packTwoIndex =
-           IndexFile.makeFile("D:/Workspace/@MainProjects/OU/MegaDict/Project/DictionaryModel/testset/hnd/ve/ve.index");
-       DictionaryFile packTwoDict = 
-           DictionaryFile.makeRandomAccessFile("D:/Workspace/@MainProjects/OU/MegaDict/Project/DictionaryModel/testset/hnd/ve/ve.dict");
-       
-       Thread packOne = new GetDictionaryName(packOneIndex, packOneDict);
-       Thread packTwo = new GetDictionaryName(packTwoIndex, packTwoDict);
-       packOne.start();
-       packTwo.start();
+    public void testSimultaneouslyLookUpWithTwoDictionaries() {
+
+        List<Callable<String>> tasks = new ArrayList<Callable<String>>(2);
+        tasks.add(new LookUpTask(packOneIndex, packOneDict, "b"));
+        tasks.add(new LookUpTask(packTwoIndex, packTwoDict, "ông"));
+
+        List<String> results = TaskExecutor.executeAndGetResult(tasks);
+
+        for (String result : results) {
+            System.out.println(result);
+        }
+    }
+    
+    @Test
+    public void testSimultaneouslyGetNameOfTwoDictionaries() {
+         List<Runnable> tasks = new ArrayList<Runnable>(2);
+         tasks.add(new GetNameTask(packOneIndex, packOneDict));
+         tasks.add(new GetNameTask(packTwoIndex, packTwoDict));
+        
+         TaskExecutor.execute(tasks);
     }
 
-    private static class GetDictionaryName extends Thread {
+    static class GetNameTask implements Runnable {
 
-        public GetDictionaryName(IndexFile indexFile, DictionaryFile dictFile) {
+        public GetNameTask(IndexFile indexFile, DictionaryFile dictFile) {
             this.dictFile = dictFile;
             this.indexFile = indexFile;
         }
@@ -38,13 +46,41 @@ public class DICTDictionaryTestWithThreading {
         @Override
         public void run() {
             Dictionary dictionary = new DICTDictionary(indexFile, dictFile);
-            Definition def = dictionary.lookUp("00-database-short");
-            System.out.println(def.getContent());
+            System.out.println(dictionary.getName());
         }
 
         private final IndexFile indexFile;
         private final DictionaryFile dictFile;
 
     }
+    
+    static class LookUpTask implements Callable<String> {
+        
+        public LookUpTask(IndexFile indexFile, DictionaryFile dictFile, String wordToLookUp) {
+            this.dictFile = dictFile;
+            this.indexFile = indexFile;
+            this.wordToLookUp = wordToLookUp;
+        }
 
+        @Override
+        public String call() throws Exception {
+            Dictionary dictionary = new DICTDictionary(indexFile, dictFile);
+            Definition def = dictionary.lookUp(wordToLookUp);
+            return def.getContent();
+        }
+
+        private final IndexFile indexFile;
+        private final DictionaryFile dictFile;
+        private final String wordToLookUp;
+    }
+
+    private static final IndexFile packOneIndex = IndexFile
+            .makeFile("D:/Workspace/@MainProjects/OU/MegaDict/Project/DictionaryModel/testset/hnd/ev/ev.index");
+    private static final DictionaryFile packOneDict = DictionaryFile
+            .makeRandomAccessFile("D:/Workspace/@MainProjects/OU/MegaDict/Project/DictionaryModel/testset/hnd/ev/ev.dict");
+
+    private static final IndexFile packTwoIndex = IndexFile
+            .makeFile("D:/Workspace/@MainProjects/OU/MegaDict/Project/DictionaryModel/testset/hnd/ve/ve.index");
+    private static final DictionaryFile packTwoDict = DictionaryFile
+            .makeRandomAccessFile("D:/Workspace/@MainProjects/OU/MegaDict/Project/DictionaryModel/testset/hnd/ve/ve.dict");
 }

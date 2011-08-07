@@ -1,4 +1,4 @@
-package com.megadict.format.dict.sample;
+package com.megadict.test.toolbox.samples;
 
 class Sample {
     

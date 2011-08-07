@@ -6,7 +6,8 @@ import org.junit.*;
 import java.util.*;
 
 import com.megadict.format.dict.parser.*;
-import com.megadict.format.dict.sample.*;
+import com.megadict.test.toolbox.samples.IndexTestSample;
+import com.megadict.test.toolbox.samples.TestSamples;
 
 public class IndexFileReaderTest {
 

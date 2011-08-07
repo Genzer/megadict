@@ -15,7 +15,7 @@ import org.junit.Test;
 
 import com.megadict.format.dict.index.Index;
 import com.megadict.format.dict.parser.IndexParser;
-import com.megadict.format.dict.parser.IndexTabDilimeterParser;
+import com.megadict.format.dict.parser.IndexParsers;
 
 public class MappedDictFileReaderTest {
 
@@ -62,7 +62,7 @@ public class MappedDictFileReaderTest {
                 "zymotic\toN2l\tBJ", "decorously\tuSf3\t4", "Forecast error\tqnR8\tDC", "procrastinating\tahbX\tBN",
                 "two-master\tk+2K\tBU", "voidable\tm0Yz\tBa", "Z-score\tsmpF\tm", };
 
-        IndexParser parser = new IndexTabDilimeterParser();
+        IndexParser parser = IndexParsers.newInstance();
 
         Index[] result = new Index[indexStrings.length];
 

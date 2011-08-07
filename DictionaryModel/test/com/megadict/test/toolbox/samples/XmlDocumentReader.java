@@ -1,4 +1,4 @@
-package com.megadict.format.dict.sample;
+package com.megadict.test.toolbox.samples;
 
 import java.io.*;
 import java.util.List;

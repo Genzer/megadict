@@ -5,7 +5,6 @@ import org.junit.*;
 
 import com.megadict.format.dict.index.Index;
 import com.megadict.format.dict.index.IndexFile;
-import com.megadict.format.dict.index.BaseIndexStore;
 
 public class IndexStoreTest {
     

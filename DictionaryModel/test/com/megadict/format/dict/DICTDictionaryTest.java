@@ -12,8 +12,9 @@ import org.junit.rules.ExpectedException;
 import com.megadict.exception.ResourceMissingException;
 import com.megadict.format.dict.index.IndexFile;
 import com.megadict.format.dict.reader.DictionaryFile;
-import com.megadict.format.dict.sample.*;
 import com.megadict.model.*;
+import com.megadict.test.toolbox.samples.DictionaryTestSample;
+import com.megadict.test.toolbox.samples.TestSamples;
 
 public class DICTDictionaryTest {
 
