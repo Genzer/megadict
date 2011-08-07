@@ -33,9 +33,9 @@ public class SegmentStore {
     }
 
     private Segment extract(String word) {
-        SortedMap<String, Segment> lessOrEqual = map.tailMap(word);
-        String keyOfFirstMatch = lessOrEqual.firstKey();
-        return lessOrEqual.get(keyOfFirstMatch);
+        SortedMap<String, Segment> greaterOrEqual = map.tailMap(word);
+        String keyOfFirstMatch = greaterOrEqual.firstKey();
+        return greaterOrEqual.get(keyOfFirstMatch);
     }
 
     private SortedMap<String, Segment> map;
