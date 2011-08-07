@@ -1,61 +1,75 @@
 package com.megadict.business;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Logger;
 
 import android.app.Activity;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.megadict.bean.RescanComponent;
 import com.megadict.bean.ScanStorageComponent;
-import com.megadict.exception.DataFileNotFoundException;
-import com.megadict.exception.IndexFileNotFoundException;
-import com.megadict.model.ChosenModel;
 import com.megadict.model.Dictionary;
-import com.megadict.model.DictionaryInformation;
-import com.megadict.singletask.base.BaseScanTask;
 import com.megadict.task.RescanAllTask;
 import com.megadict.task.ScanStorageAllTask;
-import com.megadict.task.base.BaseScanAllTask;
+import com.megadict.task.base.BaseScanTask;
 
 public class DictionaryScanner {
-	private static final List<Dictionary> MODELS = new Vector<Dictionary>();
-	private BaseScanAllTask task = null;
+	private final ExternalReader externalReader = new ExternalReader(ExternalStorage.getExternalDirectory());
+	private static final Map<Integer, Dictionary> MODELS = new ConcurrentHashMap<Integer, Dictionary>();
+	private BaseScanTask task = null;
+	private static final Logger LOGGER = Logger.getLogger("DictionaryScanner");
 	@Deprecated
 	private static final List<BaseScanTask> TASKS = new Vector<BaseScanTask>();
 
-	public static void addModel(final Dictionary dictionaryModel) {
-		MODELS.add(dictionaryModel);
+	public DictionaryScanner() {
+		LOGGER.addHandler(new ConsoleHandler());
+	}
+
+	public static void addModel(final int dictionaryID, final Dictionary dictionaryModel) {
+		MODELS.put(dictionaryID, dictionaryModel);
+	}
+
+	public static void removeModel(final int dictionaryID) {
+		MODELS.remove(dictionaryID);
 	}
 
 	public static int getDictionaryCount() {
 		return MODELS.size();
 	}
 
-	public boolean scanStorageNew(final Activity activity, final SQLiteDatabase database, final ScanStorageComponent scanStorageComponent) throws IndexFileNotFoundException, DataFileNotFoundException {
+	public static void log(final String message) {
+		LOGGER.warning(message);
+	}
+
+	public boolean scanStorage(final Activity activity, final SQLiteDatabase database, final ScanStorageComponent scanStorageComponent) {
 		if(task == null || !task.isScanning()) {
 			MODELS.clear();
-			final List<DictionaryInformation> infos = readFromDatabase(activity, database);
-			task = new ScanStorageAllTask(infos, scanStorageComponent);
+			task = new ScanStorageAllTask(activity, database, scanStorageComponent);
 			task.execute();
 			return true;
 		}
 		return false;
 	}
 
-	public boolean rescanNew(final RescanComponent rescanComponent) throws IndexFileNotFoundException, DataFileNotFoundException {
+	public boolean rescan(final RescanComponent rescanComponent) {
 		if(task == null || !task.isScanning()) {
 			MODELS.clear();
-			final List<DictionaryInformation> infos = readFromExternalStorage();
-			task = new RescanAllTask(infos, rescanComponent);
+			task = new RescanAllTask(externalReader, rescanComponent);
 			task.execute();
 			return true;
 		}
 		return false;
 	}
+
+	//	public boolean updateDictonaryModels(final SQLiteDatabase database) {
+	//		final Cursor cursor = ChosenModel.selectChosenDictionaryIDs(database);
+	//
+	//	}
 
 	// ========================== Private functions ============================ //
 	@Deprecated
@@ -75,28 +89,8 @@ public class DictionaryScanner {
 		return true;
 	}
 
-	private List<DictionaryInformation> readFromExternalStorage() throws IndexFileNotFoundException, DataFileNotFoundException {
-		// Get external reader.
-		final ExternalReader reader = new ExternalReader(ExternalStorage.getExternalDirectory());
-		return reader.getInfos();
-	}
-
-	private List<DictionaryInformation> readFromDatabase(final Activity activity, final SQLiteDatabase database) throws IndexFileNotFoundException, DataFileNotFoundException {
-		// Select chosen dictionaries from database.
-		final Cursor cursor = ChosenModel.selectChosenDictionaries(database);
-		activity.startManagingCursor(cursor);
-
-		final List<DictionaryInformation> infos = new ArrayList<DictionaryInformation>();
-		for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
-			final String dictPath = cursor.getString(cursor.getColumnIndex(ChosenModel.DICTIONARY_PATH_COLUMN));
-			final DictionaryInformation info = new DictionaryInformation(new File(dictPath));
-			infos.add(info);
-		}
-		return infos;
-	}
-
 	public List<Dictionary> getDictionaryModels() {
-		return MODELS;
+		return new ArrayList<Dictionary>(MODELS.values());
 	}
 
 

@@ -1,17 +1,11 @@
 package com.megadict.task.base;
 
-import java.util.List;
-
 import android.os.AsyncTask;
 
-import com.megadict.model.DictionaryInformation;
-
-public abstract class BaseScanAllTask extends AsyncTask<Void, Void, Void> {
-	final protected List<DictionaryInformation> infos;
+public abstract class BaseScanTask extends AsyncTask<Void, Void, Void> {
 	private boolean scanning;
 
-	public BaseScanAllTask(final List<DictionaryInformation> infos) {
-		this.infos = infos;
+	public BaseScanTask() {
 	}
 
 	@Override

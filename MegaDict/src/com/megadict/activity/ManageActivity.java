@@ -6,7 +6,6 @@ import android.app.ProgressDialog;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -17,8 +16,6 @@ import com.megadict.adapter.ChosenDictionaryCheckBoxAdapter;
 import com.megadict.application.MegaDictApp;
 import com.megadict.bean.RescanComponent;
 import com.megadict.business.DictionaryClient;
-import com.megadict.exception.DataFileNotFoundException;
-import com.megadict.exception.IndexFileNotFoundException;
 import com.megadict.model.ChosenModel;
 import com.megadict.utility.DatabaseHelper;
 import com.megadict.utility.Utility;
@@ -82,14 +79,8 @@ public class ManageActivity extends BaseListActivity {
 
 	// ======================= Private functions =================== //
 	private void doRescanning(final SQLiteDatabase database, final Cursor cursor) {
-		try {
-			if(!dictionaryClient.rescan(rescanComponent)) {
-				Utility.messageBox(this, getString(R.string.scanning));
-			}
-		} catch (final IndexFileNotFoundException e) {
-			Log.d(TAG, e.getMessage());
-		} catch (final DataFileNotFoundException e) {
-			Log.d(TAG, e.getMessage());
+		if(!dictionaryClient.rescan(rescanComponent)) {
+			Utility.messageBox(this, getString(R.string.scanning));
 		}
 	}
 }

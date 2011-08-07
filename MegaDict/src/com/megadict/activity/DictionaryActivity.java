@@ -4,7 +4,6 @@ package com.megadict.activity;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.text.ClipboardManager;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -33,8 +32,6 @@ import com.megadict.business.DictionaryClient;
 import com.megadict.business.DictionaryScanner;
 import com.megadict.business.ResultTextMaker;
 import com.megadict.business.TextSelector;
-import com.megadict.exception.DataFileNotFoundException;
-import com.megadict.exception.IndexFileNotFoundException;
 import com.megadict.task.WordListTask;
 import com.megadict.task.WordListTask.OnClickWordListener;
 import com.megadict.utility.DatabaseHelper;
@@ -82,8 +79,8 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 			// Change noDefinition string.
 			dictionaryClient.setNoDefinitionString(getString(R.string.noDefinition));
 		}
-		if(shouldSetStartPage)
-			setStartPage();
+		//		if(shouldSetStartPage)
+		//			setStartPage();
 	}
 
 	@Override
@@ -214,6 +211,7 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 				final long diff = currentTime - time;
 				time = currentTime;
 				if(diff > 500) {
+					System.out.println("Recommending");
 					doRecommendWords(searchEditText.getText().toString());
 				}
 			}
@@ -249,20 +247,14 @@ public class DictionaryActivity extends BaseActivity implements OnClickListener,
 	}
 
 	private void doScanningStorage() {
-		try {
-			if(!dictionaryClient.scanStorage(this, database, scanStorageComponent)) {
-				Utility.messageBox(this, getString(R.string.scanning));
-			}
-		} catch (final IndexFileNotFoundException e) {
-			Log.d(TAG, e.getMessage());
-		} catch (final DataFileNotFoundException e) {
-			Log.d(TAG, e.getMessage());
+		if(!dictionaryClient.scanStorage(this, database, scanStorageComponent)) {
+			Utility.messageBox(this, getString(R.string.scanning));
 		}
 	}
 
 	private void setStartPage() {
 		final int dictCount = DictionaryScanner.getDictionaryCount();
-		System.out.println(dictCount);
+		System.out.println("Dict count: " + dictCount);
 		try {
 			final String welcomeStr = (dictCount > 1 ? scanStorageComponent.context.getString(R.string.usingDictionaryPlural, dictCount) : scanStorageComponent.context.getString(R.string.usingDictionary, dictCount));
 			final String welcomeHTML = scanStorageComponent.resultTextMaker.getWelcomeHTML(welcomeStr);

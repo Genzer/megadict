@@ -15,10 +15,14 @@ public class DictionaryInformation {
 		createNecessaryFiles(parentFile);
 	}
 
+	public DictionaryInformation(final String parentFilePath) throws IndexFileNotFoundException, DataFileNotFoundException {
+		this(new File(parentFilePath));
+	}
+
 	private void createNecessaryFiles(final File parentFilePath) throws IndexFileNotFoundException, DataFileNotFoundException {
 
 		/* Create index and data file path. */
-		final File filePath = parentFilePath;
+		final String filePath = parentFilePath.getAbsolutePath();
 		final String separator = System.getProperty("file.separator");
 		final String indexFilePath =
 			filePath + separator + "dict.index";
@@ -30,11 +34,19 @@ public class DictionaryInformation {
 		dataFile = new File(dataFilePath);
 
 		if (!indexFile.exists()) {
-			throw new IndexFileNotFoundException();
+			throw new IndexFileNotFoundException(filePath);
 		}
 		if (!dataFile.exists()) {
-			throw new DataFileNotFoundException();
+			throw new DataFileNotFoundException(filePath);
 		}
+	}
+
+	public static DictionaryInformation newInstance(final File parentFilePath) throws IndexFileNotFoundException, DataFileNotFoundException {
+		return new DictionaryInformation(parentFilePath);
+	}
+
+	public static DictionaryInformation newInstance(final String parentFilePath) throws IndexFileNotFoundException, DataFileNotFoundException {
+		return new DictionaryInformation(parentFilePath);
 	}
 
 	public File getParentFile() {

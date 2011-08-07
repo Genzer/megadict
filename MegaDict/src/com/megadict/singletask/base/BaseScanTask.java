@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import com.megadict.model.Dictionary;
 import com.megadict.model.DictionaryInformation;
 
+@Deprecated
 public abstract class BaseScanTask extends AsyncTask<Void, Void, Void> {
 	protected final DictionaryInformation info;
 	protected final List<Dictionary> dictionaryModels;

@@ -11,8 +11,6 @@ import com.megadict.bean.RecommendComponent;
 import com.megadict.bean.RescanComponent;
 import com.megadict.bean.ScanStorageComponent;
 import com.megadict.bean.SearchComponent;
-import com.megadict.exception.DataFileNotFoundException;
-import com.megadict.exception.IndexFileNotFoundException;
 import com.megadict.model.Dictionary;
 
 public class DictionaryClient {
@@ -45,18 +43,17 @@ public class DictionaryClient {
 		return recommender.recommend(context, word, getAllModels(), recommendComponent);
 	}
 
-	public boolean rescan(final RescanComponent rescanComponent) throws IndexFileNotFoundException, DataFileNotFoundException {
-		//return scanner.rescan(database, dialog, cursor);
-		return scanner.rescanNew(rescanComponent);
+	public boolean rescan(final RescanComponent rescanComponent) {
+		return scanner.rescan(rescanComponent);
 	}
 
-	public boolean scanStorage(final Activity activity, final SQLiteDatabase database, final ScanStorageComponent scanStorageComponent) throws IndexFileNotFoundException, DataFileNotFoundException {
-		//		scanner.scanStorage(activity, database);
-		return scanner.scanStorageNew(activity, database, scanStorageComponent);
+	public boolean scanStorage(final Activity activity, final SQLiteDatabase database, final ScanStorageComponent scanStorageComponent) {
+		return scanner.scanStorage(activity, database, scanStorageComponent);
 	}
 
-	public void scanDatabase() {
-		// Working
+	public void updateDictionaryModels() {
+
+		//		return scanner.updateDictonaryModels();
 	}
 
 	private List<Dictionary> getAllModels() {
