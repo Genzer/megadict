@@ -39,20 +39,20 @@ public class BufferToolTest {
 
     @Test
     public void testGetLastHeadWord() {
-        String expected = "abate";        
+        String expected = "abate";
         byte[] cleaned = BufferTool.cleanLeftOver(rawContent.getBytes());
-        
+
         String actual = BufferTool.lastHeadWordIn(cleaned);
-        
+
         assertEquals(expected, actual);
     }
-    
+
     @Test
     public void testGetLastHeadWordWithEmptyInput() {
         String actual = BufferTool.lastHeadWordIn(new byte[0]);
         assertEquals("", actual);
     }
-    
+
     @Test
     public void testGetLastHeadWordWithShortInput() {
         String shortInput = "ds8 23324 tra";
@@ -84,34 +84,58 @@ public class BufferToolTest {
                 + "andonment\toOZo\tq\nabapikal\tsn80\tBM\nabarticular\tsn+A\tBP\nabase\tBcp\tCM\naba"
                 + "sement\tBe1\tB1\nabash\tBgq\tBm\nabashed\tsn/P\tw\nabashment\tBiQ\tBk\nabask\tBj0\tB"
                 + "z\nabatable\tBln\tEU\nabate\tBp7\tH4";
-        
+
         byte[] cleanedLeftOver = BufferTool.cleanLeftOver(rawContent.getBytes());
-        
+
         String cleanedLeftOverInString = new String(cleanedLeftOver);
-        
+
         assertEquals(expected, cleanedLeftOverInString);
     }
-    
+
     @Test
     public void testConcatenate() {
         String partOne = "A shares\tppv+\tBd\nA4-size\toOVN\t0\naa\tsnur\tBX\naaa\tsnw"
-            + "C\tCE\naardvark\tsnyG\t1\naard-wolf\t5k\tBZ\naardwolf\tsny7\t9\naasvogel\t"
-            + "69\tBX\nab\tsnz4\tB2\naba\t8U\tBd\nabac, abacus\t2GQg\t7\nabaca\tsn1u\tBc\n"
-            + "abaci\t9x\tDb\nabacist\tsn3K\tBG\naback\tBBM\tFp\nabacterial\tsn4Q\t4\nab"
-            + "action\tsn5I\tBH\nabactus\tsn6P\tp\nabacus\tBG1\tDc\nabacus\toOWB\tc\nabaddo"
-            + "n\tBKR\tBI\nabaft\tBLZ\tDH\nabalienate\tsn64\t";
-        
+                + "C\tCE\naardvark\tsnyG\t1\naard-wolf\t5k\tBZ\naardwolf\tsny7\t9\naasvogel\t"
+                + "69\tBX\nab\tsnz4\tB2\naba\t8U\tBd\nabac, abacus\t2GQg\t7\nabaca\tsn1u\tBc\n"
+                + "abaci\t9x\tDb\nabacist\tsn3K\tBG\naback\tBBM\tFp\nabacterial\tsn4Q\t4\nab"
+                + "action\tsn5I\tBH\nabactus\tsn6P\tp\nabacus\tBG1\tDc\nabacus\toOWB\tc\nabaddo"
+                + "n\tBKR\tBI\nabaft\tBLZ\tDH\nabalienate\tsn64\t";
+
         String partTwo = "BA\nabalienation\tsn74\t8\nabal"
-            + "one\tBOg\tBK\nabampere\toOWd\tCC\nabandon\tBPq\tGn\nabandon\toOYf\tn\nabandon "
-            + "call\toOZG\ti\nabandoned\tBWR\tBr\nabandoner\tBX8\tBL\nabandonment\tBZH\tDi\nab"
-            + "andonment\toOZo\tq\nabapikal\tsn80\tBM\nabarticular\tsn+A\tBP\nabase\tBcp\tCM\naba"
-            + "sement\tBe1\tB1\nabash\tBgq\tBm\nabashed\tsn/P\tw\nabashment\tBiQ\tBk\nabask\tBj0\tB"
-            + "z\nabatable\tBln\tEU\nabate\tBp7\tH4\nabatement\tre34";
-        
+                + "one\tBOg\tBK\nabampere\toOWd\tCC\nabandon\tBPq\tGn\nabandon\toOYf\tn\nabandon "
+                + "call\toOZG\ti\nabandoned\tBWR\tBr\nabandoner\tBX8\tBL\nabandonment\tBZH\tDi\nab"
+                + "andonment\toOZo\tq\nabapikal\tsn80\tBM\nabarticular\tsn+A\tBP\nabase\tBcp\tCM\naba"
+                + "sement\tBe1\tB1\nabash\tBgq\tBm\nabashed\tsn/P\tw\nabashment\tBiQ\tBk\nabask\tBj0\tB"
+                + "z\nabatable\tBln\tEU\nabate\tBp7\tH4\nabatement\tre34";
+
         byte[] concatenated = BufferTool.concatenate(partOne.getBytes(), partTwo.getBytes());
         String concatenatedInString = new String(concatenated);
-        assertEquals(rawContent, concatenatedInString);        
+        assertEquals(rawContent, concatenatedInString);
     }
-    
-    
+
+    @Test
+    public void testCopyBackward() {
+        String source = "This is the original content";
+        String dest = "OK, ............................";
+
+        String expectedDest = "OK, This is the original content";
+
+        byte[] actualInByteArray = BufferTool.copyBackward(source.getBytes(), dest.getBytes());
+        String actualDest = new String(actualInByteArray);
+
+        assertEquals(expectedDest, actualDest);
+    }
+
+    @Test
+    public void testCopyBackwardWithDestOffset() {
+        String source = "This is the original content";
+        String dest = "OK, ............................, after appending";
+
+        String expectedDest = "OK, This is the original content, after appending";
+
+        byte[] actualInByteArray = BufferTool.copyBackwardWithDestOffset(source.getBytes(), dest.getBytes(), 17);
+        String actualDest = new String(actualInByteArray);
+        
+        assertEquals(expectedDest, actualDest);
+    }
 }

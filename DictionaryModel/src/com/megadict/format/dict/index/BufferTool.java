@@ -1,6 +1,5 @@
 package com.megadict.format.dict.index;
 
-
 public class BufferTool {
 
     private static enum SearchDirection {
@@ -137,6 +136,50 @@ public class BufferTool {
         System.arraycopy(arrayA, 0, newArray, 0, arrayA.length);
         System.arraycopy(arrayB, 0, newArray, arrayA.length, arrayB.length);
         return newArray;
+    }
+
+    public static byte[] copyBackward(byte[] source, byte[] dest) {
+        return copyBackwardWithOffset(source, 0, dest);
+    }
+
+    public static byte[] copyBackwardWithOffset(byte[] source, int offsetBackward, byte[] dest) {
+        int sourceLengthToCopy = source.length - offsetBackward;
+
+        if (dest.length < sourceLengthToCopy) {
+            throw new IllegalArgumentException("Length of source array is bigger than dest array's: "
+                    + sourceLengthToCopy + ">" + dest.length);
+        }
+
+        int sourceTracker = sourceLengthToCopy - 1;
+        int destTracker = dest.length - 1;
+
+        for (; sourceTracker >= 0; sourceTracker--) {
+            dest[destTracker] = source[sourceTracker];
+            destTracker--;
+        }
+
+        return dest;
+    }
+
+    public static byte[] copyBackwardWithDestOffset(byte[] source, byte[] dest, int offsetBackward) {
+        int remainingSpaceInDest = dest.length - offsetBackward;
+
+        if (remainingSpaceInDest < source.length) {
+            throw new IllegalArgumentException(
+                    "Length of source array is bigger than the remaining spaces of dest array: " + source.length + ">"
+                            + remainingSpaceInDest);
+
+        }
+        
+        int sourceTracker = source.length - 1;
+        int destTracker = remainingSpaceInDest - 1;
+        
+        for (; sourceTracker >= 0; sourceTracker--) {
+            dest[destTracker] = source[sourceTracker];
+            destTracker--;
+        }
+        
+        return dest;
     }
 
     private static final byte NOT_FOUND = -1;

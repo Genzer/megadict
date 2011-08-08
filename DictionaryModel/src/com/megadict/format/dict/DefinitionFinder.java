@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 
 import com.megadict.format.dict.index.Index;
 import com.megadict.format.dict.reader.DictFileReader;
+import com.megadict.model.Definition;
 
 public class DefinitionFinder {
     
@@ -12,6 +13,9 @@ public class DefinitionFinder {
     }    
     
     public String getDefinitionAt(Index index) {
+        if (index == null) {
+            return "";
+        }
         byte[] contentInBytes = readDictionaryFile(index);
         return newUnicodeStringFrom(contentInBytes);
     }

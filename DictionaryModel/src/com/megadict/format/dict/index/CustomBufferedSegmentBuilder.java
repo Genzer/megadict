@@ -4,7 +4,7 @@ import java.io.*;
 import java.util.*;
 import com.megadict.exception.*;
 
-class CustomBufferedSegmentBuilder extends BaseSegmentBuilder implements SegmentBuilder {
+public class CustomBufferedSegmentBuilder extends BaseSegmentBuilder implements SegmentBuilder {
 
     public CustomBufferedSegmentBuilder(File indexFile) {
         super(indexFile);
@@ -21,7 +21,7 @@ class CustomBufferedSegmentBuilder extends BaseSegmentBuilder implements Segment
         DataInputStream reader = null;
         try {
             reader = makeReader();
-            while (reader.read(buffer) != -1) {
+            while (reader.read(inputBuffer) != -1) {
                 processLeftOverFromPreviousReadIfAny();
                 createAndSaveSegmentToFile();
             }
@@ -39,20 +39,39 @@ class CustomBufferedSegmentBuilder extends BaseSegmentBuilder implements Segment
     private DataInputStream makeReader() throws FileNotFoundException {
         return new DataInputStream(new FileInputStream(indexFile()));
     }
-    
 
     private void processLeftOverFromPreviousReadIfAny() {
-        appendPreviousLeftOverIfAny();
         cleanLeftOverIfAny();
+        appendPreviousLeftOverIfAny();
+        updateLeftOver();
     }
-    
-    private void appendPreviousLeftOverIfAny() {
-        buffer = (leftOver.length == 0) ? buffer : BufferTool.concatenate(leftOver, buffer);
-    }
-    
+
     private void cleanLeftOverIfAny() {
-        leftOver = BufferTool.extractBufferLeftOver(buffer);        
-        buffer = (leftOver.length == 0) ? buffer : BufferTool.cleanLeftOver(buffer);
+        currentLeftOver = BufferTool.extractBufferLeftOver(inputBuffer);
+        outputBuffer = (currentLeftOver.length == 0) ? inputBuffer : cleanLeftOver(inputBuffer, currentLeftOver);
+    }
+
+    private byte[] cleanLeftOver(byte[] inputBuffer, byte[] leftOver) {
+        resetBuffer(outputBuffer);
+        return BufferTool.copyBackwardWithOffset(inputBuffer, leftOver.length, outputBuffer);
+    }
+
+    private void resetBuffer(byte[] buffer) {
+        Arrays.fill(buffer, (byte) 0);
+    }
+
+    private void appendPreviousLeftOverIfAny() {
+        outputBuffer = (previousLeftOver.length == 0) ? outputBuffer : appendPreviousLeftOver(outputBuffer);
+    }
+
+    private byte[] appendPreviousLeftOver(byte[] previousBuffer) {
+        int usedSpaceInOutputBuffer = inputBuffer.length - currentLeftOver.length;
+        return BufferTool.copyBackwardWithDestOffset(previousLeftOver, outputBuffer, usedSpaceInOutputBuffer);
+    }
+    
+    private void updateLeftOver() {
+        previousLeftOver = currentLeftOver;
+        currentLeftOver = EMPTY_BUFFER;
     }
 
     private void createAndSaveSegmentToFile() {
@@ -74,11 +93,11 @@ class CustomBufferedSegmentBuilder extends BaseSegmentBuilder implements Segment
     }
 
     private String firstWordInBlock() {
-        return BufferTool.firstHeadWordIn(buffer);
+        return BufferTool.firstHeadWordIn(inputBuffer);
     }
 
     private String lastWordInBlock() {
-        return BufferTool.lastHeadWordIn(buffer);
+        return BufferTool.lastHeadWordIn(inputBuffer);
     }
 
     private File makeCurrentSegmentFile() {
@@ -86,10 +105,10 @@ class CustomBufferedSegmentBuilder extends BaseSegmentBuilder implements Segment
     }
 
     private void saveSegmentToFile(Segment segment) {
-        DataOutputStream writer = null;
+        BufferedOutputStream writer = null;
         try {
-            writer = new DataOutputStream(new FileOutputStream(segment.file()));
-            writer.write(buffer);
+            writer = new BufferedOutputStream(new FileOutputStream(segment.file()));
+            writer.write(inputBuffer);
             writer.flush();
         } catch (FileNotFoundException fnf) {
             throw new ResourceMissingException(segment.file());
@@ -108,7 +127,7 @@ class CustomBufferedSegmentBuilder extends BaseSegmentBuilder implements Segment
         }
     }
 
-    private void closeWriter(DataOutputStream writer) {
+    private void closeWriter(BufferedOutputStream writer) {
         try {
             writer.close();
         } catch (IOException ioe) {
@@ -117,6 +136,8 @@ class CustomBufferedSegmentBuilder extends BaseSegmentBuilder implements Segment
     }
 
     private static final byte[] EMPTY_BUFFER = new byte[0];
-    private byte[] buffer = new byte[BUFFER_SIZE];
-    private byte[] leftOver = EMPTY_BUFFER;
+    private byte[] inputBuffer = new byte[BUFFER_SIZE];
+    private byte[] outputBuffer = new byte[BUFFER_SIZE + 300];
+    private byte[] previousLeftOver = EMPTY_BUFFER;
+    private byte[] currentLeftOver = EMPTY_BUFFER;
 }

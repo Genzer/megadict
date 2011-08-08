@@ -46,6 +46,41 @@ public abstract class BaseSegmentBuilder implements SegmentBuilder {
     protected String determineCurrentSegmentPath() {
         return String.format(SEGMENT_FULL_PATH_PATTERN, parentSegmentFolder, numOfCreatedSegment);
     }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public void loadSavedSegmentIndex() {
+        ObjectInputStream reader = makeObjectReader(segmentMainIndexFile);
+        try {
+            createdSegments = (List<Segment>) reader.readObject();
+        } catch (IOException ioe) {
+            throw new OperationFailedException("reading segment main index", ioe);
+        } catch (ClassNotFoundException cnf) {
+            throw new OperationFailedException("casting read object to original type", cnf);
+        } finally {
+            closeReader(reader);
+        }
+    }
+
+    private ObjectInputStream makeObjectReader(File file) {
+        try {
+            FileInputStream rawStream = new FileInputStream(file);
+            DataInputStream dataStream = new DataInputStream(rawStream);
+            return new ObjectInputStream(dataStream);
+        } catch (FileNotFoundException fnf) {
+            throw new ResourceMissingException(segmentMainIndexFile, fnf);
+        } catch (IOException ioe) {
+            throw new OperationFailedException("creating ObjectInputStream", ioe);
+        }
+    }
+    
+    private void closeReader(ObjectInputStream reader) {
+        try {
+            reader.close();
+        } catch (IOException ioe) {
+            throw new OperationFailedException("closing ObjectInputStream", ioe);
+        }
+    }
 
     protected File indexFile() {
         return indexFile;
@@ -100,41 +135,6 @@ public abstract class BaseSegmentBuilder implements SegmentBuilder {
             writer.close();
         } catch (IOException ioe) {
             throw new OperationFailedException("closing segment index writer", ioe);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public void loadSavedSegmentIndex() {
-        ObjectInputStream reader = makeObjectReader(segmentMainIndexFile);
-        try {
-            createdSegments = (List<Segment>) reader.readObject();
-        } catch (IOException ioe) {
-            throw new OperationFailedException("reading segment main index", ioe);
-        } catch (ClassNotFoundException cnf) {
-            throw new OperationFailedException("casting read object to original type", cnf);
-        } finally {
-            closeReader(reader);
-        }
-    }
-
-    private ObjectInputStream makeObjectReader(File file) {
-        try {
-            FileInputStream rawStream = new FileInputStream(file);
-            DataInputStream dataStream = new DataInputStream(rawStream);
-            return new ObjectInputStream(dataStream);
-        } catch (FileNotFoundException fnf) {
-            throw new ResourceMissingException(segmentMainIndexFile, fnf);
-        } catch (IOException ioe) {
-            throw new OperationFailedException("creating ObjectInputStream", ioe);
-        }
-    }
-    
-    private void closeReader(ObjectInputStream reader) {
-        try {
-            reader.close();
-        } catch (IOException ioe) {
-            throw new OperationFailedException("closing ObjectInputStream", ioe);
         }
     }
 
