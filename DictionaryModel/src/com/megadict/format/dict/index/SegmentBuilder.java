@@ -4,11 +4,11 @@ import java.util.List;
 
 interface SegmentBuilder {
     
-    boolean findSegmentMainIndexIfExists();
+    boolean checkIfSegmentIndexExists();
     
-    void saveSegmentMainIndex();
+    void saveSegmentIndex();
     
-    void loadSavedSegmentMainIndex();
+    void loadSavedSegmentIndex();
 
     List<Segment> builtSegments();
 

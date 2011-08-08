@@ -19,21 +19,21 @@ public abstract class BaseSegmentBuilder implements SegmentBuilder {
 
     public BaseSegmentBuilder(File indexFile) {
         this.indexFile = indexFile;
-        parentSegmentFolder = computeSegmentFolderPath();
-        segmentMainIndexFile = createSegmentMap();
-        createSegmentFolderIfDoesNotExist();
+        parentSegmentFolder = determineSegmentFolderPath();
+        segmentMainIndexFile = createSegmentIndexFile();
+        createSegmentFolderIfNotExist();
     }
 
-    private String computeSegmentFolderPath() {
+    private String determineSegmentFolderPath() {
         return indexFile.getParent() + File.separator + FOLDER_NAME;
     }
 
-    private File createSegmentMap() {
-        String segmentMapPath = computeCurrentSegmentPath();
+    private File createSegmentIndexFile() {
+        String segmentMapPath = determineCurrentSegmentPath();
         return new File(segmentMapPath);
     }
 
-    private void createSegmentFolderIfDoesNotExist() {
+    private void createSegmentFolderIfNotExist() {
         File folder = new File(parentSegmentFolder);
         if (!folder.exists()) {
             boolean folderCreated = folder.mkdir();
@@ -43,20 +43,20 @@ public abstract class BaseSegmentBuilder implements SegmentBuilder {
         }
     }
     
-    protected String computeCurrentSegmentPath() {
+    protected String determineCurrentSegmentPath() {
         return String.format(SEGMENT_FULL_PATH_PATTERN, parentSegmentFolder, numOfCreatedSegment);
     }
 
-    protected File getIndexFile() {
+    protected File indexFile() {
         return indexFile;
     }
 
-    
+    @Override
     public List<Segment> builtSegments() {
         return createdSegments;
     }
     
-    protected void recordCreatedSegment(Segment segment) {
+    protected void storeCreatedSegment(Segment segment) {
         createdSegments.add(segment);
     }
 
@@ -65,12 +65,12 @@ public abstract class BaseSegmentBuilder implements SegmentBuilder {
     }
 
     @Override
-    public boolean findSegmentMainIndexIfExists() {
+    public boolean checkIfSegmentIndexExists() {
         return segmentMainIndexFile.exists();
     }
 
     @Override
-    public void saveSegmentMainIndex() {
+    public void saveSegmentIndex() {
         ObjectOutputStream writer = makeObjectWriter(segmentMainIndexFile);
 
         try {
@@ -105,7 +105,7 @@ public abstract class BaseSegmentBuilder implements SegmentBuilder {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void loadSavedSegmentMainIndex() {
+    public void loadSavedSegmentIndex() {
         ObjectInputStream reader = makeObjectReader(segmentMainIndexFile);
         try {
             createdSegments = (List<Segment>) reader.readObject();

@@ -39,7 +39,7 @@ class ReadLineSegmentBuilder extends BaseSegmentBuilder implements SegmentBuilde
                 lines = makeLinesBuffer();
             }
         } catch (FileNotFoundException fnf) {
-            throw new ResourceMissingException(getIndexFile());
+            throw new ResourceMissingException(indexFile());
         } catch (IOException ioe) {
             throw new OperationFailedException("reading file", ioe);
         } finally {
@@ -54,7 +54,7 @@ class ReadLineSegmentBuilder extends BaseSegmentBuilder implements SegmentBuilde
     }
 
     private BufferedReader makeReader() throws FileNotFoundException {
-        return new BufferedReader(new FileReader(getIndexFile()), BUFFER_SIZE);
+        return new BufferedReader(new FileReader(indexFile()), BUFFER_SIZE);
     }
 
     private Segment createSegment(List<String> lines) {
@@ -77,7 +77,7 @@ class ReadLineSegmentBuilder extends BaseSegmentBuilder implements SegmentBuilde
     }
 
     private File makeCurrentSegmentFile() {
-        return new File(computeCurrentSegmentPath());
+        return new File(determineCurrentSegmentPath());
     }
 
     private void saveSegmentToFile(Segment segment, List<String> lines) {

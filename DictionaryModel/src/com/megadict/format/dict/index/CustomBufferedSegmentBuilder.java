@@ -26,7 +26,7 @@ class CustomBufferedSegmentBuilder extends BaseSegmentBuilder implements Segment
                 createAndSaveSegmentToFile();
             }
         } catch (FileNotFoundException fnf) {
-            throw new ResourceMissingException(getIndexFile());
+            throw new ResourceMissingException(indexFile());
         } catch (IOException ioe) {
             throw new OperationFailedException("reading index file", ioe);
         } finally {
@@ -37,7 +37,7 @@ class CustomBufferedSegmentBuilder extends BaseSegmentBuilder implements Segment
     }
 
     private DataInputStream makeReader() throws FileNotFoundException {
-        return new DataInputStream(new FileInputStream(getIndexFile()));
+        return new DataInputStream(new FileInputStream(indexFile()));
     }
     
 
@@ -57,7 +57,7 @@ class CustomBufferedSegmentBuilder extends BaseSegmentBuilder implements Segment
 
     private void createAndSaveSegmentToFile() {
         Segment newSegment = createAndCountSegment();
-        recordCreatedSegment(newSegment);
+        storeCreatedSegment(newSegment);
         saveSegmentToFile(newSegment);
     }
 
@@ -82,7 +82,7 @@ class CustomBufferedSegmentBuilder extends BaseSegmentBuilder implements Segment
     }
 
     private File makeCurrentSegmentFile() {
-        return new File(computeCurrentSegmentPath());
+        return new File(determineCurrentSegmentPath());
     }
 
     private void saveSegmentToFile(Segment segment) {

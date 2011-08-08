@@ -1,6 +1,5 @@
 package com.megadict.format.dict.index;
 
-import java.util.Arrays;
 
 public class BufferTool {
 
@@ -9,8 +8,8 @@ public class BufferTool {
             public boolean isOver(int current, int end) {
                 return current < end;
             }
-        }, 
-        
+        },
+
         BACKWARD(-1) {
             public boolean isOver(int current, int end) {
                 return current >= end;
@@ -24,7 +23,7 @@ public class BufferTool {
         public int next(int current) {
             return current += incrementValue;
         }
-        
+
         public abstract boolean isOver(int current, int end);
 
         private final int incrementValue;
@@ -40,8 +39,7 @@ public class BufferTool {
     private static String findAndExtractFirstHeadWord(byte[] buffer) {
         int maxCharsToFind = 100;
         int firstTabChar = findFirstTabCharInBeginningChars(maxCharsToFind, buffer);
-        byte[] firstWordInBytes = wasNotFound(firstTabChar) ? EMPTY_CONTENT : Arrays.copyOfRange(buffer, 0,
-                firstTabChar);
+        byte[] firstWordInBytes = wasNotFound(firstTabChar) ? EMPTY_CONTENT : copyOfRange(buffer, 0, firstTabChar);
         return new String(firstWordInBytes);
     }
 
@@ -63,11 +61,11 @@ public class BufferTool {
 
     private static String findAndExtractLastHeadWord(byte[] buffer) {
         int newLineChar = findLastNewlineChar(buffer);
-        byte[] fullContent = wasNotFound(newLineChar) ? EMPTY_CONTENT : Arrays.copyOfRange(buffer, newLineChar + 1,
+        byte[] fullContent = wasNotFound(newLineChar) ? EMPTY_CONTENT : copyOfRange(buffer, newLineChar + 1,
                 buffer.length);
 
         int firstTabChar = findFirstTabCharInBeginningChars(fullContent.length, fullContent);
-        byte[] headWord = wasNotFound(firstTabChar) ? EMPTY_CONTENT : Arrays.copyOfRange(fullContent, 0, firstTabChar);
+        byte[] headWord = wasNotFound(firstTabChar) ? EMPTY_CONTENT : copyOfRange(fullContent, 0, firstTabChar);
 
         return new String(headWord);
     }
@@ -99,6 +97,20 @@ public class BufferTool {
         return -1;
     }
 
+    private static byte[] copyOfRange(byte[] original, int from, int to) {
+        int newLength = to - from;
+
+        if (newLength < 0) {
+            throw new IllegalArgumentException(from + " > " + to);
+        }
+
+        byte[] copy = new byte[newLength];
+
+        System.arraycopy(original, from, copy, 0, Math.min(original.length - from, newLength));
+
+        return copy;
+    }
+
     public static byte[] extractBufferLeftOver(byte[] buffer) {
 
         int lastPositionOfNewlineChar = findLastNewlineChar(buffer);
@@ -117,7 +129,7 @@ public class BufferTool {
 
     public static byte[] cleanLeftOver(byte[] buffer) {
         int newlineChar = findLastNewlineChar(buffer);
-        return wasNotFound(newlineChar) ? EMPTY_CONTENT : Arrays.copyOfRange(buffer, 0, newlineChar);
+        return wasNotFound(newlineChar) ? EMPTY_CONTENT : copyOfRange(buffer, 0, newlineChar);
     }
 
     public static byte[] concatenate(byte[] arrayA, byte[] arrayB) {

@@ -11,14 +11,18 @@ class IndexStoreWithSegmentSupport extends BaseIndexStore implements IndexStore 
     }  
 
     private void buildSegments() {
-        SegmentBuilder builder = new CustomBufferedSegmentBuilder(indexFile.asRawFile());
-        if (builder.findSegmentMainIndexIfExists()) {
-            builder.loadSavedSegmentMainIndex();
+        SegmentBuilder builder = makeSegmentBuilder();
+        if (builder.checkIfSegmentIndexExists()) {
+            builder.loadSavedSegmentIndex();
         } else {
             builder.build();
-            builder.saveSegmentMainIndex();
+            builder.saveSegmentIndex();
         }        
-        segmentStore = new SegmentStore(builder.builtSegments());
+        segmentStore = new SegmentLocator(builder.builtSegments());
+    }
+    
+    private SegmentBuilder makeSegmentBuilder() {
+        return new CustomBufferedSegmentBuilder(indexFile.asRawFile());
     }
     
     @Override
@@ -29,8 +33,8 @@ class IndexStoreWithSegmentSupport extends BaseIndexStore implements IndexStore 
     }
     
     private File determineWhichSegmentContains(String word) {
-        return segmentStore.getSegmentContains(word).file();
+        return segmentStore.locateSegmentPossiblyContains(word).file();
     }
     
-    private SegmentStore segmentStore;
+    private SegmentLocator segmentStore;
 }

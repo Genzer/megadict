@@ -1,15 +1,7 @@
 package com.megadict.test.toolbox;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
+import java.util.*;
+import java.util.concurrent.*;
 
 public class TaskExecutor {
 
@@ -43,11 +35,15 @@ public class TaskExecutor {
 
     public static <T> List<T> executeAndGetResult(Collection<? extends Callable<T>> tasks, long waitingTimeInMillis) {
         ExecutorService executor = Executors.newFixedThreadPool(tasks.size());
-        List<T> finalResults = Collections.emptyList();
-        List<Future<T>> temporaryResults = Collections.emptyList();
+        List<T> finalResults = new ArrayList<T>(tasks.size());
+        List<Future<T>> temporaryResults = new ArrayList<Future<T>>(tasks.size());
 
         try {
-            temporaryResults = executor.invokeAll(tasks, waitingTimeInMillis, TimeUnit.MILLISECONDS);
+            for (Callable<T> task : tasks) {
+                Future<T> future = executor.submit(task);
+                temporaryResults.add(future);
+            }            
+            executor.awaitTermination(waitingTimeInMillis, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         } finally {
@@ -68,6 +64,7 @@ public class TaskExecutor {
 
         return finalResults;
     }
+    
 
     private static final int DEFAULT_TIMEOUT_IN_MILLIS = 1000;
 }
