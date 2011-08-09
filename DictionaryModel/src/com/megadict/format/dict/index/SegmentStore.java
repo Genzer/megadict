@@ -28,7 +28,7 @@ public class SegmentStore {
     }
     
 
-    public Segment getSegmentContains(String word) {
+    public Segment findSegmentPossiblyContains(String word) {
         return extract(word);
     }
 

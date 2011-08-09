@@ -18,7 +18,7 @@ class IndexStoreWithSegmentSupport extends BaseIndexStore implements IndexStore 
             builder.build();
             builder.saveSegmentIndex();
         }        
-        segmentStore = new SegmentLocator(builder.builtSegments());
+        segmentStore = new SegmentStore(builder.builtSegments());
     }
     
     private SegmentBuilder makeSegmentBuilder() {
@@ -33,8 +33,8 @@ class IndexStoreWithSegmentSupport extends BaseIndexStore implements IndexStore 
     }
     
     private File determineWhichSegmentContains(String word) {
-        return segmentStore.locateSegmentPossiblyContains(word).file();
+        return segmentStore.findSegmentPossiblyContains(word).file();
     }
     
-    private SegmentLocator segmentStore;
+    private SegmentStore segmentStore;
 }

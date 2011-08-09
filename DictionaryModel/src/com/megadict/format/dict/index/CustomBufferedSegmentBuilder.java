@@ -21,18 +21,13 @@ public class CustomBufferedSegmentBuilder extends BaseSegmentBuilder implements 
         DataInputStream reader = null;
         try {
             reader = makeReader();
-            while (reader.read(inputBuffer) != -1) {
-                processLeftOverFromPreviousReadIfAny();
-                createAndSaveSegmentToFile();
-            }
+            readIndexFileAndPerformSplitting(reader);
         } catch (FileNotFoundException fnf) {
             throw new ResourceMissingException(indexFile());
         } catch (IOException ioe) {
             throw new OperationFailedException("reading index file", ioe);
         } finally {
-            if (reader != null) {
-                closeReader(reader);
-            }
+            closeReader(reader);
         }
     }
 
@@ -40,10 +35,27 @@ public class CustomBufferedSegmentBuilder extends BaseSegmentBuilder implements 
         return new DataInputStream(new FileInputStream(indexFile()));
     }
 
-    private void processLeftOverFromPreviousReadIfAny() {
+    private void closeReader(DataInputStream reader) {
+        try {
+            if (reader != null) {
+                reader.close();
+            }
+        } catch (IOException ioe) {
+            throw new OperationFailedException("closing data input stream", ioe);
+        }
+    }
+
+    private void readIndexFileAndPerformSplitting(DataInputStream reader) throws IOException {
+        while (reader.read(inputBuffer) != -1) {
+            cleanUpBufferContent();
+            createAndSaveSegmentToFile();
+        }
+    }
+
+    private void cleanUpBufferContent() {
         cleanLeftOverIfAny();
         appendPreviousLeftOverIfAny();
-        updateLeftOver();
+        updateLeftOverForNextRead();
     }
 
     private void cleanLeftOverIfAny() {
@@ -55,7 +67,7 @@ public class CustomBufferedSegmentBuilder extends BaseSegmentBuilder implements 
         resetBuffer(outputBuffer);
         return BufferTool.copyBackwardWithOffset(inputBuffer, leftOver.length, outputBuffer);
     }
-
+    
     private void resetBuffer(byte[] buffer) {
         Arrays.fill(buffer, (byte) 0);
     }
@@ -65,11 +77,12 @@ public class CustomBufferedSegmentBuilder extends BaseSegmentBuilder implements 
     }
 
     private byte[] appendPreviousLeftOver(byte[] previousBuffer) {
+        startPositionToWrite = determineSegmentContentOffset();
         int usedSpaceInOutputBuffer = inputBuffer.length - currentLeftOver.length;
         return BufferTool.copyBackwardWithDestOffset(previousLeftOver, outputBuffer, usedSpaceInOutputBuffer);
     }
-    
-    private void updateLeftOver() {
+
+    private void updateLeftOverForNextRead() {
         previousLeftOver = currentLeftOver;
         currentLeftOver = EMPTY_BUFFER;
     }
@@ -105,34 +118,14 @@ public class CustomBufferedSegmentBuilder extends BaseSegmentBuilder implements 
     }
 
     private void saveSegmentToFile(Segment segment) {
-        BufferedOutputStream writer = null;
-        try {
-            writer = new BufferedOutputStream(new FileOutputStream(segment.file()));
-            writer.write(inputBuffer);
-            writer.flush();
-        } catch (FileNotFoundException fnf) {
-            throw new ResourceMissingException(segment.file());
-        } catch (IOException ioe) {
-            throw new OperationFailedException("writing segment file", ioe);
-        } finally {
-            closeWriter(writer);
-        }
+        new SegmentWriter().write(segment, outputBuffer, startPositionToWrite);
     }
-
-    private void closeReader(DataInputStream reader) {
-        try {
-            reader.close();
-        } catch (IOException ioe) {
-            throw new OperationFailedException("closing data input stream", ioe);
-        }
-    }
-
-    private void closeWriter(BufferedOutputStream writer) {
-        try {
-            writer.close();
-        } catch (IOException ioe) {
-            throw new OperationFailedException("closing writer", ioe);
-        }
+    
+    private int determineSegmentContentOffset() {
+        int lengthBeforeAppendPreviousLeftOver = inputBuffer.length - currentLeftOver.length;
+        int lengthAfterAppend = lengthBeforeAppendPreviousLeftOver + previousLeftOver.length;
+        int startPosition = outputBuffer.length - lengthAfterAppend;
+        return startPosition;
     }
 
     private static final byte[] EMPTY_BUFFER = new byte[0];
@@ -140,4 +133,5 @@ public class CustomBufferedSegmentBuilder extends BaseSegmentBuilder implements 
     private byte[] outputBuffer = new byte[BUFFER_SIZE + 300];
     private byte[] previousLeftOver = EMPTY_BUFFER;
     private byte[] currentLeftOver = EMPTY_BUFFER;
+    private int startPositionToWrite = 0;
 }

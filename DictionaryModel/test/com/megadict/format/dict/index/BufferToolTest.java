@@ -113,29 +113,29 @@ public class BufferToolTest {
         assertEquals(rawContent, concatenatedInString);
     }
 
-    @Test
-    public void testCopyBackward() {
-        String source = "This is the original content";
-        String dest = "OK, ............................";
-
-        String expectedDest = "OK, This is the original content";
-
-        byte[] actualInByteArray = BufferTool.copyBackward(source.getBytes(), dest.getBytes());
-        String actualDest = new String(actualInByteArray);
-
-        assertEquals(expectedDest, actualDest);
-    }
-
-    @Test
-    public void testCopyBackwardWithDestOffset() {
-        String source = "This is the original content";
-        String dest = "OK, ............................, after appending";
-
-        String expectedDest = "OK, This is the original content, after appending";
-
-        byte[] actualInByteArray = BufferTool.copyBackwardWithDestOffset(source.getBytes(), dest.getBytes(), 17);
-        String actualDest = new String(actualInByteArray);
-        
-        assertEquals(expectedDest, actualDest);
-    }
+//    @Test
+//    public void testCopyBackward() {
+//        String source = "This is the original content";
+//        String dest = "OK, ............................";
+//
+//        String expectedDest = "OK, This is the original content";
+//
+//        byte[] actualInByteArray = BufferTool.copyBackward(source.getBytes(), dest.getBytes());
+//        String actualDest = new String(actualInByteArray);
+//
+//        assertEquals(expectedDest, actualDest);
+//    }
+//
+//    @Test
+//    public void testCopyBackwardWithDestOffset() {
+//        String source = "This is the original content";
+//        String dest = "OK, ............................, after appending";
+//
+//        String expectedDest = "OK, This is the original content, after appending";
+//
+//        byte[] actualInByteArray = BufferTool.copyBackwardWithDestOffset(source.getBytes(), dest.getBytes(), 17);
+//        String actualDest = new String(actualInByteArray);
+//        
+//        assertEquals(expectedDest, actualDest);
+//    }
 }
