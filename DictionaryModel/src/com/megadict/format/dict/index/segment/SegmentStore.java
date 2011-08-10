@@ -1,4 +1,4 @@
-package com.megadict.format.dict.index;
+package com.megadict.format.dict.index.segment;
 
 import java.util.Collection;
 import java.util.SortedMap;

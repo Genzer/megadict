@@ -1,8 +1,8 @@
-package com.megadict.format.dict.index;
+package com.megadict.format.dict.index.segment;
 
 import java.util.List;
 
-interface SegmentBuilder {
+public interface SegmentBuilder {
     
     boolean checkIfSegmentIndexExists();
     

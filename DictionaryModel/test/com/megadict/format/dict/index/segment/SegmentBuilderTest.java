@@ -1,4 +1,4 @@
-package com.megadict.format.dict.index;
+package com.megadict.format.dict.index.segment;
 
 import static org.junit.Assert.*;
 
@@ -7,13 +7,17 @@ import java.util.List;
 
 import org.junit.Test;
 
+import com.megadict.format.dict.index.segment.ByteBufferedSegmentBuilder;
+import com.megadict.format.dict.index.segment.Segment;
+import com.megadict.format.dict.index.segment.SegmentBuilder;
+
 public class SegmentBuilderTest {
 
     @Test
     public void testBuild() {
         File indexFile = new File("C:/test/av.index");
         
-        SegmentBuilder builder = new DirectByteBufferedSegnmentBuilder(indexFile);
+        SegmentBuilder builder = new ByteBufferedSegmentBuilder(indexFile);
         
         builder.build();
         

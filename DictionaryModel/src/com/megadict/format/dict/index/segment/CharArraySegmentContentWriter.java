@@ -1,13 +1,13 @@
-package com.megadict.format.dict.index;
+package com.megadict.format.dict.index.segment;
 
 import java.io.*;
 
 import com.megadict.exception.OperationFailedException;
 import com.megadict.exception.ResourceMissingException;
 
-public class ByteArraySegmentContentWriter {
-
-    public void write(Segment segment, byte[] content, int startPosition) {
+public class CharArraySegmentContentWriter {
+    
+    public void write(Segment segment, char[] content, int startPosition) {
         try {
             makeWriter(segment.file());
             writeSegmentContent(content, startPosition);
@@ -20,12 +20,12 @@ public class ByteArraySegmentContentWriter {
         }
     }
     
-    private void makeWriter(File segmentFile) throws FileNotFoundException {
-        FileOutputStream rawStream = new FileOutputStream(segmentFile);
-        writer = new BufferedOutputStream(rawStream, BUFFER_SIZE_IN_BYTES);
+    private void makeWriter(File segmentFile) throws IOException {
+        FileWriter rawWriter = new FileWriter(segmentFile);
+        writer = new BufferedWriter(rawWriter, BUFFER_SIZE_IN_BYTES);
     }
     
-    private void writeSegmentContent(byte[] content, int startPosition) throws IOException {
+    private void writeSegmentContent(char[] content, int startPosition) throws IOException {
         int lengthToWrite = content.length - startPosition;
         writer.write(content, startPosition, lengthToWrite);
         writer.flush();
@@ -40,5 +40,7 @@ public class ByteArraySegmentContentWriter {
     }
     
     private static final int BUFFER_SIZE_IN_BYTES = 8 * 1024;
-    BufferedOutputStream writer;
+    BufferedWriter writer;
+    
+    
 }

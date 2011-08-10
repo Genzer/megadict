@@ -1,8 +1,10 @@
-package com.megadict.format.dict.index;
+package com.megadict.format.dict.index.segment;
 
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+
+import com.megadict.format.dict.index.segment.Segment;
 
 public class SegmentTest {
 
