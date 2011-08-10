@@ -2,7 +2,7 @@ package com.megadict.format.dict.index;
 
 import java.util.List;
 
-public interface IndexStore {
+public interface IndexStoreDefaultImpl {
 
     public Index getIndexOf(String headword);
 

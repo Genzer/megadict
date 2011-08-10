@@ -13,7 +13,7 @@ public class SegmentBuilderTest {
     public void testBuild() {
         File indexFile = new File("C:/test/av.index");
         
-        SegmentBuilder builder = new CustomBufferedSegmentBuilder(indexFile);
+        SegmentBuilder builder = new DirectByteBufferedSegnmentBuilder(indexFile);
         
         builder.build();
         

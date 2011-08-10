@@ -5,11 +5,11 @@ public class IndexStoreFactory {
     private IndexStoreFactory() {
     }
 
-    public static IndexStore newDefaultIndexStore(IndexFile indexFile) {
+    public static IndexStoreDefaultImpl newDefaultIndexStore(IndexFile indexFile) {
         return new BaseIndexStore(indexFile);
     }
 
-    public static IndexStore newIndexStoreSupportSegment(IndexFile indexFile) {
+    public static IndexStoreDefaultImpl newIndexStoreSupportSegment(IndexFile indexFile) {
         return new IndexStoreWithSegmentSupport(indexFile);
     }
 }

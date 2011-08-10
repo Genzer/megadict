@@ -153,7 +153,7 @@ public class DICTDictionary implements Dictionary {
     private String name;
     private DefinitionFinder definitionFinder;
     private Map<String, Definition> definitionCache = new HashMap<String, Definition>();
-    private IndexStore supportedWords;
+    private IndexStoreDefaultImpl supportedWords;
 
     private static final String NAME_REDUNDANT_STRING = "@00-database-short- FVDP ";
     private static final String TO_STRING_PATTERN = "DICTDictionary[name: %s; indexFile: %s; dictFile: %s]";

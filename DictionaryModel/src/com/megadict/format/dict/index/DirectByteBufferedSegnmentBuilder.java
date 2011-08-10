@@ -4,15 +4,15 @@ import java.io.*;
 import java.util.*;
 import com.megadict.exception.*;
 
-public class CustomBufferedSegmentBuilder extends BaseSegmentBuilder implements SegmentBuilder {
+public class DirectByteBufferedSegnmentBuilder extends BaseSegmentBuilder implements SegmentBuilder {
 
-    public CustomBufferedSegmentBuilder(File indexFile) {
+    public DirectByteBufferedSegnmentBuilder(File indexFile) {
         super(indexFile);
     }
 
     @Override
     public List<Segment> builtSegments() {
-        return createdSegments;
+        return getCreatedSegment();
     }
 
     @Override
@@ -106,11 +106,12 @@ public class CustomBufferedSegmentBuilder extends BaseSegmentBuilder implements 
     }
 
     private String firstWordInBlock() {
+        
         return BufferTool.firstHeadWordIn(inputBuffer);
     }
 
     private String lastWordInBlock() {
-        return BufferTool.lastHeadWordIn(inputBuffer);
+        return BufferTool.lastHeadWordIn(outputBuffer);
     }
 
     private File makeCurrentSegmentFile() {
@@ -118,7 +119,7 @@ public class CustomBufferedSegmentBuilder extends BaseSegmentBuilder implements 
     }
 
     private void saveSegmentToFile(Segment segment) {
-        new SegmentWriter().write(segment, outputBuffer, startPositionToWrite);
+        new ByteArraySegmentContentWriter().write(segment, outputBuffer, startPositionToWrite);
     }
     
     private int determineSegmentContentOffset() {
@@ -130,7 +131,7 @@ public class CustomBufferedSegmentBuilder extends BaseSegmentBuilder implements 
 
     private static final byte[] EMPTY_BUFFER = new byte[0];
     private byte[] inputBuffer = new byte[BUFFER_SIZE];
-    private byte[] outputBuffer = new byte[BUFFER_SIZE + 300];
+    private byte[] outputBuffer = new byte[BUFFER_SIZE + 500];
     private byte[] previousLeftOver = EMPTY_BUFFER;
     private byte[] currentLeftOver = EMPTY_BUFFER;
     private int startPositionToWrite = 0;

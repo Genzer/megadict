@@ -1,6 +1,6 @@
 package com.megadict.format.dict.index;
 
-public class BufferTool {
+public class CharBufferTool {
 
     private static enum SearchDirection {
         FORWARD(1) {
@@ -28,17 +28,17 @@ public class BufferTool {
         private final int incrementValue;
     }
 
-    private BufferTool() {
+    private CharBufferTool() {
     }
 
-    public static String firstHeadWordIn(byte[] buffer) {
+    public static String firstHeadWordIn(char[] buffer) {
         return (buffer.length == 0) ? "" : findAndExtractFirstHeadWord(buffer);
     }
 
-    private static String findAndExtractFirstHeadWord(byte[] buffer) {
+    private static String findAndExtractFirstHeadWord(char[] buffer) {
         int maxCharsToFind = 100;
         int firstTabChar = findFirstTabCharInBeginningChars(maxCharsToFind, buffer);
-        byte[] firstWordInBytes = wasNotFound(firstTabChar) ? EMPTY_CONTENT : copyOfRange(buffer, 0, firstTabChar);
+        char[] firstWordInBytes = wasNotFound(firstTabChar) ? EMPTY_CONTENT : copyOfRange(buffer, 0, firstTabChar);
         return new String(firstWordInBytes);
     }
 
@@ -46,7 +46,7 @@ public class BufferTool {
         return returnedPosition == NOT_FOUND;
     }
 
-    private static int findFirstTabCharInBeginningChars(int numOfChars, byte[] byteArray) {
+    private static int findFirstTabCharInBeginningChars(int numOfChars, char[] byteArray) {
         int start = 0;
         int end = Math.min(numOfChars, byteArray.length);
         char tabChar = '\t';
@@ -54,22 +54,22 @@ public class BufferTool {
         return findFowardFirstOccurrenceOfCharInRange(byteArray, start, end, tabChar);
     }
 
-    public static String lastHeadWordIn(byte[] buffer) {
+    public static String lastHeadWordIn(char[] buffer) {
         return (buffer.length == 0) ? "" : findAndExtractLastHeadWord(buffer);
     }
 
-    private static String findAndExtractLastHeadWord(byte[] buffer) {
+    private static String findAndExtractLastHeadWord(char[] buffer) {
         int newLineChar = findLastNewlineChar(buffer);
-        byte[] fullContent = wasNotFound(newLineChar) ? EMPTY_CONTENT : copyOfRange(buffer, newLineChar + 1,
+        char[] fullContent = wasNotFound(newLineChar) ? EMPTY_CONTENT : copyOfRange(buffer, newLineChar + 1,
                 buffer.length);
 
         int firstTabChar = findFirstTabCharInBeginningChars(fullContent.length, fullContent);
-        byte[] headWord = wasNotFound(firstTabChar) ? EMPTY_CONTENT : copyOfRange(fullContent, 0, firstTabChar);
+        char[] headWord = wasNotFound(firstTabChar) ? EMPTY_CONTENT : copyOfRange(fullContent, 0, firstTabChar);
 
         return new String(headWord);
     }
 
-    private static int findLastNewlineChar(byte[] byteArray) {
+    private static int findLastNewlineChar(char[] byteArray) {
         int start = byteArray.length - 1;
         int end = 0;
         char newlineChar = '\n';
@@ -77,15 +77,15 @@ public class BufferTool {
         return findBackwardFirstOccurrenceOfCharInRange(byteArray, start, end, newlineChar);
     }
 
-    private static int findFowardFirstOccurrenceOfCharInRange(byte[] searchArray, int start, int end, char charToFind) {
+    private static int findFowardFirstOccurrenceOfCharInRange(char[] searchArray, int start, int end, char charToFind) {
         return findFirstOccurrenceOfCharInRange(searchArray, start, end, charToFind, SearchDirection.FORWARD);
     }
 
-    private static int findBackwardFirstOccurrenceOfCharInRange(byte[] searchArray, int start, int end, char charToFind) {
+    private static int findBackwardFirstOccurrenceOfCharInRange(char[] searchArray, int start, int end, char charToFind) {
         return findFirstOccurrenceOfCharInRange(searchArray, start, end, charToFind, SearchDirection.BACKWARD);
     }
 
-    private static int findFirstOccurrenceOfCharInRange(byte[] searchArray, int start, int end, char charToFind,
+    private static int findFirstOccurrenceOfCharInRange(char[] searchArray, int start, int end, char charToFind,
             SearchDirection search) {
 
         for (int i = start; search.isOver(i, end); i = search.next(i)) {
@@ -96,26 +96,26 @@ public class BufferTool {
         return -1;
     }
 
-    private static byte[] copyOfRange(byte[] original, int from, int to) {
+    private static char[] copyOfRange(char[] original, int from, int to) {
         int newLength = to - from;
 
         if (newLength < 0) {
             throw new IllegalArgumentException(from + " > " + to);
         }
 
-        byte[] copy = new byte[newLength];
+        char[] copy = new char[newLength];
 
         System.arraycopy(original, from, copy, 0, Math.min(original.length - from, newLength));
 
         return copy;
     }
 
-    public static byte[] extractBufferLeftOver(byte[] buffer) {
+    public static char[] extractBufferLeftOver(char[] buffer) {
 
         int lastPositionOfNewlineChar = findLastNewlineChar(buffer);
 
         int leftOverLength = (buffer.length - 1) - lastPositionOfNewlineChar;
-        byte[] leftOver = new byte[leftOverLength];
+        char[] leftOver = new char[leftOverLength];
 
         int leftOverIndex = 0;
         for (int i = lastPositionOfNewlineChar + 1; i < buffer.length; i++) {
@@ -126,23 +126,23 @@ public class BufferTool {
         return leftOver;
     }
 
-    public static byte[] cleanLeftOver(byte[] buffer) {
+    public static char[] cleanLeftOver(char[] buffer) {
         int newlineChar = findLastNewlineChar(buffer);
         return wasNotFound(newlineChar) ? EMPTY_CONTENT : copyOfRange(buffer, 0, newlineChar);
     }
 
-    public static byte[] concatenate(byte[] arrayA, byte[] arrayB) {
-        byte[] newArray = new byte[arrayA.length + arrayB.length];
+    public static char[] concatenate(char[] arrayA, char[] arrayB) {
+        char[] newArray = new char[arrayA.length + arrayB.length];
         System.arraycopy(arrayA, 0, newArray, 0, arrayA.length);
         System.arraycopy(arrayB, 0, newArray, arrayA.length, arrayB.length);
         return newArray;
     }
 
-    public static byte[] copyBackward(byte[] source, byte[] dest) {
+    public static char[] copyBackward(char[] source, char[] dest) {
         return copyBackwardWithOffset(source, 0, dest);
     }
 
-    public static byte[] copyBackwardWithOffset(byte[] source, int offsetBackward, byte[] dest) {
+    public static char[] copyBackwardWithOffset(char[] source, int offsetBackward, char[] dest) {
         int sourceLengthToCopy = source.length - offsetBackward;
 
         if (dest.length < sourceLengthToCopy) {
@@ -161,7 +161,7 @@ public class BufferTool {
         return dest;
     }
 
-    public static byte[] copyBackwardWithDestOffset(byte[] source, byte[] dest, int offsetBackward) {
+    public static char[] copyBackwardWithDestOffset(char[] source, char[] dest, int offsetBackward) {
         int remainingSpaceInDest = dest.length - offsetBackward;
 
         if (remainingSpaceInDest < source.length) {
@@ -174,18 +174,18 @@ public class BufferTool {
                             + remainingSpaceInDest);
 
         }
-        
+
         int sourceTracker = source.length - 1;
         int destTracker = remainingSpaceInDest - 1;
-        
+
         for (; sourceTracker >= 0; sourceTracker--) {
             dest[destTracker] = source[sourceTracker];
             destTracker--;
         }
-        
+
         return dest;
     }
 
     private static final byte NOT_FOUND = -1;
-    private static final byte[] EMPTY_CONTENT = new byte[0];
+    private static final char[] EMPTY_CONTENT = new char[0];
 }

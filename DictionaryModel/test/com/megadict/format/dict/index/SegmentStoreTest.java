@@ -25,11 +25,11 @@ public class SegmentStoreTest {
 
     @Test
     public void testGetSegmentContains() {
-        SegmentLocator store = new SegmentLocator(Arrays.asList(segments));
+        SegmentStore store = new SegmentStore(Arrays.asList(segments));
 
         String testWord = "abasement";
         Segment expectedSegment = new Segment("abasement", "abbey");
-        Segment foundSegment = store.locateSegmentPossiblyContains(testWord);
+        Segment foundSegment = store.findSegmentPossiblyContains(testWord);
 
         assertEquals(expectedSegment, foundSegment);
     }

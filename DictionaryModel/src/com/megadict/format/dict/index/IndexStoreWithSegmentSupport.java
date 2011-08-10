@@ -3,7 +3,7 @@ package com.megadict.format.dict.index;
 import java.io.File;
 import java.util.Set;
 
-class IndexStoreWithSegmentSupport extends BaseIndexStore implements IndexStore {
+class IndexStoreWithSegmentSupport extends BaseIndexStore implements IndexStoreDefaultImpl {
 
     public IndexStoreWithSegmentSupport(IndexFile indexFile) {
         super(indexFile);
@@ -22,7 +22,7 @@ class IndexStoreWithSegmentSupport extends BaseIndexStore implements IndexStore 
     }
     
     private SegmentBuilder makeSegmentBuilder() {
-        return new CustomBufferedSegmentBuilder(indexFile.asRawFile());
+        return new DirectByteBufferedSegnmentBuilder(indexFile.asRawFile());
     }
     
     @Override
