@@ -1,6 +1,6 @@
 package com.megadict.format.dict.index.segment;
 
-public class BufferTool {
+public class ByteBufferTool {
 
     private static enum SearchDirection {
         FORWARD(1) {
@@ -28,7 +28,7 @@ public class BufferTool {
         private final int incrementValue;
     }
 
-    private BufferTool() {
+    private ByteBufferTool() {
     }
 
     public static String firstHeadWordIn(byte[] buffer) {
@@ -36,22 +36,31 @@ public class BufferTool {
     }
 
     private static String findAndExtractFirstHeadWord(byte[] buffer) {
-        int maxCharsToFind = 100;
+        int maxCharsToFind = 300;
         int firstTabChar = findFirstTabCharInBeginningChars(maxCharsToFind, buffer);
-        byte[] firstWordInBytes = wasNotFound(firstTabChar) ? EMPTY_CONTENT : copyOfRange(buffer, 0, firstTabChar);
+        int lastNullChar = findBackwardFirstNullCharFromTabChar(firstTabChar, buffer);
+
+        int beginCopyPos = lastNullChar + 1;
+        byte[] firstWordInBytes = wasNotFound(firstTabChar) ? EMPTY_CONTENT : copyOfRange(buffer, beginCopyPos,
+                firstTabChar);
+
         return new String(firstWordInBytes);
     }
 
     private static boolean wasNotFound(int returnedPosition) {
-        return returnedPosition == NOT_FOUND;
+        return returnedPosition == -1;
     }
 
-    private static int findFirstTabCharInBeginningChars(int numOfChars, byte[] byteArray) {
+    private static int findFirstTabCharInBeginningChars(int numOfChars, byte[] content) {
         int start = 0;
-        int end = Math.min(numOfChars, byteArray.length);
+        int end = Math.min(numOfChars, content.length);
         char tabChar = '\t';
 
-        return findFowardFirstOccurrenceOfCharInRange(byteArray, start, end, tabChar);
+        return findFowardFirstOccurrenceOfCharInRange(content, start, end, tabChar);
+    }
+
+    private static int findBackwardFirstNullCharFromTabChar(int tabCharPos, byte[] content) {
+        return findBackwardFirstOccurrenceOfCharInRange(content, tabCharPos, 0, '\0');
     }
 
     public static String lastHeadWordIn(byte[] buffer) {
@@ -126,61 +135,46 @@ public class BufferTool {
         return leftOver;
     }
 
-    public static byte[] concatenate(byte[] arrayA, byte[] arrayB) {
-        byte[] newArray = new byte[arrayA.length + arrayB.length];
-        System.arraycopy(arrayA, 0, newArray, 0, arrayA.length);
-        System.arraycopy(arrayB, 0, newArray, arrayA.length, arrayB.length);
-        return newArray;
-    }
-
-    public static byte[] copyBackward(byte[] source, byte[] dest) {
-        return copyBackwardWithOffset(source, 0, dest);
-    }
-
-    public static byte[] copyBackwardWithOffset(byte[] source, int offsetBackward, byte[] dest) {
+    public static byte[] copyBackwardFromSourceOffset(byte[] source, int offsetBackward, byte[] dest) {
         int sourceLengthToCopy = source.length - offsetBackward;
 
         if (dest.length < sourceLengthToCopy) {
-            throw new IllegalArgumentException("Length of source array is bigger than dest array's: "
-                    + sourceLengthToCopy + ">" + dest.length);
+            throw new IllegalArgumentException("The dest does not have enough spaces to hold the source content: "
+                    + dest.length + "<" + sourceLengthToCopy);
         }
 
-        int sourceTracker = sourceLengthToCopy - 1;
-        int destTracker = dest.length - 1;
+        int srcPos = sourceLengthToCopy - 1;
+        int destPos = dest.length - 1;
+        SearchDirection search = SearchDirection.BACKWARD;
 
-        for (; sourceTracker >= 0; sourceTracker--) {
-            dest[destTracker] = source[sourceTracker];
-            destTracker--;
+        for (; search.isOver(srcPos, 0); srcPos = search.next(srcPos)) {
+
+            dest[destPos] = source[srcPos];
+            destPos = search.next(destPos);
         }
 
         return dest;
     }
 
-    public static byte[] copyBackwardWithDestOffset(byte[] source, byte[] dest, int offsetBackward) {
+    public static byte[] copyBackwardToDestOffset(byte[] source, byte[] dest, int offsetBackward) {
         int remainingSpaceInDest = dest.length - offsetBackward;
 
         if (remainingSpaceInDest < source.length) {
-            System.out.println(new String(source));
-            System.out.println(new String(dest));
-            System.out.println(dest.length);
-            System.out.println(offsetBackward);
-            throw new IllegalArgumentException(
-                    "Length of source array is bigger than the remaining spaces of dest array: " + source.length + ">"
-                            + remainingSpaceInDest);
+            throw new IllegalArgumentException("Length of source array is bigger than"
+                    + " the remaining spaces of dest array: " + source.length + ">" + remainingSpaceInDest);
 
         }
-        
+
         int sourceTracker = source.length - 1;
         int destTracker = remainingSpaceInDest - 1;
-        
+
         for (; sourceTracker >= 0; sourceTracker--) {
             dest[destTracker] = source[sourceTracker];
             destTracker--;
         }
-        
+
         return dest;
     }
-
-    private static final byte NOT_FOUND = -1;
+    
     private static final byte[] EMPTY_CONTENT = new byte[0];
 }

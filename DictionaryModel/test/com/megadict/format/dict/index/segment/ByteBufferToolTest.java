@@ -4,9 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import com.megadict.format.dict.index.segment.CharBufferTool;
-
-public class CharBufferToolTest {
+public class ByteBufferToolTest {
 
     private static final String rawContent = "A shares\tppv+\tBd\nA4-size\toOVN\t0\naa\tsnur\tBX\naaa\tsnw"
             + "C\tCE\naardvark\tsnyG\t1\naard-wolf\t5k\tBZ\naardwolf\tsny7\t9\naasvogel\t"
@@ -23,20 +21,20 @@ public class CharBufferToolTest {
     @Test
     public void testGetFirstHeadWord() {
         String expected = "A shares";
-        String actual = CharBufferTool.firstHeadWordIn(rawContent.toCharArray());
+        String actual = ByteBufferTool.firstHeadWordIn(rawContent.getBytes());
         assertEquals(expected, actual);
     }
 
     @Test
     public void testGetFirstHeadWordkWithEmptyInput() {
-        String actual = CharBufferTool.firstHeadWordIn(new char[0]);
+        String actual = ByteBufferTool.firstHeadWordIn(new byte[0]);
         assertEquals("", actual);
     }
 
     @Test
     public void testGetFirstHeadWordWithShortInput() {
         String shortInput = "ds8 23324 tra";
-        String actual = CharBufferTool.firstHeadWordIn(shortInput.toCharArray());
+        String actual = ByteBufferTool.firstHeadWordIn(shortInput.getBytes());
         assertEquals("", actual);
     }
 
@@ -56,21 +54,21 @@ public class CharBufferToolTest {
 
         String expected = "abatement";
 
-        String actual = CharBufferTool.lastHeadWordIn(givenContent.toCharArray());
+        String actual = ByteBufferTool.lastHeadWordIn(givenContent.getBytes());
 
         assertEquals(expected, actual);
     }
 
     @Test
     public void testGetLastHeadWordWithEmptyInput() {
-        String actual = CharBufferTool.lastHeadWordIn(new char[0]);
+        String actual = ByteBufferTool.lastHeadWordIn(new byte[0]);
         assertEquals("", actual);
     }
 
     @Test
     public void testGetLastHeadWordWithShortInput() {
         String shortInput = "ds8 23324 tra";
-        String actual = CharBufferTool.lastHeadWordIn(shortInput.toCharArray());
+        String actual = ByteBufferTool.lastHeadWordIn(shortInput.getBytes());
         assertEquals("", actual);
     }
 
@@ -78,7 +76,7 @@ public class CharBufferToolTest {
     public void testExtractBufferLeftOver() {
         String expectedLeftOver = "abatement\tre34\teA3";
 
-        char[] actualLeftOver = CharBufferTool.extractBufferLeftOver(rawContent.toCharArray());
+        byte[] actualLeftOver = ByteBufferTool.extractBufferLeftOver(rawContent.getBytes());
 
         String actualLeftOverInString = new String(actualLeftOver);
 
@@ -87,16 +85,17 @@ public class CharBufferToolTest {
 
     @Test
     public void testCopyBackwardFromSourceOffset() {
-        String givenSource = "This is the original content\nLeftOver"; //29 + 8 chars
+        String givenSource = "This is the original content\nLeftOver"; // 29 + 8
+                                                                       // chars
         String leftOver = "LeftOver";
         String dest = "OK, 12345678901234567890123456789";
 
         String expectedDest = "OK, This is the original content\n";
 
-        char[] actualDestInCharArray = CharBufferTool.copyBackwardFromSourceOffset(givenSource.toCharArray(),
-                leftOver.length(), dest.toCharArray());
+        byte[] actualDestInCharArray = ByteBufferTool.copyBackwardFromSourceOffset(givenSource.getBytes(),
+                leftOver.length(), dest.getBytes());
         String actualDest = new String(actualDestInCharArray);
-        
+
         assertEquals(expectedDest, actualDest);
     }
 
@@ -107,8 +106,8 @@ public class CharBufferToolTest {
 
         String expectedDest = "OK, This is the original content, after appending";
 
-        char[] actualInByteArray = CharBufferTool
-                .copyBackwardToDestOffset(source.toCharArray(), dest.toCharArray(), 17);
+        byte[] actualInByteArray = ByteBufferTool
+                .copyBackwardToDestOffset(source.getBytes(), dest.getBytes(), ", after appending".length());
         String actualDest = new String(actualInByteArray);
 
         assertEquals(expectedDest, actualDest);

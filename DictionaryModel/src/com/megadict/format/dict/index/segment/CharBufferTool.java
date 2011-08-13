@@ -36,9 +36,14 @@ public class CharBufferTool {
     }
 
     private static String findAndExtractFirstHeadWord(char[] buffer) {
-        int maxCharsToFind = 100;
+        int maxCharsToFind = 300;
         int firstTabChar = findFirstTabCharInBeginningChars(maxCharsToFind, buffer);
-        char[] firstWordInBytes = wasNotFound(firstTabChar) ? EMPTY_CONTENT : copyOfRange(buffer, 0, firstTabChar);
+        int lastNullChar = findBackwardFirstNullCharFromTabChar(firstTabChar, buffer);
+
+        int beginCopyPos = lastNullChar + 1;
+        char[] firstWordInBytes = wasNotFound(firstTabChar) ? EMPTY_CONTENT : copyOfRange(buffer, beginCopyPos,
+                firstTabChar);
+
         return new String(firstWordInBytes);
     }
 
@@ -46,12 +51,16 @@ public class CharBufferTool {
         return returnedPosition == NOT_FOUND;
     }
 
-    private static int findFirstTabCharInBeginningChars(int numOfChars, char[] byteArray) {
+    private static int findFirstTabCharInBeginningChars(int numOfChars, char[] content) {
         int start = 0;
-        int end = Math.min(numOfChars, byteArray.length);
+        int end = Math.min(numOfChars, content.length);
         char tabChar = '\t';
 
-        return findFowardFirstOccurrenceOfCharInRange(byteArray, start, end, tabChar);
+        return findFowardFirstOccurrenceOfCharInRange(content, start, end, tabChar);
+    }
+
+    private static int findBackwardFirstNullCharFromTabChar(int tabCharPos, char[] content) {
+        return findBackwardFirstOccurrenceOfCharInRange(content, tabCharPos, 0, '\0');
     }
 
     public static String lastHeadWordIn(char[] buffer) {
@@ -126,17 +135,6 @@ public class CharBufferTool {
         return leftOver;
     }
 
-    public static char[] concatenate(char[] arrayA, char[] arrayB) {
-        char[] newArray = new char[arrayA.length + arrayB.length];
-        System.arraycopy(arrayA, 0, newArray, 0, arrayA.length);
-        System.arraycopy(arrayB, 0, newArray, arrayA.length, arrayB.length);
-        return newArray;
-    }
-
-    public static char[] copyBackward(char[] source, char[] dest) {
-        return copyBackwardFromSourceOffset(source, 0, dest);
-    }
-
     public static char[] copyBackwardFromSourceOffset(char[] source, int offsetBackward, char[] dest) {
         int sourceLengthToCopy = source.length - offsetBackward;
 
@@ -162,13 +160,8 @@ public class CharBufferTool {
         int remainingSpaceInDest = dest.length - offsetBackward;
 
         if (remainingSpaceInDest < source.length) {
-            System.out.println(new String(source));
-            System.out.println(new String(dest));
-            System.out.println(dest.length);
-            System.out.println(offsetBackward);
-            throw new IllegalArgumentException(
-                    "Length of source array is bigger than the remaining spaces of dest array: " + source.length + ">"
-                            + remainingSpaceInDest);
+            throw new IllegalArgumentException("Length of source array is bigger than"
+                    + " the remaining spaces of dest array: " + source.length + ">" + remainingSpaceInDest);
 
         }
 

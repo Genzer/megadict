@@ -85,7 +85,7 @@ public class CharBufferedSegmentBuilder extends BaseSegmentBuilder implements Se
     }
 
     private String lastWordInBlock() {
-        return buffer.headWord();
+        return buffer.lastWord();
     }
 
     private File makeCurrentSegmentFile() {
@@ -93,8 +93,9 @@ public class CharBufferedSegmentBuilder extends BaseSegmentBuilder implements Se
     }
 
     private void saveSegmentToFile(Segment segment) {
-        new CharArraySegmentContentWriter().write(segment, buffer.outputBuffer(), buffer.startPositionToWrite());
+        segmentWriter.write(segment, buffer.outputBuffer(), buffer.startPositionToWrite());
     }
 
     private CharArrayInnerBuffer buffer = new CharArrayInnerBuffer(BUFFER_SIZE_IN_BYTES);
+    private CharArraySegmentContentWriter segmentWriter = new CharArraySegmentContentWriter(true);
 }

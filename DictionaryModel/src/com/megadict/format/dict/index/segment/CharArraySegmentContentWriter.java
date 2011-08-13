@@ -7,6 +7,14 @@ import com.megadict.exception.ResourceMissingException;
 
 public class CharArraySegmentContentWriter {
     
+    public CharArraySegmentContentWriter() {
+        this.bufferEnabled = false;
+    }
+    
+    public CharArraySegmentContentWriter(boolean bufferEnabled) {
+        this.bufferEnabled = bufferEnabled;
+    }
+    
     public void write(Segment segment, char[] content, int startPosition) {
         try {
             makeWriter(segment.file());
@@ -21,8 +29,15 @@ public class CharArraySegmentContentWriter {
     }
     
     private void makeWriter(File segmentFile) throws IOException {
-        FileWriter rawWriter = new FileWriter(segmentFile);
-        writer = new BufferedWriter(rawWriter, BUFFER_SIZE_IN_BYTES);
+        writer = bufferEnabled ? makeBufferedWriter(segmentFile) : makeRegularWriter(segmentFile);
+    }
+    
+    private Writer makeBufferedWriter(File segmentFile) throws IOException {
+        return new BufferedWriter(makeRegularWriter(segmentFile), BUFFER_SIZE_IN_BYTES);
+    }
+    
+    private Writer makeRegularWriter(File segmentFile) throws IOException {
+        return new FileWriter(segmentFile);
     }
     
     private void writeSegmentContent(char[] content, int startPosition) throws IOException {
@@ -40,7 +55,6 @@ public class CharArraySegmentContentWriter {
     }
     
     private static final int BUFFER_SIZE_IN_BYTES = 8 * 1024;
-    BufferedWriter writer;
-    
-    
+    private final boolean bufferEnabled;
+    Writer writer;   
 }

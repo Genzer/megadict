@@ -2,6 +2,7 @@ package com.megadict.format.dict.index.segment;
 
 import java.io.*;
 import java.util.*;
+
 import com.megadict.exception.*;
 
 public class ByteBufferedSegmentBuilder extends BaseSegmentBuilder implements SegmentBuilder {
@@ -12,16 +13,16 @@ public class ByteBufferedSegmentBuilder extends BaseSegmentBuilder implements Se
 
     @Override
     public List<Segment> builtSegments() {
-        return getCreatedSegment();
+        return super.getCreatedSegment();
     }
 
     @Override
     public void build() {
 
-        DataInputStream reader = null;
+        InputStream reader = null;
         try {
             reader = makeReader();
-            readIndexFileAndPerformSplitting(reader);
+            readIndexFileAndSplitIt(reader);
         } catch (FileNotFoundException fnf) {
             throw new ResourceMissingException(indexFile());
         } catch (IOException ioe) {
@@ -31,11 +32,11 @@ public class ByteBufferedSegmentBuilder extends BaseSegmentBuilder implements Se
         }
     }
 
-    private DataInputStream makeReader() throws FileNotFoundException {
-        return new DataInputStream(new FileInputStream(indexFile()));
+    private InputStream makeReader() throws FileNotFoundException {
+        return new FileInputStream(indexFile());
     }
 
-    private void closeReader(DataInputStream reader) {
+    private void closeReader(InputStream reader) {
         try {
             if (reader != null) {
                 reader.close();
@@ -45,17 +46,17 @@ public class ByteBufferedSegmentBuilder extends BaseSegmentBuilder implements Se
         }
     }
 
-    private void readIndexFileAndPerformSplitting(DataInputStream reader) throws IOException {
-        while (stillReceiveDataFromReader(reader)) {
+    private void readIndexFileAndSplitIt(InputStream reader) throws IOException {
+        while (stillReceiveDataFrom(reader)) {
             cleanUpBufferContent();
             createAndSaveSegmentToFile();
         }
     }
 
-    private boolean stillReceiveDataFromReader(DataInputStream reader) throws IOException {
+    private boolean stillReceiveDataFrom(InputStream reader) throws IOException {
         return reader.read(buffer.inputBuffer()) != -1;
     }
-    
+
     private void cleanUpBufferContent() {
         buffer.clean();
     }
@@ -78,8 +79,8 @@ public class ByteBufferedSegmentBuilder extends BaseSegmentBuilder implements Se
         return new Segment(lowerbound, upperbound, currentSegmentFile);
     }
 
-    private String firstWordInBlock() {        
-        return buffer.firstWord();
+    private String firstWordInBlock() {
+        return buffer.fistWord();
     }
 
     private String lastWordInBlock() {
@@ -91,8 +92,9 @@ public class ByteBufferedSegmentBuilder extends BaseSegmentBuilder implements Se
     }
 
     private void saveSegmentToFile(Segment segment) {
-        new ByteArraySegmentContentWriter().write(segment, buffer.outputBuffer(), buffer.startPositionToWrite());
+        segmentWriter.write(segment, buffer.outputBuffer(), buffer.startPositionToWrite());
     }
 
     private ByteArrayInnerBuffer buffer = new ByteArrayInnerBuffer(BUFFER_SIZE_IN_BYTES);
+    private ByteArraySegmentContentWriter segmentWriter = new ByteArraySegmentContentWriter();
 }

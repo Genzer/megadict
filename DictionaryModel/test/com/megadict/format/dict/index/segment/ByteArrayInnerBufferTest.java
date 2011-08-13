@@ -1,10 +1,12 @@
 package com.megadict.format.dict.index.segment;
 
-import static org.junit.Assert.*;
-import org.junit.*;
+import static org.junit.Assert.assertEquals;
+
 import java.util.Arrays;
 
-public class CharArrayInnerBufferTest {
+import org.junit.Test;
+
+public class ByteArrayInnerBufferTest {
 
     private static final String GIVEN_EXPECTED_CLEANED_INPUT = "z\tr\nknobbed\twel9\tU\nknobble\tTLpO\t5\n"
             + "knobbly\tTLqH\tCa\nknobby\twemR\t+\nknobkerrie\twenP\tCA\nknobstick\tTLsh\t"
@@ -16,10 +18,10 @@ public class CharArrayInnerBufferTest {
 
     @Test
     public void testCleanLeftOver() {
-        
-        givenInputs(GIVEN_UNCLEANED_INPUT.toCharArray(), GIVEN_EXPECTED_CLEANED_INPUT.toCharArray());
-        givenLeftOvers(GIVEN_LEFT_OVER_FROM_INPUT.toCharArray(), GIVEN_PREVIOUS_LEFT_OVER.toCharArray());
-        
+
+        givenInputs(GIVEN_UNCLEANED_INPUT.getBytes(), GIVEN_EXPECTED_CLEANED_INPUT.getBytes());
+        givenLeftOvers(GIVEN_LEFT_OVER_FROM_INPUT.getBytes(), GIVEN_PREVIOUS_LEFT_OVER.getBytes());
+
         testBuffer = makeBufferFromGivenInput();
         final String expectedOuput = explectedAfterCleaningOutputBuffer();
 
@@ -29,31 +31,31 @@ public class CharArrayInnerBufferTest {
         String actual = new String(testBuffer.outputBuffer());
         assertEquals(expected, actual);
     }
-    
-    private void givenInputs(char[] inputBuffer, char[] expectedCleanInput) {
+
+    private void givenInputs(byte[] inputBuffer, byte[] expectedCleanInput) {
         this.givenInputBuffer = inputBuffer;
         this.givenExpectedCleanInput = expectedCleanInput;
     }
-    
-    private void givenLeftOvers(char[] currentLeftOver, char[] previousLeftOver) {
+
+    private void givenLeftOvers(byte[] currentLeftOver, byte[] previousLeftOver) {
         this.givenCurrentLeftOver = currentLeftOver;
         this.givenPreviousLeftOver = previousLeftOver;
     }
 
-    private CharArrayInnerBuffer makeBufferFromGivenInput() {
+    private ByteArrayInnerBuffer makeBufferFromGivenInput() {
         int testBufferSize = this.givenInputBuffer.length;
-        CharArrayInnerBuffer buffer = new CharArrayInnerBuffer(testBufferSize);
+        ByteArrayInnerBuffer buffer = new ByteArrayInnerBuffer(testBufferSize);
         System.arraycopy(this.givenInputBuffer, 0, buffer.inputBuffer(), 0, testBufferSize);
         return buffer;
     }
 
     private String explectedAfterCleaningOutputBuffer() {
         int outputBufferRemainingLength = computeOutputBufferLengthRemainsAfterCleaning();
-        
+
         String padding = createPadding(outputBufferRemainingLength);
-        StringBuilder expectedContent = 
-                new StringBuilder(padding.length() + this.givenExpectedCleanInput.length)
-                    .append(padding).append(this.givenExpectedCleanInput);
+        
+        StringBuilder expectedContent = new StringBuilder(padding.length() + this.givenExpectedCleanInput.length)
+                .append(new String(padding)).append(new String(givenExpectedCleanInput));
         return expectedContent.toString();
     }
 
@@ -63,23 +65,23 @@ public class CharArrayInnerBufferTest {
         int outputBufferLength = outputBufferLength();
         return outputBufferLength - inputLengthAfterClean;
     }
-    
+
     private int outputBufferLength() {
         return testBuffer.outputBuffer().length;
     }
 
     private static String createPadding(int length) {
-        char[] padding = new char[length];
-        Arrays.fill(padding, '\0');
+        byte[] padding = new byte[length];
+        Arrays.fill(padding, (byte) 0);
         return new String(padding);
     }
 
     @Test
     public void testAppendPreviousLeftOverIfAny() {
-        
-        givenInputs(GIVEN_UNCLEANED_INPUT.toCharArray(), GIVEN_EXPECTED_CLEANED_INPUT.toCharArray());
-        givenLeftOvers(GIVEN_LEFT_OVER_FROM_INPUT.toCharArray(), GIVEN_PREVIOUS_LEFT_OVER.toCharArray());
-        
+
+        givenInputs(GIVEN_UNCLEANED_INPUT.getBytes(), GIVEN_EXPECTED_CLEANED_INPUT.getBytes());
+        givenLeftOvers(GIVEN_LEFT_OVER_FROM_INPUT.getBytes(), GIVEN_PREVIOUS_LEFT_OVER.getBytes());
+
         testBuffer = makeBufferAndSetPreviousLeftOver();
 
         testBuffer.cleanLeftOverIfAny();
@@ -87,23 +89,22 @@ public class CharArrayInnerBufferTest {
 
         String expected = expectedOutputBufferAfterAppending(testBuffer.outputBuffer());
 
-        char[] actualOutput = testBuffer.outputBuffer();
+        byte[] actualOutput = testBuffer.outputBuffer();
         String actual = new String(actualOutput);
         assertEquals(expected, actual);
     }
 
-    private CharArrayInnerBuffer makeBufferAndSetPreviousLeftOver() {
-        CharArrayInnerBuffer buffer = makeBufferFromGivenInput();
+    private ByteArrayInnerBuffer makeBufferAndSetPreviousLeftOver() {
+        ByteArrayInnerBuffer buffer = makeBufferFromGivenInput();
 
-        buffer.previousLeftOver = new char[givenPreviousLeftOver.length];
+        buffer.previousLeftOver = new byte[givenPreviousLeftOver.length];
 
-        System.arraycopy(givenPreviousLeftOver, 0, buffer.previousLeftOver, 0,
-                givenPreviousLeftOver.length);
+        System.arraycopy(givenPreviousLeftOver, 0, buffer.previousLeftOver, 0, givenPreviousLeftOver.length);
 
         return buffer;
     }
 
-    private String expectedOutputBufferAfterAppending(char[] outputBuffer) {
+    private String expectedOutputBufferAfterAppending(byte[] outputBuffer) {
         int spacesRemainsAfferAppend = expectedOutputBufferLengthRemainsAfterAppending();
         String padding = createPadding(spacesRemainsAfferAppend);
         String expected = padding + GIVEN_PREVIOUS_LEFT_OVER + GIVEN_EXPECTED_CLEANED_INPUT;
@@ -118,10 +119,10 @@ public class CharArrayInnerBufferTest {
 
     @Test
     public void testStartPositionToWrite() {
-        
-        givenInputs(GIVEN_UNCLEANED_INPUT.toCharArray(), GIVEN_EXPECTED_CLEANED_INPUT.toCharArray());
-        givenLeftOvers(GIVEN_LEFT_OVER_FROM_INPUT.toCharArray(), GIVEN_PREVIOUS_LEFT_OVER.toCharArray());
-        
+
+        givenInputs(GIVEN_UNCLEANED_INPUT.getBytes(), GIVEN_EXPECTED_CLEANED_INPUT.getBytes());
+        givenLeftOvers(GIVEN_LEFT_OVER_FROM_INPUT.getBytes(), GIVEN_PREVIOUS_LEFT_OVER.getBytes());
+
         testBuffer = makeBufferAndSetPreviousLeftOver();
 
         testBuffer.cleanLeftOverIfAny();
@@ -135,12 +136,12 @@ public class CharArrayInnerBufferTest {
 
     @Test
     public void testGetFirstHeadWord() {
-        
-        givenInputs(GIVEN_UNCLEANED_INPUT.toCharArray(), GIVEN_EXPECTED_CLEANED_INPUT.toCharArray());
-        givenLeftOvers(GIVEN_LEFT_OVER_FROM_INPUT.toCharArray(), GIVEN_PREVIOUS_LEFT_OVER.toCharArray());
-        
+
+        givenInputs(GIVEN_UNCLEANED_INPUT.getBytes(), GIVEN_EXPECTED_CLEANED_INPUT.getBytes());
+        givenLeftOvers(GIVEN_LEFT_OVER_FROM_INPUT.getBytes(), GIVEN_PREVIOUS_LEFT_OVER.getBytes());
+
         testBuffer = makeBufferAndSetPreviousLeftOver();
-       
+
         String expectedFirstWord = "knob";
 
         testBuffer.clean();
@@ -151,12 +152,12 @@ public class CharArrayInnerBufferTest {
 
     @Test
     public void testGetLastHeadWord() {
-        
-        givenInputs(GIVEN_UNCLEANED_INPUT.toCharArray(), GIVEN_EXPECTED_CLEANED_INPUT.toCharArray());
-        givenLeftOvers(GIVEN_LEFT_OVER_FROM_INPUT.toCharArray(), GIVEN_PREVIOUS_LEFT_OVER.toCharArray());
-        
+
+        givenInputs(GIVEN_UNCLEANED_INPUT.getBytes(), GIVEN_EXPECTED_CLEANED_INPUT.getBytes());
+        givenLeftOvers(GIVEN_LEFT_OVER_FROM_INPUT.getBytes(), GIVEN_PREVIOUS_LEFT_OVER.getBytes());
+
         testBuffer = makeBufferAndSetPreviousLeftOver();
-        
+
         String expectedLastWord = "knock-down";
 
         testBuffer.clean();
@@ -164,10 +165,10 @@ public class CharArrayInnerBufferTest {
 
         assertEquals(expectedLastWord, actualLastWord);
     }
-    
-    private CharArrayInnerBuffer testBuffer;
-    private char[] givenExpectedCleanInput;
-    private char[] givenInputBuffer;
-    private char[] givenPreviousLeftOver;
-    private char[] givenCurrentLeftOver;
+
+    private ByteArrayInnerBuffer testBuffer;
+    private byte[] givenExpectedCleanInput;
+    private byte[] givenInputBuffer;
+    private byte[] givenPreviousLeftOver;
+    private byte[] givenCurrentLeftOver;
 }
