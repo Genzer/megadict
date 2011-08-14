@@ -4,7 +4,6 @@ import java.io.UnsupportedEncodingException;
 
 import com.megadict.format.dict.index.Index;
 import com.megadict.format.dict.reader.DictFileReader;
-import com.megadict.model.Definition;
 
 public class DefinitionFinder {
     

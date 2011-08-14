@@ -7,7 +7,7 @@ import com.megadict.format.dict.index.segment.ByteBufferedSegmentBuilder;
 import com.megadict.format.dict.index.segment.SegmentBuilder;
 import com.megadict.format.dict.index.segment.SegmentStore;
 
-class IndexStoreWithSegmentSupport extends BaseIndexStore implements IndexStoreDefaultImpl {
+class IndexStoreWithSegmentSupport extends BaseIndexStore implements IndexStore {
 
     public IndexStoreWithSegmentSupport(IndexFile indexFile) {
         super(indexFile);

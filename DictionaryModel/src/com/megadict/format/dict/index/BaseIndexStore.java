@@ -2,7 +2,7 @@ package com.megadict.format.dict.index;
 
 import java.util.*;
 
-class BaseIndexStore implements IndexStoreDefaultImpl {
+class BaseIndexStore implements IndexStore {
 
     public BaseIndexStore(IndexFile indexFile) {
         this.indexFile = indexFile;

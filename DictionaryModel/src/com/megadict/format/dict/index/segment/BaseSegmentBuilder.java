@@ -128,7 +128,7 @@ public abstract class BaseSegmentBuilder implements SegmentBuilder {
         }
     }
 
-    protected static final int BUFFER_SIZE_IN_BYTES = 8 * 1024;
+    protected static final int BUFFER_SIZE_IN_BYTES = 16 * 1024;
     private static final String FOLDER_NAME = "splitted";
     private static final String SEGMENT_FULL_PATH_PATTERN = "%s\\s%d.index";
 

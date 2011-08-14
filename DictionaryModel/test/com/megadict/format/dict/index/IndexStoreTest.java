@@ -18,7 +18,7 @@ public class IndexStoreTest {
     public void testNewImplementation() {
         IndexFile indexFile = IndexFile.makeFile("C:/test/av.index");
         
-        IndexStoreDefaultImpl store = IndexStoreFactory.newIndexStoreSupportSegment(indexFile);
+        IndexStore store = IndexStoreFactory.newIndexStoreSupportSegment(indexFile);
         
         Index index = store.getIndexOf("person");
         

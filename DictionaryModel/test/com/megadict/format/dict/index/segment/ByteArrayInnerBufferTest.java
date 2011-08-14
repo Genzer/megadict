@@ -28,7 +28,7 @@ public class ByteArrayInnerBufferTest {
         testBuffer.cleanLeftOverIfAny();
 
         String expected = new String(expectedOuput);
-        String actual = new String(testBuffer.outputBuffer());
+        String actual = new String(testBuffer.outputBuffer);
         assertEquals(expected, actual);
     }
 
@@ -45,7 +45,7 @@ public class ByteArrayInnerBufferTest {
     private ByteArrayInnerBuffer makeBufferFromGivenInput() {
         int testBufferSize = this.givenInputBuffer.length;
         ByteArrayInnerBuffer buffer = new ByteArrayInnerBuffer(testBufferSize);
-        System.arraycopy(this.givenInputBuffer, 0, buffer.inputBuffer(), 0, testBufferSize);
+        System.arraycopy(this.givenInputBuffer, 0, buffer.inputBuffer, 0, testBufferSize);
         return buffer;
     }
 
@@ -67,7 +67,7 @@ public class ByteArrayInnerBufferTest {
     }
 
     private int outputBufferLength() {
-        return testBuffer.outputBuffer().length;
+        return testBuffer.outputBuffer.length;
     }
 
     private static String createPadding(int length) {
@@ -87,9 +87,9 @@ public class ByteArrayInnerBufferTest {
         testBuffer.cleanLeftOverIfAny();
         testBuffer.appendPreviousLeftOverIfAny();
 
-        String expected = expectedOutputBufferAfterAppending(testBuffer.outputBuffer());
+        String expected = expectedOutputBufferAfterAppending(testBuffer.outputBuffer);
 
-        byte[] actualOutput = testBuffer.outputBuffer();
+        byte[] actualOutput = testBuffer.outputBuffer;
         String actual = new String(actualOutput);
         assertEquals(expected, actual);
     }

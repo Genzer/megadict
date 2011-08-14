@@ -54,7 +54,7 @@ public class ByteBufferedSegmentBuilder extends BaseSegmentBuilder implements Se
     }
 
     private boolean stillReceiveDataFrom(InputStream reader) throws IOException {
-        return reader.read(buffer.inputBuffer()) != -1;
+        return reader.read(buffer.inputBuffer) != -1;
     }
 
     private void cleanUpBufferContent() {
@@ -92,7 +92,7 @@ public class ByteBufferedSegmentBuilder extends BaseSegmentBuilder implements Se
     }
 
     private void saveSegmentToFile(Segment segment) {
-        segmentWriter.write(segment, buffer.outputBuffer(), buffer.startPositionToWrite());
+        segmentWriter.write(segment, buffer.outputBuffer, buffer.startPositionToWrite());
     }
 
     private ByteArrayInnerBuffer buffer = new ByteArrayInnerBuffer(BUFFER_SIZE_IN_BYTES);

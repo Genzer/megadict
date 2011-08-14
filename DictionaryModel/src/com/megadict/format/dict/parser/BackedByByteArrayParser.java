@@ -106,5 +106,5 @@ class BackedByByteArrayParser implements IndexParser {
     }
 
     private byte[] text;
-    private int[] tabPositions = new int[2];
+    private final int[] tabPositions = new int[2];
 }

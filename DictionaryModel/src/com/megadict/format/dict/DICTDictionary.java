@@ -91,6 +91,11 @@ public class DICTDictionary implements Dictionary {
     public List<String> recommendWord(String word) {
         return supportedWords.getSimilarWord(word, 20);
     }
+    
+    @Override
+    public List<String> recommendWord(String word, int preferredNumOfWord) {
+        return supportedWords.getSimilarWord(word, preferredNumOfWord);
+    }
 
     @Override
     public Definition lookUp(String word) {
@@ -153,7 +158,7 @@ public class DICTDictionary implements Dictionary {
     private String name;
     private DefinitionFinder definitionFinder;
     private Map<String, Definition> definitionCache = new HashMap<String, Definition>();
-    private IndexStoreDefaultImpl supportedWords;
+    private IndexStore supportedWords;
 
     private static final String NAME_REDUNDANT_STRING = "@00-database-short- FVDP ";
     private static final String TO_STRING_PATTERN = "DICTDictionary[name: %s; indexFile: %s; dictFile: %s]";

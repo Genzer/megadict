@@ -18,14 +18,6 @@ public class ByteArrayInnerBuffer {
         return (int) Math.abs(inputBufferSize * percent);
     }
 
-    public byte[] inputBuffer() {
-        return inputBuffer;
-    }
-
-    public byte[] outputBuffer() {
-        return outputBuffer;
-    }
-
     public int startPositionToWrite() {
         return startPositionToWrite;
     }
@@ -99,8 +91,8 @@ public class ByteArrayInnerBuffer {
 
     private static final double OUTPUT_BUFFER_SIZE_INCREMENT_FACTOR = 1.02;
     private static final byte[] EMPTY_BUFFER = new byte[0];
-    private byte[] inputBuffer;
-    private byte[] outputBuffer;
+    byte[] inputBuffer;
+    byte[] outputBuffer;
     byte[] previousLeftOver = EMPTY_BUFFER;
     byte[] currentLeftOver = EMPTY_BUFFER;
     private int startPositionToWrite = 0;
