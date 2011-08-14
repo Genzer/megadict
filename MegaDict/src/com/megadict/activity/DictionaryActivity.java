@@ -36,14 +36,10 @@ public final class DictionaryActivity extends BaseActivity {
 
 	// Member variables
 	public DictionaryComponent dictionaryComponent;
-	public SQLiteDatabase database;
-	public TextSelector textSelector;
-
-	private BusinessComponent businessComponent;
+	private SQLiteDatabase database;
+	private TextSelector textSelector;
 	private WordSearcher searcher;
-	private WordRecommender recommender;
 	private DictionaryScanner scanner;
-
 
 	public DictionaryActivity() {
 		super(R.layout.search);
@@ -132,24 +128,29 @@ public final class DictionaryActivity extends BaseActivity {
 				progressBar(progressBar).
 				context(this).build();
 
-		// Create scanner, searcher, recommender and businessComponent.
+		// Get scanner from application.
 		scanner = ((MegaDictApp) getApplication()).scanner;
-		recommender = new WordRecommender(scanner.getDictionaryModels(), dictionaryComponent);
-		searcher = new WordSearcher(scanner.getDictionaryModels(), dictionaryComponent);
-		businessComponent = new BusinessComponent(searcher, recommender);
 
-		// Register observers.
+		// Create searcher, recommender and businessComponent.
+		final WordRecommender recommender = new WordRecommender(scanner.getDictionaryModels(), dictionaryComponent);
+		searcher = new WordSearcher(scanner.getDictionaryModels(), dictionaryComponent);
+		final BusinessComponent businessComponent = new BusinessComponent(searcher, recommender);
+		// Register observers for scanner.
 		scanner.addObserver(searcher);
 		scanner.addObserver(recommender);
 
 		// Init search button.
-		SearchButtonInitializer.init(this, businessComponent, dictionaryComponent);
+		final SearchButtonInitializer searchButtonInitializer = new SearchButtonInitializer(this, businessComponent, dictionaryComponent);
+		searchButtonInitializer.doNothing();
 
 		// Init search bar.
-		SearchBarInitializer.init(this, businessComponent, dictionaryComponent);
+		final SearchBarInitializer searchBarInitializer = new SearchBarInitializer(this, businessComponent, dictionaryComponent);
+		// Register observers for sbInitializer.
+		searchBarInitializer.addObserver(recommender);
 
 		// Init Result view.
-		ResultViewInitializer.init(this, businessComponent, dictionaryComponent);
+		final ResultViewInitializer resultViewInitializer = new ResultViewInitializer(this, businessComponent, dictionaryComponent);
+		resultViewInitializer.doNothing();
 
 		// Init result panel.
 		final LinearLayout resultPanel = (LinearLayout)findViewById(R.id.resultPanel);

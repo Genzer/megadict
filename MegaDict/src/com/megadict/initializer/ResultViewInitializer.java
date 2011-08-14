@@ -11,18 +11,28 @@ import com.megadict.R;
 import com.megadict.bean.BusinessComponent;
 import com.megadict.bean.DictionaryComponent;
 import com.megadict.business.recommending.WordListTask;
-import com.megadict.business.recommending.WordRecommender;
 import com.megadict.business.recommending.WordListTask.OnClickWordListener;
+import com.megadict.business.recommending.WordRecommender;
 import com.megadict.business.searching.WordSearcher;
 import com.megadict.utility.Utility;
 import com.megadict.widget.ResultView;
 import com.megadict.widget.ResultView.OnSelectTextListener;
 
-public final class ResultViewInitializer {
-	private ResultViewInitializer() {}
+public final class ResultViewInitializer implements Initializer {
+	private final Activity activity;
+	private final BusinessComponent businessComponent;
+	private final DictionaryComponent dictionaryComponent;
 
-	public static void init(final Activity activity, final BusinessComponent businessComponent,
+	public ResultViewInitializer(final Activity activity,
+			final BusinessComponent businessComponent,
 			final DictionaryComponent dictionaryComponent) {
+		this.activity = activity;
+		this.businessComponent = businessComponent;
+		this.dictionaryComponent = dictionaryComponent;
+		initResultView();
+	}
+
+	public void initResultView() {
 		// Prepare components.
 		final ClipboardManager clipboardManager = (ClipboardManager)activity.getSystemService(Context.CLIPBOARD_SERVICE);
 		final ResultView resultView = dictionaryComponent.getResultView();
@@ -39,9 +49,7 @@ public final class ResultViewInitializer {
 					@Override
 					public void onClickWord() {
 						searchBar.setText(task.getWord());
-						doSearching(activity, businessComponent,
-								dictionaryComponent,
-								searchBar.getText().toString());
+						doSearching(searchBar.getText().toString());
 					}
 				});
 				task.execute((Void [])null);
@@ -49,10 +57,7 @@ public final class ResultViewInitializer {
 		});
 	}
 
-	private static void doSearching(final Activity activity,
-			final BusinessComponent businessComponent,
-			final DictionaryComponent dictionaryComponent,
-			final String word) {
+	private void doSearching(final String word) {
 		// THE OUTER IF MAKES SURE THAT NO CRASH IN MEGADICT.
 		/// I'M NOT SATISFIED WITH THIS BECAUSE THE DICTIONARY MODEL CAN'T BE USED BY MULTIPLE THREADS.
 		/// IT MEANS THAT WHEN RECOMMENDING IS RUNNING,
@@ -69,4 +74,7 @@ public final class ResultViewInitializer {
 			}
 		}
 	}
+
+	@Override
+	public void doNothing() { /* Empty for no reason, ok? */ }
 }

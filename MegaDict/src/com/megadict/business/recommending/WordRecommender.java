@@ -8,89 +8,46 @@ import java.util.Observer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AutoCompleteTextView;
 
 import com.megadict.bean.DictionaryComponent;
+import com.megadict.business.scanning.DictionaryScanner;
+import com.megadict.initializer.SearchBarInitializer;
 import com.megadict.model.Dictionary;
 
 public final class WordRecommender implements Observer {
-	private final int DELAY_TIME = 2000;
+	private final static int DELAY_TIME = 2000;
 	private final List<Dictionary> dictionaryModels;
 	private final DictionaryComponent dictionaryComponent;
-	boolean begin;
 
 	private RecommendTask recommendTask;
-	Runnable recommendRunnable;
+	private Runnable recommendRunnable;
 	private final Handler recommendHandler = new RecommendHandler();
 
 	public WordRecommender(final List<Dictionary> dictionaryModels, final DictionaryComponent dictionaryComponent) {
 		this.dictionaryModels = dictionaryModels;
 		this.dictionaryComponent = dictionaryComponent;
-		final AutoCompleteTextView searchBar = dictionaryComponent.getSearchBar();
-		searchBar.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
-				if(!begin) begin = true;
-				if(begin) {
-					if(recommendRunnable != null) {
-						recommendHandler.removeCallbacks(recommendRunnable);
-					}
-
-					if(recommendTask != null && recommendTask.isRecommending()) {
-						// Can't postDelayed if a runnable was in runnable queue.
-					} else {
-						recommendRunnable = new RecommendRunnable(s.toString());
-						recommendHandler.postDelayed(recommendRunnable, DELAY_TIME);
-					}
-				}
-
-			}
-
-			@Override
-			public void beforeTextChanged(final CharSequence s, final int start, final int count, final int after) {
-			}
-
-			@Override
-			public void afterTextChanged(final Editable s) {
-			}
-		});
-
-		searchBar.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-			public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
-				if(recommendRunnable != null) {
-					recommendHandler.removeCallbacks(recommendRunnable);
-				}
-			}
-		});
 	}
 
 	private boolean recommend(final String word) {
+		boolean result;
 		if(recommendTask == null || !recommendTask.isRecommending()) {
 			// Lower and trim it.
 			final String recommendedWord = word.toLowerCase(Locale.ENGLISH).trim();
-			// Return true if recommendWord empty.
-			if(recommendedWord.equals("")) {
-				return true;
+			if("".equals(recommendedWord)) {
+				/* Do nothing if recommendedWord is empty. */
+			} else {
+				recommendTask = new RecommendTask(dictionaryModels, dictionaryComponent);
+				recommendTask.execute(recommendedWord);
 			}
-
-			recommendTask = new RecommendTask(this, dictionaryModels, dictionaryComponent);
-			recommendTask.execute(recommendedWord);
-			return true;
+			result = true;
+		} else {
+			result = false;
 		}
-		return false;
+		return result;
 	}
 
 	public boolean isRecommending() {
-		if(recommendTask != null) {
-			return recommendTask.isRecommending();
-		}
-		return false;
+		return recommendTask == null ? false : recommendTask.isRecommending();
 	}
 
 	private class RecommendHandler extends Handler {
@@ -119,9 +76,30 @@ public final class WordRecommender implements Observer {
 
 	@Override
 	public void update(final Observable o, final Object arg) {
-		@SuppressWarnings("unchecked")
-		final List<Dictionary> models = (List<Dictionary>)(arg);
-		dictionaryModels.clear();
-		dictionaryModels.addAll(models);
+		if(o instanceof DictionaryScanner) {
+			@SuppressWarnings("unchecked")
+			final List<Dictionary> models = (List<Dictionary>)(arg);
+			dictionaryModels.clear();
+			dictionaryModels.addAll(models);
+		} else if(o instanceof SearchBarInitializer) {
+			if(arg instanceof String) {
+				// Remove old runnable in handler.
+				if(recommendRunnable != null) {
+					recommendHandler.removeCallbacks(recommendRunnable);
+				}
+				// Check if a Runnable should be posted.
+				if(recommendTask != null && recommendTask.isRecommending()) {
+					// Can't postDelayed if a runnable was in runnable queue.
+				} else {
+					// postDelayed.
+					recommendRunnable = new RecommendRunnable(arg.toString());
+					recommendHandler.postDelayed(recommendRunnable, DELAY_TIME);
+				}
+			}
+			// Not allowed to recommend.
+			else if(arg instanceof Boolean && recommendRunnable != null) {
+				recommendHandler.removeCallbacks(recommendRunnable);
+			}
+		}
 	}
 }

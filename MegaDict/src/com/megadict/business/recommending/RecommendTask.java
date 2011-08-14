@@ -20,15 +20,13 @@ import com.megadict.exception.RecommendingException;
 import com.megadict.model.Dictionary;
 
 public class RecommendTask extends BaseRecommendTask {
-	private final int RECOMMENDED_WORD_COUNT = 10;
-	private final int TIMEOUT_IN_SECONDS = 3;
-	private final WordRecommender recommender;
+	private final static int RECOMMENDED_WORD_COUNT = 10;
+	private final static int TIMEOUT_IN_SECONDS = 3;
 	private final List<Dictionary> dictionaryModels;
 	private final DictionaryComponent dictionaryComponent;
 
-	public RecommendTask(final WordRecommender recommender, final List<Dictionary> dictionaryModels, final DictionaryComponent dictionaryComponent) {
+	public RecommendTask(final List<Dictionary> dictionaryModels, final DictionaryComponent dictionaryComponent) {
 		super();
-		this.recommender = recommender;
 		this.dictionaryModels = dictionaryModels;
 		this.dictionaryComponent = dictionaryComponent;
 	}
@@ -41,12 +39,10 @@ public class RecommendTask extends BaseRecommendTask {
 
 	@Override
 	protected List<String> doInBackground(final String... params) {
-		final String word = params[0];
-
 		// Create callable list.
 		final List<Callable<List<String>>> callables = new ArrayList<Callable<List<String>>>();
 		for(final Dictionary model : dictionaryModels) {
-			final RecommendThread thread = new RecommendThread(word, model);
+			final RecommendThread thread = new RecommendThread(params[0], model);
 			callables.add(thread);
 		}
 
@@ -79,12 +75,6 @@ public class RecommendTask extends BaseRecommendTask {
 	@Override
 	protected void onPostExecute(final List<String> list) {
 		super.onPostExecute(list);
-
-		//		System.out.println("=====================");
-		//		for(final String s : list) {
-		//			System.out.println(s);
-		//		}
-		//final String []a = {"w", "word", "wobble", "wit", "work", "why", "wet"};
 		final ArrayAdapter<String> adapter = new ArrayAdapter<String>(
 				dictionaryComponent.getContext(),
 				android.R.layout.simple_dropdown_item_1line, list);

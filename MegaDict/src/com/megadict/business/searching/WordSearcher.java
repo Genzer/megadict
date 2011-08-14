@@ -6,8 +6,6 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Vector;
 
-import android.webkit.WebView;
-
 import com.megadict.bean.DictionaryComponent;
 import com.megadict.business.ResultTextMaker;
 import com.megadict.model.Dictionary;
@@ -44,36 +42,38 @@ public final class WordSearcher implements Observer {
 			TASKS.clear();
 		}
 
-		final WebView resultView = dictionaryComponent.getResultView();
 		final ResultTextMaker resultTextMaker = dictionaryComponent.getResultTextMaker();
 		// Reset resultTextMaker to make a new search.
 		resultTextMaker.resetMiddleBlock();
 
 		if(dictionaryModels.isEmpty()) {
-			resultView.loadDataWithBaseURL(ResultTextMaker.ASSET_URL, resultTextMaker.getNoDictionaryHTML(noDictionaryStr), "text/html", "utf-8", null);
+			dictionaryComponent.getResultView().loadDataWithBaseURL(ResultTextMaker.ASSET_URL, resultTextMaker.getNoDictionaryHTML(noDictionaryStr), "text/html", "utf-8", null);
 		} else {
 			// Lower and trim it.
 			final String searchedWord = word.toLowerCase(Locale.ENGLISH).trim();
 
-			// Return if searchedWord empty.
-			if(searchedWord.equals("")) {
-				return true;
-			}
-
-			// Create and store all tasks to list.
-			for(final Dictionary dictionary : dictionaryModels) {
-				final SearchTask task = new SearchTask(dictionary, dictionaryComponent);
-				task.setDictionaryName(dictionary.getName());
-				task.setNoDefinitionStr(noDefinitionStr);
-				TASKS.add(task);
-			} // End for loop.
-
-			// Execute them.
-			for(final SearchTask task : TASKS) {
-				task.execute(searchedWord);
+			// Only search if searchedWord is not empty.
+			if(!"".equals(searchedWord)) {
+				createAndStoreSearchTasks();
+				executeSearchTasks(searchedWord);
 			}
 		} // End if.
 		return true;
+	}
+
+	private void executeSearchTasks(final String searchedWord) {
+		for(final SearchTask task : TASKS) {
+			task.execute(searchedWord);
+		}
+	}
+
+	private void createAndStoreSearchTasks() {
+		for(final Dictionary dictionary : dictionaryModels) {
+			final SearchTask task = new SearchTask(dictionary, dictionaryComponent);
+			task.setDictionaryName(dictionary.getName());
+			task.setNoDefinitionStr(noDefinitionStr);
+			TASKS.add(task);
+		}
 	}
 
 	public void setNoDictionaryStr(final String noDictionaryStr) {
