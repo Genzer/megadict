@@ -5,6 +5,7 @@ import android.widget.ProgressBar;
 import com.megadict.business.ResultTextMaker;
 import com.megadict.widget.ResultView;
 
+@Deprecated
 public class SearchComponent {
 	public final ResultView resultView;
 	public final ResultTextMaker resultTextMaker;

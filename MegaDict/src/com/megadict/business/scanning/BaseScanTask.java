@@ -1,12 +1,9 @@
-package com.megadict.task.base;
+package com.megadict.business.scanning;
 
 import android.os.AsyncTask;
 
 public abstract class BaseScanTask extends AsyncTask<Void, Void, Void> {
 	private boolean scanning;
-
-	public BaseScanTask() {
-	}
 
 	@Override
 	protected void onPreExecute() {

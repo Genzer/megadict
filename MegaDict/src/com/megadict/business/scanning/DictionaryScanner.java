@@ -1,24 +1,22 @@
-package com.megadict.business;
+package com.megadict.business.scanning;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
 import java.util.Vector;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Logger;
 
 import android.app.Activity;
-import android.database.sqlite.SQLiteDatabase;
 
+import com.megadict.bean.DictionaryComponent;
 import com.megadict.bean.RescanComponent;
-import com.megadict.bean.ScanStorageComponent;
+import com.megadict.business.ExternalReader;
+import com.megadict.business.ExternalStorage;
 import com.megadict.model.Dictionary;
 import com.megadict.model.ModelMap;
-import com.megadict.task.RescanAllTask;
-import com.megadict.task.ScanStorageAllTask;
-import com.megadict.task.UpdateModelTask;
-import com.megadict.task.base.BaseScanTask;
 
-public class DictionaryScanner {
+public final class DictionaryScanner extends Observable {
 	private final ExternalReader externalReader = new ExternalReader(ExternalStorage.getExternalDirectory());
 	private final ModelMap models = new ModelMap();
 	private BaseScanTask task = null;
@@ -30,6 +28,10 @@ public class DictionaryScanner {
 		LOGGER.addHandler(new ConsoleHandler());
 	}
 
+	public List<Dictionary> getDictionaryModels() {
+		return new ArrayList<Dictionary>(models.values());
+	}
+
 	public int getDictionaryCount() {
 		return models.size();
 	}
@@ -38,10 +40,11 @@ public class DictionaryScanner {
 		LOGGER.warning(message);
 	}
 
-	public boolean scanStorage(final Activity activity, final SQLiteDatabase database, final ScanStorageComponent scanStorageComponent) {
+	public boolean scanStorage(final Activity activity, final DictionaryComponent dictionaryComponent) {
 		if(task == null || !task.isScanning()) {
-			task = new ScanStorageAllTask(models, activity, database, scanStorageComponent);
+			task = new ScanStorageAllTask(this, models, activity, dictionaryComponent);
 			task.execute();
+			dictionaryModelsChanged();
 			return true;
 		}
 		return false;
@@ -49,16 +52,17 @@ public class DictionaryScanner {
 
 	public boolean rescan(final RescanComponent rescanComponent) {
 		if(task == null || !task.isScanning()) {
-			task = new RescanAllTask(models, externalReader, rescanComponent);
+			task = new RescanAllTask(this, models, externalReader, rescanComponent);
 			task.execute();
+			dictionaryModelsChanged();
 			return true;
 		}
 		return false;
 	}
 
-	public boolean updateDictonaryModels(final Activity activity, final SQLiteDatabase database, final ScanStorageComponent scanStorageComponent) {
+	public boolean updateDictionaryModels(final Activity activity, final DictionaryComponent dictionaryComponent) {
 		if(task == null || !task.isScanning()) {
-			task = new UpdateModelTask(models, activity, database, scanStorageComponent);
+			task = new UpdateModelTask(this, models, activity, dictionaryComponent);
 			task.execute();
 			return true;
 		}
@@ -66,6 +70,12 @@ public class DictionaryScanner {
 	}
 
 	// ========================== Private functions ============================ //
+	/* Using package access modifier */
+	void dictionaryModelsChanged() {
+		setChanged();
+		notifyObservers(getDictionaryModels());
+	}
+
 	@Deprecated
 	private void executeTasks() {
 		for(final BaseScanTask task : TASKS) {
@@ -81,10 +91,6 @@ public class DictionaryScanner {
 			}
 		}
 		return true;
-	}
-
-	public List<Dictionary> getDictionaryModels() {
-		return new ArrayList<Dictionary>(models.values());
 	}
 
 

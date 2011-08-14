@@ -14,12 +14,13 @@ import android.widget.ProgressBar;
 import com.megadict.R;
 import com.megadict.activity.base.BaseActivity;
 import com.megadict.application.MegaDictApp;
-import com.megadict.bean.RecommendComponent;
-import com.megadict.bean.ScanStorageComponent;
-import com.megadict.bean.SearchComponent;
-import com.megadict.business.DictionaryClient;
+import com.megadict.bean.BusinessComponent;
+import com.megadict.bean.DictionaryComponent;
 import com.megadict.business.ResultTextMaker;
 import com.megadict.business.TextSelector;
+import com.megadict.business.recommending.WordRecommender;
+import com.megadict.business.scanning.DictionaryScanner;
+import com.megadict.business.searching.WordSearcher;
 import com.megadict.initializer.ResultViewInitializer;
 import com.megadict.initializer.SearchBarInitializer;
 import com.megadict.initializer.SearchButtonInitializer;
@@ -34,10 +35,15 @@ public final class DictionaryActivity extends BaseActivity {
 	public ResultView resultView;
 
 	// Member variables
-	public DictionaryClient dictionaryClient;
-	public ScanStorageComponent scanStorageComponent;
+	public DictionaryComponent dictionaryComponent;
 	public SQLiteDatabase database;
 	public TextSelector textSelector;
+
+	private BusinessComponent businessComponent;
+	private WordSearcher searcher;
+	private WordRecommender recommender;
+	private DictionaryScanner scanner;
+
 
 	public DictionaryActivity() {
 		super(R.layout.search);
@@ -46,8 +52,7 @@ public final class DictionaryActivity extends BaseActivity {
 	@Override
 	public void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		initVariables();
-		initLayout();
+		initSomething();
 		// Scan chosen databases when MegaDict opens.
 		doScanningStorage();
 	}
@@ -57,14 +62,14 @@ public final class DictionaryActivity extends BaseActivity {
 		super.onStart();
 		if(Utility.isLocaleChanged()) {
 			// Change noDefinition string.
-			dictionaryClient.setNoDefinitionString(getString(R.string.noDefinition));
+			searcher.setNoDefinitionStr(getString(R.string.noDefinition));
 		}
 	}
 
 	@Override
 	protected void onRestart() {
 		super.onRestart();
-		dictionaryClient.updateDictionaryModels(this, database, scanStorageComponent);
+		scanner.updateDictionaryModels(this, dictionaryComponent);
 	}
 
 	@Override
@@ -106,44 +111,56 @@ public final class DictionaryActivity extends BaseActivity {
 	}
 
 	// ========================= Private functions ======================= //
-	private void initLayout() {
+	private void initSomething() {
+		// Create and open database.
+		final DatabaseHelper helper = new DatabaseHelper(this);
+		database = helper.getReadableDatabase();
+
+		// Create UI components.
 		final ProgressBar progressBar = (ProgressBar)findViewById(R.id.progressBar);
 		final Button searchButton = (Button) findViewById(R.id.searchButton);
 		final AutoCompleteTextView searchBar = (AutoCompleteTextView)findViewById(R.id.searchEditText);
 		final ResultTextMaker resultTextMaker = new ResultTextMaker(getAssets());
 		resultView = new ResultView(this);
 
-		// Init useful components.
-		final SearchComponent searchComponent = new SearchComponent(resultView, resultTextMaker, progressBar);
-		final RecommendComponent recommendComponent = new RecommendComponent(searchBar, resultView, progressBar);
-		scanStorageComponent = new ScanStorageComponent(resultView, resultTextMaker, this);
+		// Create dictionaryComponent which contain UI components.
+		dictionaryComponent = new DictionaryComponent.Builder().
+				searchButton(searchButton).
+				searchBar(searchBar).resultView(resultView).
+				resultTextMaker(resultTextMaker).
+				database(database).
+				progressBar(progressBar).
+				context(this).build();
+
+		// Create scanner, searcher, recommender and businessComponent.
+		scanner = ((MegaDictApp) getApplication()).scanner;
+		recommender = new WordRecommender(scanner.getDictionaryModels(), dictionaryComponent);
+		searcher = new WordSearcher(scanner.getDictionaryModels(), dictionaryComponent);
+		businessComponent = new BusinessComponent(searcher, recommender);
+
+		// Register observers.
+		scanner.addObserver(searcher);
+		scanner.addObserver(recommender);
 
 		// Init search button.
-		SearchButtonInitializer.init(this, dictionaryClient, searchButton, searchBar, searchComponent);
+		SearchButtonInitializer.init(this, businessComponent, dictionaryComponent);
 
 		// Init search bar.
-		SearchBarInitializer.init(this, dictionaryClient, searchBar, searchComponent, recommendComponent);
+		SearchBarInitializer.init(this, businessComponent, dictionaryComponent);
 
 		// Init Result view.
-		ResultViewInitializer.init(this, dictionaryClient, searchBar, searchComponent);
+		ResultViewInitializer.init(this, businessComponent, dictionaryComponent);
 
 		// Init result panel.
 		final LinearLayout resultPanel = (LinearLayout)findViewById(R.id.resultPanel);
 		resultPanel.addView(resultView);
-	}
 
-	private void initVariables() {
-		// Get application-scoped variables.
-		dictionaryClient = ((MegaDictApp) getApplication()).dictionaryClient;
-		// Create and open database.
-		final DatabaseHelper helper = new DatabaseHelper(this);
-		database = helper.getReadableDatabase();
 		// Init text selector.
 		textSelector = new TextSelector();
 	}
 
 	private void doScanningStorage() {
-		if(!dictionaryClient.scanStorage(this, database, scanStorageComponent)) {
+		if(!scanner.scanStorage(this, dictionaryComponent)) {
 			Utility.messageBox(this, getString(R.string.scanning));
 		}
 	}

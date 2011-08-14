@@ -1,4 +1,4 @@
-package com.megadict.task;
+package com.megadict.business.recommending;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,33 +12,31 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import android.content.Context;
 import android.view.View;
 import android.widget.ArrayAdapter;
 
-import com.megadict.bean.RecommendComponent;
+import com.megadict.bean.DictionaryComponent;
 import com.megadict.exception.RecommendingException;
 import com.megadict.model.Dictionary;
-import com.megadict.task.base.BaseRecommendTask;
 
 public class RecommendTask extends BaseRecommendTask {
 	private final int RECOMMENDED_WORD_COUNT = 10;
 	private final int TIMEOUT_IN_SECONDS = 3;
-	private final Context context;
+	private final WordRecommender recommender;
 	private final List<Dictionary> dictionaryModels;
-	private final RecommendComponent recommendComponent;
-	private boolean recommending;
+	private final DictionaryComponent dictionaryComponent;
 
-	public RecommendTask(final Context context, final List<Dictionary> dictionaryModels, final RecommendComponent recommendComponent) {
-		this.context = context;
+	public RecommendTask(final WordRecommender recommender, final List<Dictionary> dictionaryModels, final DictionaryComponent dictionaryComponent) {
+		super();
+		this.recommender = recommender;
 		this.dictionaryModels = dictionaryModels;
-		this.recommendComponent = recommendComponent;
+		this.dictionaryComponent = dictionaryComponent;
 	}
 
 	@Override
 	protected void onPreExecute() {
-		recommendComponent.progressBar.setVisibility(View.VISIBLE);
-		recommending = true;
+		super.onPreExecute();
+		dictionaryComponent.getProgressBar().setVisibility(View.VISIBLE);
 	}
 
 	@Override
@@ -66,33 +64,33 @@ public class RecommendTask extends BaseRecommendTask {
 				tempList.addAll(words);
 			}
 			service.shutdown();
+
+			final int neededWordCount = Math.min(RECOMMENDED_WORD_COUNT, tempList.size());
+			// Get a number of needed recommended words from the set.
+			final List<String> recommendWords = Arrays.asList(tempList.toArray(new String[neededWordCount]));
+			return recommendWords.subList(0, neededWordCount);
 		} catch (final InterruptedException e) {
 			throw new RecommendingException(e);
 		} catch (final ExecutionException e) {
 			throw new RecommendingException(e);
 		}
-
-		final int neededWordCount = Math.min(RECOMMENDED_WORD_COUNT, tempList.size());
-		// Get a number of needed recommended words from the set.
-		final List<String> recommendWords = Arrays.asList(tempList.toArray(new String[neededWordCount]));
-		return recommendWords.subList(0, neededWordCount);
 	}
 
 	@Override
 	protected void onPostExecute(final List<String> list) {
+		super.onPostExecute(list);
+
 		//		System.out.println("=====================");
 		//		for(final String s : list) {
 		//			System.out.println(s);
 		//		}
 		//final String []a = {"w", "word", "wobble", "wit", "work", "why", "wet"};
-		recommendComponent.searchBar.setAdapter(new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, list));
-		recommendComponent.searchBar.showDropDown();
-		recommendComponent.progressBar.setVisibility(View.INVISIBLE);
-		recommending = false;
-	}
-
-	public boolean isRecommeding() {
-		return recommending;
+		final ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+				dictionaryComponent.getContext(),
+				android.R.layout.simple_dropdown_item_1line, list);
+		dictionaryComponent.getSearchBar().setAdapter(adapter);
+		dictionaryComponent.getSearchBar().showDropDown();
+		dictionaryComponent.getProgressBar().setVisibility(View.INVISIBLE);
 	}
 
 	private class RecommendThread implements Callable<List<String>> {

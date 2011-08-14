@@ -1,6 +1,5 @@
-package com.megadict.task;
+package com.megadict.business.searching;
 
-import com.megadict.task.base.BaseSearchTask;
 
 public class WikiSearchTask extends BaseSearchTask {
 	@Override

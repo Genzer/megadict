@@ -1,4 +1,4 @@
-package com.megadict.task;
+package com.megadict.business.recommending;
 
 import java.util.ArrayList;
 import java.util.List;

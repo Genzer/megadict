@@ -5,6 +5,7 @@ import android.content.Context;
 import com.megadict.business.ResultTextMaker;
 import com.megadict.widget.ResultView;
 
+@Deprecated
 public class ScanStorageComponent {
 	public ResultView resultView;
 	public ResultTextMaker resultTextMaker;

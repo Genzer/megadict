@@ -4,6 +4,7 @@ import android.webkit.WebView;
 import android.widget.AutoCompleteTextView;
 import android.widget.ProgressBar;
 
+@Deprecated
 public class RecommendComponent {
 	public final AutoCompleteTextView searchBar;
 	public final WebView resultView;

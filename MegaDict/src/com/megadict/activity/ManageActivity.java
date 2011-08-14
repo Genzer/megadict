@@ -15,14 +15,14 @@ import com.megadict.activity.base.BaseListActivity;
 import com.megadict.adapter.ChosenDictionaryCheckBoxAdapter;
 import com.megadict.application.MegaDictApp;
 import com.megadict.bean.RescanComponent;
-import com.megadict.business.DictionaryClient;
+import com.megadict.business.scanning.DictionaryScanner;
 import com.megadict.model.ChosenModel;
 import com.megadict.utility.DatabaseHelper;
 import com.megadict.utility.Utility;
 
 public class ManageActivity extends BaseListActivity {
 	private SQLiteDatabase database;
-	private DictionaryClient dictionaryClient;
+	private DictionaryScanner scanner;
 	private RescanComponent rescanComponent;
 
 	public ManageActivity() {
@@ -34,17 +34,17 @@ public class ManageActivity extends BaseListActivity {
 		super.onCreate(savedInstanceState);
 
 		// Get application-scoped variables.
-		dictionaryClient = ((MegaDictApp) getApplication()).dictionaryClient;
+		scanner = ((MegaDictApp) getApplication()).scanner;
 
 		// Create or open database.
 		final DatabaseHelper databaseHelper = new DatabaseHelper(this);
 		database = databaseHelper.getWritableDatabase();
 
 		final Cursor listViewCursor =
-			database.query(ChosenModel.TABLE_NAME, null, null, null, null, null, null);
+				database.query(ChosenModel.TABLE_NAME, null, null, null, null, null, null);
 		startManagingCursor(listViewCursor);
 		final ChosenDictionaryCheckBoxAdapter adapter =
-			new ChosenDictionaryCheckBoxAdapter(this, listViewCursor, database);
+				new ChosenDictionaryCheckBoxAdapter(this, listViewCursor, database);
 		setListAdapter(adapter);
 
 		final ProgressDialog progressDialog = new ProgressDialog(this);
@@ -76,7 +76,7 @@ public class ManageActivity extends BaseListActivity {
 
 	// ======================= Private functions =================== //
 	private void doRescanning() {
-		if(!dictionaryClient.rescan(rescanComponent)) {
+		if(!scanner.rescan(rescanComponent)) {
 			Utility.messageBox(this, getString(R.string.scanning));
 		}
 	}

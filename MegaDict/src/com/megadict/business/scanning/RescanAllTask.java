@@ -1,4 +1,4 @@
-package com.megadict.task;
+package com.megadict.business.scanning;
 
 import java.util.List;
 
@@ -13,15 +13,16 @@ import com.megadict.model.Dictionary;
 import com.megadict.model.DictionaryInformation;
 import com.megadict.model.ModelMap;
 import com.megadict.model.UsedDictionary;
-import com.megadict.task.base.BaseScanTask;
 
 public class RescanAllTask extends BaseScanTask {
+	private final DictionaryScanner scanner;
 	private final ExternalReader externalReader;
 	private final RescanComponent rescanComponent;
 	private final ModelMap models;
 
-	public RescanAllTask(final ModelMap models, final ExternalReader externalReader, final RescanComponent rescanComponent) {
+	public RescanAllTask(final DictionaryScanner scanner, final ModelMap models, final ExternalReader externalReader, final RescanComponent rescanComponent) {
 		super();
+		this.scanner = scanner;
 		this.externalReader = externalReader;
 		this.rescanComponent = rescanComponent;
 		this.models = models;
@@ -67,6 +68,7 @@ public class RescanAllTask extends BaseScanTask {
 	@Override
 	protected void onPostExecute(final Void result) {
 		super.onPostExecute(result);
+		scanner.dictionaryModelsChanged();
 		// Requery the cursor to update list view.
 		rescanComponent.cursor.requery();
 		// Close progress dialog.

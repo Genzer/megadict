@@ -29,6 +29,7 @@
     <string name="canNotSelectText">Không thể chọn từ</string>
     <string name="ok">Đồng ý</string>
     <string name="cancel">Thoát</string>
+    <string name="searchBarHint">Nhập từ cần tra</string>
     
     <!-- Others -->
     <string name="appName">MegaDict</string>    
