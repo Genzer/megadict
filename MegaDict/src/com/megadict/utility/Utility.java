@@ -20,11 +20,16 @@ public class Utility {
 		Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
 	}
 
+	public static void messageBox(final Context context, final int resID)
+	{
+		Toast.makeText(context, context.getString(resID), Toast.LENGTH_SHORT).show();
+	}
+
 	public static void startActivity(final Context context, final String className) {
 		try {
 			final Class<?> classObj = Class.forName(className);
 			final Intent intent =
-				new Intent(context, classObj);
+					new Intent(context, classObj);
 			context.startActivity(intent);
 		} catch (final ClassNotFoundException e) {
 			messageBox(context, className + " class not found.");

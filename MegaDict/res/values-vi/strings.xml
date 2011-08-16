@@ -14,6 +14,7 @@
     <string name="manageMenuItemTitle">Quản lý từ điển</string>
     <string name="aboutMenuItemTitle">Thông tin</string>
     <string name="selectTextMenuItemTitle">Chọn từ</string>
+    <string name="historyMenuItemTitle">Danh sách từ đã tra</string>
     
     <!-- Common Strings -->
     <string name="noDefinition">Không tìm thấy nghĩa!</string>    
@@ -27,9 +28,17 @@
     <string name="usingDictionaryPlural">Bạn đang dùng %1$d từ điển.</string>
     <string name="selectText">Có thể chọn từ được rồi.</string>
     <string name="canNotSelectText">Không thể chọn từ</string>
+    <string name="emptyHistory">Không có từ nào</string>
     <string name="ok">Đồng ý</string>
     <string name="cancel">Thoát</string>
+    <string name="deleteEllipsis">Xóa...</string>
+    <string name="clear">Xóa hết</string>
+    <string name="close">Đóng</string>
     <string name="searchBarHint">Nhập từ cần tra</string>
+    
+    <!-- Dialog title -->
+    <string name="wordListDialogTitle">Chọn một từ</string>
+    <string name="historyDialogTitle">Danh sách từ đã tra</string>
     
     <!-- Others -->
     <string name="appName">MegaDict</string>    

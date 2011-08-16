@@ -11,6 +11,7 @@ import android.os.AsyncTask;
 import com.megadict.R;
 
 public class WordListTask extends AsyncTask<Void, Void, String[]> {
+	private final static String SPLIT_REGEX = "[^\\w]+";
 	private final String text;
 	protected OnClickWordListener clickWordListener;
 	private String word;
@@ -24,8 +25,8 @@ public class WordListTask extends AsyncTask<Void, Void, String[]> {
 
 	private AlertDialog.Builder createBuilder(final Context context) {
 		builder = new AlertDialog.Builder(context);
-		builder.setTitle("Pick a word");
-		builder.setNegativeButton(context.getString(R.string.cancel), new DialogInterface.OnClickListener() {
+		builder.setTitle(R.string.wordListDialogTitle);
+		builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(final DialogInterface dialog, final int which) {
 				dialog.cancel();
@@ -36,7 +37,7 @@ public class WordListTask extends AsyncTask<Void, Void, String[]> {
 
 	@Override
 	protected String[] doInBackground(final Void... params) {
-		return text.split("[^\\w]+");
+		return text.split(SPLIT_REGEX);
 	}
 
 	@Override

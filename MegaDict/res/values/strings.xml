@@ -13,7 +13,8 @@
     <string name="settingMenuItemTitle">Settings</string>
     <string name="manageMenuItemTitle">Manage</string>
     <string name="aboutMenuItemTitle">About</string>
-    <string name="selectTextMenuItemTitle">Select text</string>
+    <string name="selectTextMenuItemTitle">Select text</string>    
+    <string name="historyMenuItemTitle">History</string>
     
     <!-- Common Strings -->
     <string name="noDefinition">There is no definition. Don\'t be silly, guy!</string>    
@@ -25,11 +26,19 @@
     <string name="scanning">Scanning.. Please wait.</string>
     <string name="usingDictionary">You are using %1$d dictionary.</string>
     <string name="usingDictionaryPlural">You are using %1$d dictionaries.</string>
-    <string name="selectText">Select text now</string>
-    <string name="canNotSelectText">Can\'t select text</string>
+    <string name="selectText">Select text now.</string>
+    <string name="canNotSelectText">Can\'t select text.</string>
+    <string name="emptyHistory">There is no any word.</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
-    <string name="searchBarHint">Enter word to search</string>
+    <string name="deleteEllipsis">Delete...</string>
+    <string name="clear">Clear</string>
+    <string name="close">Close</string>
+    <string name="searchBarHint">Enter word here</string>
+    
+    <!-- Dialog title -->
+    <string name="wordListDialogTitle">Pick a word</string>
+    <string name="historyDialogTitle">History</string>
     
     <!-- Others -->
     <string name="appName">MegaDict</string>    
@@ -40,6 +49,6 @@
     <!-- Language -->
     <string name="languagePrefTitle">Language</string>
     <string name="mainPrefTitle">Settings</string>    
-    <string name="languagePrefKey">language</string>    
+    <string name="languagePrefKey">language</string>        
 
 </resources>

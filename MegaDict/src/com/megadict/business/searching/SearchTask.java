@@ -8,13 +8,18 @@ import com.megadict.model.Definition;
 import com.megadict.model.Dictionary;
 
 public class SearchTask extends BaseSearchTask {
+	private final WordSearcher searcher;
 	private final Dictionary dictionary;
 	private final DictionaryComponent dictionaryComponent;
 	private String dictionaryName = "<Dictionary name>";
 	private String noDefinitionStr = "There is no definition.";
 
-	public SearchTask(final Dictionary dictionary, final DictionaryComponent dictionaryComponent) {
+	// Member variables.
+	private String word;
+
+	public SearchTask(final WordSearcher searcher, final Dictionary dictionary, final DictionaryComponent dictionaryComponent) {
 		super();
+		this.searcher = searcher;
 		this.dictionary = dictionary;
 		this.dictionaryComponent = dictionaryComponent;
 	}
@@ -27,6 +32,8 @@ public class SearchTask extends BaseSearchTask {
 
 	@Override
 	protected String doInBackground(final String... words) {
+		word = words[0];
+
 		final Definition d = dictionary.lookUp(words[0]);
 		String content;
 		if(d == Definition.NOT_FOUND) {
@@ -44,8 +51,10 @@ public class SearchTask extends BaseSearchTask {
 		dictionaryComponent.getResultView().loadDataWithBaseURL(ResultTextMaker.ASSET_URL, dictionaryComponent.getResultTextMaker().getResultHTML(), "text/html", "utf-8", null);
 
 		// Hide progress bar if all tasks finished.
-		if(WordSearcher.didAllTasksFinish()) {
+		if(searcher.didAllTasksFinish()) {
 			dictionaryComponent.getProgressBar().setVisibility(View.INVISIBLE);
+			// Save word to history.
+			searcher.saveWordToHistory(word);
 		}
 	}
 

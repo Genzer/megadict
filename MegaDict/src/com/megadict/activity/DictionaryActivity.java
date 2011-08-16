@@ -1,6 +1,8 @@
 package com.megadict.activity;
 
 
+import java.util.List;
+
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.Menu;
@@ -16,6 +18,7 @@ import com.megadict.activity.base.BaseActivity;
 import com.megadict.application.MegaDictApp;
 import com.megadict.bean.BusinessComponent;
 import com.megadict.bean.DictionaryComponent;
+import com.megadict.business.HistoryDisplayer;
 import com.megadict.business.ResultTextMaker;
 import com.megadict.business.TextSelector;
 import com.megadict.business.recommending.WordRecommender;
@@ -37,9 +40,10 @@ public final class DictionaryActivity extends BaseActivity {
 	// Member variables
 	public DictionaryComponent dictionaryComponent;
 	private SQLiteDatabase database;
-	private TextSelector textSelector;
 	private WordSearcher searcher;
 	private DictionaryScanner scanner;
+	private TextSelector textSelector;
+	private HistoryDisplayer historyDisplayer;
 
 	public DictionaryActivity() {
 		super(R.layout.search);
@@ -102,6 +106,13 @@ public final class DictionaryActivity extends BaseActivity {
 			Utility.startActivity(this, "com.megadict.activity.AboutActivity");
 		} else if(item.getItemId() == R.id.selectTextMenuItem) {
 			textSelector.selectText(this, resultView, TAG);
+		} else if(item.getItemId() == R.id.historyMenuItem) {
+			final List<String> list = searcher.getHistoryList();
+			if(list.isEmpty()) {
+				Utility.messageBox(this, R.string.emptyHistory);
+			} else {
+				historyDisplayer.showHistoryDialog(list);
+			}
 		}
 		return true;
 	}
@@ -145,12 +156,15 @@ public final class DictionaryActivity extends BaseActivity {
 
 		// Init search bar.
 		final SearchBarInitializer searchBarInitializer = new SearchBarInitializer(this, businessComponent, dictionaryComponent);
-		// Register observers for sbInitializer.
 		searchBarInitializer.addObserver(recommender);
 
 		// Init Result view.
 		final ResultViewInitializer resultViewInitializer = new ResultViewInitializer(this, businessComponent, dictionaryComponent);
-		resultViewInitializer.doNothing();
+		resultViewInitializer.addObserver(recommender);
+
+		// Init history retriever.
+		historyDisplayer = new HistoryDisplayer(this, businessComponent, dictionaryComponent);
+		historyDisplayer.addObserver(recommender);
 
 		// Init result panel.
 		final LinearLayout resultPanel = (LinearLayout)findViewById(R.id.resultPanel);
@@ -162,7 +176,7 @@ public final class DictionaryActivity extends BaseActivity {
 
 	private void doScanningStorage() {
 		if(!scanner.scanStorage(this, dictionaryComponent)) {
-			Utility.messageBox(this, getString(R.string.scanning));
+			Utility.messageBox(this, R.string.scanning);
 		}
 	}
 }

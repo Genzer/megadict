@@ -11,7 +11,7 @@ import android.os.Message;
 
 import com.megadict.bean.DictionaryComponent;
 import com.megadict.business.scanning.DictionaryScanner;
-import com.megadict.initializer.SearchBarInitializer;
+import com.megadict.initializer.AbstractInitializer;
 import com.megadict.model.Dictionary;
 
 public final class WordRecommender implements Observer {
@@ -77,16 +77,13 @@ public final class WordRecommender implements Observer {
 	@Override
 	public void update(final Observable o, final Object arg) {
 		if(o instanceof DictionaryScanner) {
-			@SuppressWarnings("unchecked")
-			final List<Dictionary> models = (List<Dictionary>)(arg);
-			dictionaryModels.clear();
-			dictionaryModels.addAll(models);
-		} else if(o instanceof SearchBarInitializer) {
+			updateModels(arg);
+		} else if(o instanceof AbstractInitializer) {
+			// Remove old runnable in handler.
+			preventRecommending();
+
+			// Should recommending?
 			if(arg instanceof String) {
-				// Remove old runnable in handler.
-				if(recommendRunnable != null) {
-					recommendHandler.removeCallbacks(recommendRunnable);
-				}
 				// Check if a Runnable should be posted.
 				if(recommendTask != null && recommendTask.isRecommending()) {
 					// Can't postDelayed if a runnable was in runnable queue.
@@ -96,10 +93,21 @@ public final class WordRecommender implements Observer {
 					recommendHandler.postDelayed(recommendRunnable, DELAY_TIME);
 				}
 			}
-			// Not allowed to recommend.
-			else if(arg instanceof Boolean && recommendRunnable != null) {
-				recommendHandler.removeCallbacks(recommendRunnable);
-			}
 		}
+	}
+
+	private void preventRecommending() {
+		if(recommendRunnable != null) {
+			recommendHandler.removeCallbacks(recommendRunnable);
+		}
+		// Dismiss if drop down list presented.
+		dictionaryComponent.getSearchBar().dismissDropDown();
+	}
+
+	private void updateModels(final Object arg) {
+		@SuppressWarnings("unchecked")
+		final List<Dictionary> models = (List<Dictionary>)(arg);
+		dictionaryModels.clear();
+		dictionaryModels.addAll(models);
 	}
 }

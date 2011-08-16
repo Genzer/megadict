@@ -20,7 +20,7 @@ import com.megadict.exception.RecommendingException;
 import com.megadict.model.Dictionary;
 
 public class RecommendTask extends BaseRecommendTask {
-	private final static int RECOMMENDED_WORD_COUNT = 10;
+	private final static int RECOMMENDED_WORD_COUNT = 50;
 	private final static int TIMEOUT_IN_SECONDS = 3;
 	private final List<Dictionary> dictionaryModels;
 	private final DictionaryComponent dictionaryComponent;
@@ -94,7 +94,7 @@ public class RecommendTask extends BaseRecommendTask {
 
 		@Override
 		public List<String> call() throws Exception {
-			return dictionary.recommendWord(word);
+			return dictionary.recommendWord(word, 50);
 		}
 	}
 }

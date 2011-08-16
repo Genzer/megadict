@@ -77,7 +77,7 @@ public class ManageActivity extends BaseListActivity {
 	// ======================= Private functions =================== //
 	private void doRescanning() {
 		if(!scanner.rescan(rescanComponent)) {
-			Utility.messageBox(this, getString(R.string.scanning));
+			Utility.messageBox(this, R.string.scanning);
 		}
 	}
 }

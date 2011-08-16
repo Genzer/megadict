@@ -1,8 +1,6 @@
 package com.megadict.initializer;
 
-import java.util.Observable;
-
-import android.app.Activity;
+import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -14,29 +12,20 @@ import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
-import com.megadict.R;
 import com.megadict.bean.BusinessComponent;
 import com.megadict.bean.DictionaryComponent;
-import com.megadict.business.recommending.WordRecommender;
-import com.megadict.business.searching.WordSearcher;
 import com.megadict.utility.Utility;
 
-public class SearchBarInitializer extends Observable implements Initializer {
-	private final Activity activity;
-	private final BusinessComponent businessComponent;
-	private final DictionaryComponent dictionaryComponent;
+public class SearchBarInitializer extends AbstractInitializer {
 
-	public SearchBarInitializer(final Activity activity,
+	public SearchBarInitializer(final Context context,
 			final BusinessComponent businessComponent,
 			final DictionaryComponent dictionaryComponent) {
-		super();
-		this.activity = activity;
-		this.businessComponent = businessComponent;
-		this.dictionaryComponent = dictionaryComponent;
-		initSearchBar();
+		super(context, businessComponent, dictionaryComponent);
 	}
 
-	private void initSearchBar() {
+	@Override
+	protected void init() {
 		// Prepare components.
 		final AutoCompleteTextView searchBar = dictionaryComponent.getSearchBar();
 		searchBar.setThreshold(1);
@@ -47,7 +36,7 @@ public class SearchBarInitializer extends Observable implements Initializer {
 		setOnItemClickListener(searchBar);
 
 		// Disable soft keyboard.
-		Utility.disableSoftKeyboard(activity, searchBar);
+		Utility.disableSoftKeyboard(context, searchBar);
 	}
 
 	private void addTextChangedListener(final AutoCompleteTextView searchBar) {
@@ -88,31 +77,6 @@ public class SearchBarInitializer extends Observable implements Initializer {
 				return true;
 			}
 		});
-	}
-
-	private void doSearching(final String word) {
-		// THE OUTER IF MAKES SURE THAT NO CRASH IN MEGADICT.
-		/// I'M NOT SATISFIED WITH THIS BECAUSE THE DICTIONARY MODEL CAN'T BE USED BY MULTIPLE THREADS.
-		/// IT MEANS THAT WHEN RECOMMENDING IS RUNNING,
-		/// WE CAN'T RUN ANOTHER THREAD TO SEARCH WORD ON THE SAME DICTIONARY MODEL.
-		/// NEED TO FIX THE DICTIONARY MODEL.
-
-		// Get useful components.
-		final WordSearcher searcher = businessComponent.getSearcher();
-		final WordRecommender recommender = businessComponent.getRecommender();
-
-		if(recommender.isRecommending()) {
-			Utility.messageBox(activity, activity.getString(R.string.recommending));
-		} else {
-			if(!searcher.lookup(word)) {
-				Utility.messageBox(activity, activity.getString(R.string.searching));
-			}
-		}
-	}
-
-	private void preventRecommending() {
-		setChanged();
-		notifyObservers(true);
 	}
 
 	private class SearchBarTextWatcher implements TextWatcher {

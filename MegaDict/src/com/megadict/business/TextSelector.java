@@ -15,7 +15,7 @@ public class TextSelector {
 			final KeyEvent shiftPressEvent = new KeyEvent(0, 0, KeyEvent.ACTION_DOWN,
 					KeyEvent.KEYCODE_SHIFT_LEFT, 0, 0);
 			shiftPressEvent.dispatch(resultView);
-			Utility.messageBox(context, context.getString(R.string.selectText));
+			Utility.messageBox(context, R.string.selectText);
 		}
 		catch (final Exception e) {
 			Log.e(tag, context.getString(R.string.canNotSelectText), e);

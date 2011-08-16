@@ -22,4 +22,9 @@ public class WikiDictionary implements Dictionary {
 		return null;
 	}
 
+	@Override
+	public List<String> recommendWord(final String word, final int prefferedNumOfWord) {
+		return null;
+	}
+
 }

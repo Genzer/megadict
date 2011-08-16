@@ -7,7 +7,8 @@ import android.os.Environment;
 import com.megadict.exception.CouldNotCreateExternalDirectoryException;
 
 public final class ExternalStorage {
-	public final static String EXTERNAL_STORAGE_DIRECTORY = "megadict";
+	private final static String DOWNLOAD_DIRECTORY = "Download";
+	private final static String MEGADICT_DIRECTORY = "megadict";
 
 	private ExternalStorage(){}
 
@@ -16,15 +17,22 @@ public final class ExternalStorage {
 			throw new CouldNotCreateExternalDirectoryException();
 		}
 
+		/* Only use this in API 2.2 */
 		//final File downloadDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-		final File downloadDirectory = new File("/sdcard/Download");
+
+		/* Absolute path for every API */
+		//final File downloadDirectory = new File("/sdcard/Download");
+
+		final File downloadDirectory = new File(
+				Environment.getExternalStorageDirectory().getAbsolutePath() +
+				File.separator + DOWNLOAD_DIRECTORY);
 		// Create "Download" directory if it doesn't exist.
 		if (!downloadDirectory.exists()) {
 			downloadDirectory.mkdir();
 		}
 
-		final File externalDirectory = new File(downloadDirectory.getAbsolutePath() + "/"
-				+ EXTERNAL_STORAGE_DIRECTORY);
+		final File externalDirectory = new File(downloadDirectory.getAbsolutePath() +
+				File.separator	+ MEGADICT_DIRECTORY);
 		// Create megadict directory if it doesn't exits.
 		if (!externalDirectory.exists()) {
 			externalDirectory.mkdir();
