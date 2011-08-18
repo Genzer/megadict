@@ -15,14 +15,13 @@ import android.widget.TextView;
 
 import com.megadict.R;
 import com.megadict.model.ChosenModel;
+import com.megadict.utility.DatabaseHelper;
 
 public class ChosenDictionaryCheckBoxAdapter extends ResourceCursorAdapter {
 	private final LayoutInflater inflater;
-	private final SQLiteDatabase database;
 
-	public ChosenDictionaryCheckBoxAdapter(final Context context, final Cursor cursor, final SQLiteDatabase database) {
+	public ChosenDictionaryCheckBoxAdapter(final Context context, final Cursor cursor) {
 		super(context, R.layout.textview_checkbox_row, cursor, true);
-		this.database = database;
 		this.inflater = LayoutInflater.from(context);
 	}
 
@@ -34,13 +33,13 @@ public class ChosenDictionaryCheckBoxAdapter extends ResourceCursorAdapter {
 	@Override
 	public View newView(final Context context, final Cursor cursor, final ViewGroup parent) {
 		final View view =
-			inflater.inflate(R.layout.textview_checkbox_row, parent, false);
+				inflater.inflate(R.layout.textview_checkbox_row, parent, false);
 
 		// Create view holder and store it.
 		final ViewHolder viewHolder = new ViewHolder();
 		viewHolder.dictName = (TextView) view.findViewById(R.id.dictionaryName);
 		viewHolder.dictEnabled =
-			(CheckBox) view.findViewById(R.id.dictionaryEnabled);
+				(CheckBox) view.findViewById(R.id.dictionaryEnabled);
 		view.setTag(viewHolder);
 
 		viewHolder.dictEnabled.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -52,6 +51,8 @@ public class ChosenDictionaryCheckBoxAdapter extends ResourceCursorAdapter {
 				final ContentValues value = new ContentValues();
 				value.put(ChosenModel.ENABLED_COLUMN, isChecked ? 1 : 0);
 				final String where = ChosenModel.ID_COLUMN + " = " + dictID;
+
+				final SQLiteDatabase database = DatabaseHelper.getDatabase(context);
 				database.update(ChosenModel.TABLE_NAME, value, where, null);
 
 				// NEED REVIEWING THIS USE // THIS IS NOT GOOD //

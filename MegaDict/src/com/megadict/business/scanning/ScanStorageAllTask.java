@@ -2,6 +2,7 @@ package com.megadict.business.scanning;
 
 import android.app.Activity;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 
 import com.megadict.R;
 import com.megadict.bean.DictionaryComponent;
@@ -15,11 +16,11 @@ import com.megadict.model.Dictionary;
 import com.megadict.model.DictionaryInformation;
 import com.megadict.model.ModelMap;
 import com.megadict.model.UsedDictionary;
+import com.megadict.utility.DatabaseHelper;
 
 public class ScanStorageAllTask extends BaseScanTask {
 	private final DictionaryScanner scanner;
 	private final DictionaryComponent dictionaryComponent;
-	private final Activity activity;
 	private final ModelMap models;
 
 	public ScanStorageAllTask(final DictionaryScanner scanner, final ModelMap models, final Activity activity,
@@ -27,7 +28,6 @@ public class ScanStorageAllTask extends BaseScanTask {
 		super();
 		this.scanner = scanner;
 		this.models = models;
-		this.activity = activity;
 		this.dictionaryComponent = dictionaryComponent;
 	}
 
@@ -36,8 +36,10 @@ public class ScanStorageAllTask extends BaseScanTask {
 		// Remove old dicts.
 		models.clear();
 		// Read from database.
-		final Cursor cursor = ChosenModel.selectChosenDictionaryIDsAndPaths(dictionaryComponent.getDatabase());
-		activity.startManagingCursor(cursor);
+
+		final SQLiteDatabase database = DatabaseHelper.getDatabase(dictionaryComponent.getContext());
+
+		final Cursor cursor = ChosenModel.selectChosenDictionaryIDsAndPaths(database);
 
 		for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
 			try {
@@ -58,6 +60,7 @@ public class ScanStorageAllTask extends BaseScanTask {
 				DictionaryScanner.log(e.getMessage());
 			}
 		}
+		cursor.close();
 		return null;
 	}
 

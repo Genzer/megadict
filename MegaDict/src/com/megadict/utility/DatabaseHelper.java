@@ -7,12 +7,14 @@ import android.util.Log;
 
 import com.megadict.model.ChosenModel;
 
-public class DatabaseHelper extends SQLiteOpenHelper {
+public final class DatabaseHelper extends SQLiteOpenHelper {
 	public static final String DATABASE_NAME = "dictionary";
 	public static final int DATABASE_VERSION = 2;
+	private static DatabaseHelper helper;
+	private static SQLiteDatabase database;
 
 
-	public DatabaseHelper(final Context context) {
+	private DatabaseHelper(final Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
 	}
 
@@ -32,5 +34,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 		// Recreates the database with a new version
 		onCreate(db);
+	}
+
+	public static DatabaseHelper getInstance(final Context context) {
+		if(helper == null) {
+			helper = new DatabaseHelper(context);
+		}
+		return helper;
+	}
+
+	public static SQLiteDatabase getDatabase(final Context context) {
+		helper = getInstance(context);
+		if(database == null) {
+			database = helper.getWritableDatabase();
+		}
+		return database;
 	}
 }

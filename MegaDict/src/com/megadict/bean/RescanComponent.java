@@ -1,17 +1,17 @@
 package com.megadict.bean;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 
 public class RescanComponent {
+	public Context context;
 	public ProgressDialog progressDialog;
-	public SQLiteDatabase database;
 	public Cursor cursor;
 
-	public RescanComponent(final ProgressDialog progressDialog, final SQLiteDatabase database, final Cursor cursor) {
+	public RescanComponent(final Context context, final ProgressDialog progressDialog, final Cursor cursor) {
+		this.context = context;
 		this.progressDialog = progressDialog;
-		this.database = database;
 		this.cursor = cursor;
 	}
 }

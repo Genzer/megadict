@@ -21,9 +21,9 @@ import com.megadict.utility.DatabaseHelper;
 import com.megadict.utility.Utility;
 
 public class ManageActivity extends BaseListActivity {
-	private SQLiteDatabase database;
 	private DictionaryScanner scanner;
 	private RescanComponent rescanComponent;
+	private Cursor listViewCursor;
 
 	public ManageActivity() {
 		super(R.layout.manage);
@@ -37,26 +37,25 @@ public class ManageActivity extends BaseListActivity {
 		scanner = ((MegaDictApp) getApplication()).scanner;
 
 		// Create or open database.
-		final DatabaseHelper databaseHelper = new DatabaseHelper(this);
-		database = databaseHelper.getWritableDatabase();
+		final SQLiteDatabase database = DatabaseHelper.getDatabase(this);
 
-		final Cursor listViewCursor =
+		listViewCursor =
 				database.query(ChosenModel.TABLE_NAME, null, null, null, null, null, null);
-		startManagingCursor(listViewCursor);
+		//startManagingCursor(listViewCursor);
 		final ChosenDictionaryCheckBoxAdapter adapter =
-				new ChosenDictionaryCheckBoxAdapter(this, listViewCursor, database);
+				new ChosenDictionaryCheckBoxAdapter(this, listViewCursor);
 		setListAdapter(adapter);
 
 		final ProgressDialog progressDialog = new ProgressDialog(this);
 		progressDialog.setMessage("Scanning storage... ");
 
-		rescanComponent = new RescanComponent(progressDialog, database, listViewCursor);
+		rescanComponent = new RescanComponent(this, progressDialog, listViewCursor);
 	}
 
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		database.close();
+		listViewCursor.close();
 	}
 
 	@Override

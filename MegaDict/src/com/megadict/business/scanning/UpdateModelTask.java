@@ -8,6 +8,7 @@ import java.util.Set;
 
 import android.app.Activity;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 
 import com.megadict.R;
 import com.megadict.bean.DictionaryComponent;
@@ -21,6 +22,7 @@ import com.megadict.model.Dictionary;
 import com.megadict.model.DictionaryInformation;
 import com.megadict.model.ModelMap;
 import com.megadict.model.UsedDictionary;
+import com.megadict.utility.DatabaseHelper;
 
 public class UpdateModelTask extends BaseScanTask {
 	private final DictionaryScanner scanner;
@@ -40,8 +42,9 @@ public class UpdateModelTask extends BaseScanTask {
 	protected Void doInBackground(final Void... params) {
 		final Set<Integer> IDSet = models.keySet();
 
-		final Cursor cursor = ChosenModel.selectChosenDictionaryIDsAndPaths(dictionaryComponent.getDatabase());
-		activity.startManagingCursor(cursor);
+		final SQLiteDatabase database = DatabaseHelper.getDatabase(dictionaryComponent.getContext());
+		final Cursor cursor = ChosenModel.selectChosenDictionaryIDsAndPaths(database);
+		//activity.startManagingCursor(cursor);
 
 		final List<Integer> IDListFromCursor = new ArrayList<Integer>();
 		final Map<Integer, Dictionary> newModels = new HashMap<Integer, Dictionary>();
@@ -64,6 +67,7 @@ public class UpdateModelTask extends BaseScanTask {
 				}
 			}
 		}
+		cursor.close();
 
 		// Remove old models.
 		for(final Integer i : IDSet) {

@@ -3,6 +3,7 @@ package com.megadict.business.scanning;
 import java.util.List;
 
 import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
 
 import com.megadict.bean.RescanComponent;
 import com.megadict.business.ExternalReader;
@@ -13,6 +14,7 @@ import com.megadict.model.Dictionary;
 import com.megadict.model.DictionaryInformation;
 import com.megadict.model.ModelMap;
 import com.megadict.model.UsedDictionary;
+import com.megadict.utility.DatabaseHelper;
 
 public class RescanAllTask extends BaseScanTask {
 	private final DictionaryScanner scanner;
@@ -41,8 +43,9 @@ public class RescanAllTask extends BaseScanTask {
 		// Read from external storage.
 		final List<DictionaryInformation> infos = externalReader.getInfos();
 
+		final SQLiteDatabase database = DatabaseHelper.getDatabase(rescanComponent.context);
 		// Truncate the table.
-		rescanComponent.database.delete(ChosenModel.TABLE_NAME, null, null);
+		database.delete(ChosenModel.TABLE_NAME, null, null);
 
 		for(final DictionaryInformation info : infos) {
 			// Create necessary files.
@@ -56,12 +59,13 @@ public class RescanAllTask extends BaseScanTask {
 			value.put(ChosenModel.DICTIONARY_NAME_COLUMN, model.getName());
 			value.put(ChosenModel.DICTIONARY_PATH_COLUMN, info.getParentFile().getAbsolutePath());
 			value.put(ChosenModel.ENABLED_COLUMN, 0);
-			final int dictID = (int)rescanComponent.database.insert(ChosenModel.TABLE_NAME, null, value);
+			final int dictID = (int)database.insert(ChosenModel.TABLE_NAME, null, value);
 
 			// Store model.
 			//DictionaryScanner.addModel(dictID, model);
 			models.put(dictID, model);
 		}
+
 		return null;
 	}
 
@@ -74,6 +78,4 @@ public class RescanAllTask extends BaseScanTask {
 		// Close progress dialog.
 		rescanComponent.progressDialog.dismiss();
 	}
-
-	// Need setStartPage() here????? Think!
 }

@@ -1,7 +1,6 @@
 package com.megadict.bean;
 
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -14,7 +13,6 @@ public class DictionaryComponent {
 	private final AutoCompleteTextView searchBar;
 	private final ResultView resultView;
 	private final ResultTextMaker resultTextMaker;
-	private final SQLiteDatabase database;
 	private final ProgressBar progressBar;
 	private final Context context;
 
@@ -23,7 +21,6 @@ public class DictionaryComponent {
 		private AutoCompleteTextView searchBar;
 		private ResultView resultView;
 		private ResultTextMaker resultTextMaker;
-		private SQLiteDatabase database;
 		private ProgressBar progressBar;
 		private Context context;
 
@@ -41,10 +38,6 @@ public class DictionaryComponent {
 
 		public Builder resultTextMaker(final ResultTextMaker resultTextMaker) {
 			this.resultTextMaker = resultTextMaker; return this;
-		}
-
-		public Builder database(final SQLiteDatabase database) {
-			this.database = database; return this;
 		}
 
 		public Builder progressBar(final ProgressBar progressBar) {
@@ -65,7 +58,6 @@ public class DictionaryComponent {
 		this.searchBar = builder.searchBar;
 		this.resultView = builder.resultView;
 		this.resultTextMaker = builder.resultTextMaker;
-		this.database = builder.database;
 		this.progressBar = builder.progressBar;
 		this.context = builder.context;
 	}
@@ -84,10 +76,6 @@ public class DictionaryComponent {
 
 	public ResultTextMaker getResultTextMaker() {
 		return resultTextMaker;
-	}
-
-	public SQLiteDatabase getDatabase() {
-		return database;
 	}
 
 	public ProgressBar getProgressBar() {

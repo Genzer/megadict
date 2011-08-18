@@ -3,7 +3,6 @@ package com.megadict.activity;
 
 import java.util.List;
 
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -27,7 +26,6 @@ import com.megadict.business.searching.WordSearcher;
 import com.megadict.initializer.ResultViewInitializer;
 import com.megadict.initializer.SearchBarInitializer;
 import com.megadict.initializer.SearchButtonInitializer;
-import com.megadict.utility.DatabaseHelper;
 import com.megadict.utility.Utility;
 import com.megadict.widget.ResultView;
 
@@ -39,7 +37,6 @@ public final class DictionaryActivity extends BaseActivity {
 
 	// Member variables
 	public DictionaryComponent dictionaryComponent;
-	private SQLiteDatabase database;
 	private WordSearcher searcher;
 	private DictionaryScanner scanner;
 	private TextSelector textSelector;
@@ -70,12 +67,6 @@ public final class DictionaryActivity extends BaseActivity {
 	protected void onRestart() {
 		super.onRestart();
 		scanner.updateDictionaryModels(this, dictionaryComponent);
-	}
-
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-		database.close();
 	}
 
 	@Override
@@ -119,9 +110,6 @@ public final class DictionaryActivity extends BaseActivity {
 
 	// ========================= Private functions ======================= //
 	private void initSomething() {
-		// Create and open database.
-		final DatabaseHelper helper = new DatabaseHelper(this);
-		database = helper.getReadableDatabase();
 
 		// Create UI components.
 		final ProgressBar progressBar = (ProgressBar)findViewById(R.id.progressBar);
@@ -135,7 +123,6 @@ public final class DictionaryActivity extends BaseActivity {
 				searchButton(searchButton).
 				searchBar(searchBar).resultView(resultView).
 				resultTextMaker(resultTextMaker).
-				database(database).
 				progressBar(progressBar).
 				context(this).build();
 
