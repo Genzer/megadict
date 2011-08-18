@@ -1,13 +1,28 @@
 package com.megadict.format.dict.index;
 
 import java.io.*;
-import java.nio.charset.Charset;
 import java.util.*;
 
 import com.megadict.exception.*;
 import com.megadict.format.dict.parser.*;
+import com.megadict.format.dict.util.FileUtil;
 
 public class IndexFileReader {
+    
+    static {
+        CHAR_BUFFER_SIZE = determineCharBufferSize(FileUtil.DEFAULT_BUFFER_SIZE_IN_BYTES);
+        NUM_OF_CHAR_TO_BE_READ_ON = determineNumOfCharShouldBeReadOn(100);        
+    }
+    
+    private static int determineCharBufferSize(int bufferSizeInBytes) {
+        int sizeOfCharInBytes = 2;
+        return bufferSizeInBytes / sizeOfCharInBytes;
+    }
+    
+    private static int determineNumOfCharShouldBeReadOn(int numOfWordShouldReadOn) {
+        int numOfCharPerWord = 10;
+        return numOfWordShouldReadOn * numOfCharPerWord;
+    }
 
     public IndexFileReader(File indexFile) {
         this.indexFile = indexFile;
@@ -21,22 +36,25 @@ public class IndexFileReader {
     public Set<Index> getIndexesStartFrom(String headword) {
 
         Set<Index> indexes = new HashSet<Index>();
-
-        String[] indexStrings = retrieveIndexStringsFrom(headword);
-
+        String[] indexStrings = readIndexStringsSurrounding(headword);
+        
         for (String indexString : indexStrings) {
-            Index newIndex = makeNewIndex(indexString);
-            if (newIndex != null) {
-                indexes.add(newIndex);
-            }
+            parseToIndexIfPossibleAndAddToSet(indexString, indexes);
         }
 
         return indexes;
     }
+    
+    private void parseToIndexIfPossibleAndAddToSet(String indexString, Set<Index> indexes) {
+        Index newIndex = makeNewIndex(indexString);
+        if (newIndex != null) {
+            indexes.add(newIndex);
+        }
+    }
 
     private Index makeNewIndex(String indexString) {
         try {
-            return INDEX_PARSER.parse(indexString);
+            return indexParser.parse(indexString);
         } catch (ParseIndexException pie) {
             return null;
         }
@@ -57,14 +75,12 @@ public class IndexFileReader {
         }
     }
 
-    private String[] retrieveIndexStringsFrom(String headword) {
+    private String[] readIndexStringsSurrounding(String headword) {
         try {
             makeReader();
             String customedheadword = createFuzzyMatching(headword);
             int foundPosition = locateIndexStringOf(customedheadword);
             return readAsManyIndexStringAsPossible(foundPosition);
-        } catch (FileNotFoundException fnf) {
-            throw new ResourceMissingException(indexFile, fnf);
         } catch (IOException ioException) {
             throw new OperationFailedException("reading index file", ioException);
         } finally {
@@ -72,20 +88,15 @@ public class IndexFileReader {
         }
     }
 
-    private void makeReader() throws FileNotFoundException, IOException {
-        FileInputStream rawStream = new FileInputStream(indexFile);
-        reader = new BufferedReader(newUnicodeStream(rawStream), READER_BUFFER_SIZE_IN_BYTES);
-    }
-
-    private InputStreamReader newUnicodeStream(FileInputStream rawStream) {
-        return new InputStreamReader(rawStream, UTF8_CHARSET);
+    private void makeReader() {
+        reader = FileUtil.newUnicodeBufferedReader(indexFile, FileUtil.LARGE_BUFFER_SIZE_IN_BYTES);
     }
 
     private int locateIndexStringOf(String headword) throws IOException {
         fillCharBufferWithSpaces();
 
         while (stillAbleToRead()) {
-            builder.append(CHAR_BUFFER);
+            builder.append(charBuffer);
 
             int foundPosition = builder.indexOf(headword);
 
@@ -108,11 +119,11 @@ public class IndexFileReader {
     }
 
     private void fillCharBufferWithSpaces() {
-        Arrays.fill(CHAR_BUFFER, ' ');
+        Arrays.fill(charBuffer, ' ');
     }
 
     private boolean stillAbleToRead() throws IOException {
-        return reader.read(CHAR_BUFFER) != -1;
+        return reader.read(charBuffer) != -1;
     }
 
     private String readWholeLineAt(int startPosition) {
@@ -158,24 +169,17 @@ public class IndexFileReader {
             throw new OperationFailedException("closing reading", ioe);
         }
     }
-
-    private static final int READER_BUFFER_SIZE_IN_BYTES = 8 * 1024;
-    private static final int SIZE_OF_CHAR_IN_BYTES = 2;
-    private static final int CHAR_BUFFER_SIZE = READER_BUFFER_SIZE_IN_BYTES / SIZE_OF_CHAR_IN_BYTES;
-
-    private static final int NUM_OF_CHAR_PER_WORD = 100;
-    private static final int NUM_OF_WORDS_SHOULD_BE_READ = 10;
-    private static final int NUM_OF_CHAR_TO_BE_READ_ON = NUM_OF_WORDS_SHOULD_BE_READ * NUM_OF_CHAR_PER_WORD;
     
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
     private static final String HEAD_WORD_PREFIX = "\n";
     private static final String HEAD_WORD_SUFFIX = "\t";
-    
-    private static final Charset UTF8_CHARSET = Charset.forName("UTF-8");
 
-    private final char[] CHAR_BUFFER = new char[CHAR_BUFFER_SIZE];
+    private static final int CHAR_BUFFER_SIZE;
+    private static final int NUM_OF_CHAR_TO_BE_READ_ON;
+    
+    private final char[] charBuffer = new char[CHAR_BUFFER_SIZE];
     private final StringBuilder builder = new StringBuilder(CHAR_BUFFER_SIZE);
-    private final IndexParser INDEX_PARSER = IndexParsers.newInstance();
-    private BufferedReader reader;
+    private final IndexParser indexParser = IndexParsers.newInstance();
+    private Reader reader;
     private final File indexFile;
 }

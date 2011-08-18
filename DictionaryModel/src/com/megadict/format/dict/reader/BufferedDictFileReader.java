@@ -2,6 +2,8 @@ package com.megadict.format.dict.reader;
 
 import java.io.*;
 
+import com.megadict.format.dict.util.FileUtil;
+
 class BufferedDictFileReader extends BaseDictFileReader implements DictFileReader {
 
     public BufferedDictFileReader(File dictFile) {
@@ -10,8 +12,7 @@ class BufferedDictFileReader extends BaseDictFileReader implements DictFileReade
 
     @Override
     protected void openStream() throws FileNotFoundException {
-        FileInputStream rawStream = new FileInputStream(dictFile);
-        fileReader = new BufferedInputStream(rawStream, BUFFER_SIZE);
+        fileReader = FileUtil.newBufferedInputStream(dictFile);
     }
 
     @Override
@@ -36,6 +37,5 @@ class BufferedDictFileReader extends BaseDictFileReader implements DictFileReade
         return "BufferedDictReader[file: " + this.dictFile + "]";
     }
     
-    private BufferedInputStream fileReader;
-    private static final int BUFFER_SIZE = 8 * 1024;
+    private InputStream fileReader;
 }

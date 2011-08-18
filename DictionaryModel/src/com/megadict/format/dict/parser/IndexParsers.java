@@ -6,6 +6,6 @@ public class IndexParsers {
     }
     
     public static IndexParser newInstance() {
-        return new BackedByStringParser();
+        return new BackedByByteArrayParser();
     }
 }

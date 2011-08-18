@@ -5,6 +5,7 @@ import java.util.*;
 import com.megadict.exception.*;
 import com.megadict.format.dict.index.*;
 import com.megadict.format.dict.reader.*;
+import com.megadict.format.dict.util.StringChecker;
 import com.megadict.model.*;
 import com.megadict.model.Dictionary;
 
@@ -33,17 +34,29 @@ public class DICTDictionary implements Dictionary {
     private DICTDictionary(Builder builder) {
         this.indexFile = builder.indexFile;
         this.dictFile  = builder.dictFile;
-        checkFileExistence();
-        prepareIndexStoreWithSegment();
-        prepareDefinitions();
-        loadDictionaryMetadata();
+        if (builder.segmentEnabled) {
+            initializeWithSegment();
+        } else {
+            initialize();
+        }
     }
 
     public DICTDictionary(IndexFile indexFile, DictionaryFile dictFile) {
         this.indexFile = indexFile;
         this.dictFile = dictFile;
+        initialize();
+    }
+    
+    private void initialize() {
         checkFileExistence();
         prepareIndexStore();
+        prepareDefinitions();
+        loadDictionaryMetadata();
+    }
+    
+    private void initializeWithSegment() {
+        checkFileExistence();
+        prepareIndexStoreWithSegment();
         prepareDefinitions();
         loadDictionaryMetadata();
     }
