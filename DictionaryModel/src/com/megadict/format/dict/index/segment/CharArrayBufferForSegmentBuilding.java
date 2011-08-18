@@ -2,18 +2,18 @@ package com.megadict.format.dict.index.segment;
 
 import java.util.Arrays;
 
-public class ByteArrayInnerBuffer {
+class CharArrayBufferForSegmentBuilding {
 
-    public ByteArrayInnerBuffer(int bufferSize) {
-        inputBuffer = new byte[bufferSize];
+    public CharArrayBufferForSegmentBuilding(int bufferSize) {
+        inputBuffer = new char[bufferSize];
         int outputBufferSize = determineOutputBufferSize(bufferSize);
-        outputBuffer = new byte[outputBufferSize];
+        outputBuffer = new char[outputBufferSize];
     }
 
     private int determineOutputBufferSize(int inputBufferSize) {
         return incrementByPercent(inputBufferSize, OUTPUT_BUFFER_SIZE_INCREMENT_FACTOR);
     }
-    
+
     private static int incrementByPercent(int inputBufferSize, double percent) {
         return (int) Math.abs(inputBufferSize * percent);
     }
@@ -30,23 +30,23 @@ public class ByteArrayInnerBuffer {
     }
 
     void cleanLeftOverIfAny() {
-        currentLeftOver = ByteBufferTool.extractBufferLeftOver(inputBuffer);
+        currentLeftOver = CharBufferTool.extractBufferLeftOver(inputBuffer);
         cleanOutputBuffer();
         cleanLeftOver();
     }
-    
+
     private void cleanOutputBuffer() {
         int outputPadding = outputBuffer.length - inputBuffer.length;
         int lengthOfLeftOvers = previousLeftOver.length + currentLeftOver.length;
         int lengthWillBeSweptOff = outputPadding + lengthOfLeftOvers;
-        Arrays.fill(outputBuffer, 0, lengthWillBeSweptOff, (byte) 0);
+        Arrays.fill(outputBuffer, 0, lengthWillBeSweptOff, '\0');
     }
 
     private void cleanLeftOver() {
         int discardLastNewlineChar = determineLeftOverLengthIncludingLastNewline();
-        ByteBufferTool.copyBackwardFromSourceOffset(inputBuffer, discardLastNewlineChar, outputBuffer);
+        CharBufferTool.copyBackwardFromSourceOffset(inputBuffer, discardLastNewlineChar, outputBuffer);
     }
-    
+
     private int determineLeftOverLengthIncludingLastNewline() {
         int discardLastNewlineChar = currentLeftOver.length + 1;
         return discardLastNewlineChar;
@@ -61,7 +61,7 @@ public class ByteArrayInnerBuffer {
     private void appendPreviousLeftOver() {
         int discardedLastNewlineChar = 1;
         int usedSpaceInOutputBuffer = inputBuffer.length - currentLeftOver.length - discardedLastNewlineChar;
-        ByteBufferTool.copyBackwardToDestOffset(previousLeftOver, outputBuffer, usedSpaceInOutputBuffer);
+        CharBufferTool.copyBackwardToDestOffset(previousLeftOver, outputBuffer, usedSpaceInOutputBuffer);
     }
 
     void computeOffsetToPrepareWriting() {
@@ -78,22 +78,22 @@ public class ByteArrayInnerBuffer {
 
     private void updateLeftOverForNextRead() {
         previousLeftOver = currentLeftOver;
-        currentLeftOver = EMPTY_BUFFER;
     }
 
     public String fistWord() {
-        return ByteBufferTool.firstHeadWordIn(outputBuffer);
+        int maxCharsToFind = startPositionToWrite + 200;
+        return CharBufferTool.firstHeadWordIn(outputBuffer, maxCharsToFind);
     }
 
     public String lastWord() {
-        return ByteBufferTool.lastHeadWordIn(outputBuffer);
+        return CharBufferTool.lastHeadWordIn(outputBuffer);
     }
 
     private static final double OUTPUT_BUFFER_SIZE_INCREMENT_FACTOR = 1.02;
-    private static final byte[] EMPTY_BUFFER = new byte[0];
-    byte[] inputBuffer;
-    byte[] outputBuffer;
-    byte[] previousLeftOver = EMPTY_BUFFER;
-    byte[] currentLeftOver = EMPTY_BUFFER;
+    private static final char[] EMPTY_BUFFER = new char[0];
+    char[] inputBuffer;
+    char[] outputBuffer;
+    char[] previousLeftOver = EMPTY_BUFFER;
+    char[] currentLeftOver = EMPTY_BUFFER;
     private int startPositionToWrite = 0;
 }

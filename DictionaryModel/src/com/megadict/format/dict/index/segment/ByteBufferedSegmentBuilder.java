@@ -48,13 +48,26 @@ public class ByteBufferedSegmentBuilder extends BaseSegmentBuilder implements Se
 
     private void readIndexFileAndSplitIt(InputStream reader) throws IOException {
         while (stillReceiveDataFrom(reader)) {
+            if (finalBytesWasRead()) {
+                appendTrailingNewlineCharBeforeProcess();
+            }
             cleanUpBufferContent();
             createAndSaveSegmentToFile();
+            Arrays.fill(buffer.inputBuffer, (byte) 0);
         }
     }
 
     private boolean stillReceiveDataFrom(InputStream reader) throws IOException {
-        return reader.read(buffer.inputBuffer) != -1;
+        readBytes = reader.read(buffer.inputBuffer);
+        return readBytes != -1;
+    }
+
+    private boolean finalBytesWasRead() {
+        return readBytes < buffer.inputBuffer.length;
+    }
+
+    private void appendTrailingNewlineCharBeforeProcess() {
+        buffer.inputBuffer[readBytes] = '\n';
     }
 
     private void cleanUpBufferContent() {
@@ -95,6 +108,7 @@ public class ByteBufferedSegmentBuilder extends BaseSegmentBuilder implements Se
         segmentWriter.write(segment, buffer.outputBuffer, buffer.startPositionToWrite());
     }
 
-    private ByteArrayInnerBuffer buffer = new ByteArrayInnerBuffer(BUFFER_SIZE_IN_BYTES);
+    private ByteArrayBufferForSegmentBuilding buffer = new ByteArrayBufferForSegmentBuilding(BUFFER_SIZE_IN_BYTES);
     private ByteArraySegmentContentWriter segmentWriter = new ByteArraySegmentContentWriter();
+    private int readBytes = 0;
 }

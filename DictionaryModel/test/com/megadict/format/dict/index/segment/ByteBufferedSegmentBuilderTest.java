@@ -22,9 +22,30 @@ public class ByteBufferedSegmentBuilderTest {
         
         List<Segment> segments = builder.builtSegments();        
         assertFalse(segments.isEmpty());
+
+        System.out.println("Num of Segments: " + segments.size());
         
-        Segment segment = segments.get(10);        
+        printSegmentAt(segments, 0);
+        printSegmentAt(segments, segments.size() - 1);
+        
+        String testWord = "hello";
+        
+        Segment segment = determineSegment(segments, testWord);
         System.out.println(segment);
+    }
+    
+    private void printSegmentAt(List<Segment> segments, int index) {
+        Segment segment = segments.get(index);
+        System.out.println(segment);
+    }
+    
+    private Segment determineSegment(List<Segment> segments, String headword) {
+        for (Segment segment : segments) {
+            if (segment.contains(headword)) {
+                return segment;
+            }
+        }
+        return null;
     }
 
 }

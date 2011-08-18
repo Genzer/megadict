@@ -26,7 +26,7 @@ public class CharArrayInnerBufferTest {
         testBuffer.cleanLeftOverIfAny();
 
         String expected = new String(expectedOuput);
-        String actual = new String(testBuffer.outputBuffer());
+        String actual = new String(testBuffer.outputBuffer);
         assertEquals(expected, actual);
     }
     
@@ -40,10 +40,10 @@ public class CharArrayInnerBufferTest {
         this.givenPreviousLeftOver = previousLeftOver;
     }
 
-    private CharArrayInnerBuffer makeBufferFromGivenInput() {
+    private CharArrayBufferForSegmentBuilding makeBufferFromGivenInput() {
         int testBufferSize = this.givenInputBuffer.length;
-        CharArrayInnerBuffer buffer = new CharArrayInnerBuffer(testBufferSize);
-        System.arraycopy(this.givenInputBuffer, 0, buffer.inputBuffer(), 0, testBufferSize);
+        CharArrayBufferForSegmentBuilding buffer = new CharArrayBufferForSegmentBuilding(testBufferSize);
+        System.arraycopy(this.givenInputBuffer, 0, buffer.inputBuffer, 0, testBufferSize);
         return buffer;
     }
 
@@ -65,7 +65,7 @@ public class CharArrayInnerBufferTest {
     }
     
     private int outputBufferLength() {
-        return testBuffer.outputBuffer().length;
+        return testBuffer.outputBuffer.length;
     }
 
     private static String createPadding(int length) {
@@ -85,15 +85,15 @@ public class CharArrayInnerBufferTest {
         testBuffer.cleanLeftOverIfAny();
         testBuffer.appendPreviousLeftOverIfAny();
 
-        String expected = expectedOutputBufferAfterAppending(testBuffer.outputBuffer());
+        String expected = expectedOutputBufferAfterAppending(testBuffer.outputBuffer);
 
-        char[] actualOutput = testBuffer.outputBuffer();
+        char[] actualOutput = testBuffer.outputBuffer;
         String actual = new String(actualOutput);
         assertEquals(expected, actual);
     }
 
-    private CharArrayInnerBuffer makeBufferAndSetPreviousLeftOver() {
-        CharArrayInnerBuffer buffer = makeBufferFromGivenInput();
+    private CharArrayBufferForSegmentBuilding makeBufferAndSetPreviousLeftOver() {
+        CharArrayBufferForSegmentBuilding buffer = makeBufferFromGivenInput();
 
         buffer.previousLeftOver = new char[givenPreviousLeftOver.length];
 
@@ -165,7 +165,7 @@ public class CharArrayInnerBufferTest {
         assertEquals(expectedLastWord, actualLastWord);
     }
     
-    private CharArrayInnerBuffer testBuffer;
+    private CharArrayBufferForSegmentBuilding testBuffer;
     private char[] givenExpectedCleanInput;
     private char[] givenInputBuffer;
     private char[] givenPreviousLeftOver;

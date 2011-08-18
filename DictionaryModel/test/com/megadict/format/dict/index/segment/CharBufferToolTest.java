@@ -23,20 +23,20 @@ public class CharBufferToolTest {
     @Test
     public void testGetFirstHeadWord() {
         String expected = "A shares";
-        String actual = CharBufferTool.firstHeadWordIn(rawContent.toCharArray());
+        String actual = CharBufferTool.firstHeadWordIn(rawContent.toCharArray(), 50);
         assertEquals(expected, actual);
     }
 
     @Test
     public void testGetFirstHeadWordkWithEmptyInput() {
-        String actual = CharBufferTool.firstHeadWordIn(new char[0]);
+        String actual = CharBufferTool.firstHeadWordIn(new char[0], 50);
         assertEquals("", actual);
     }
 
     @Test
     public void testGetFirstHeadWordWithShortInput() {
         String shortInput = "ds8 23324 tra";
-        String actual = CharBufferTool.firstHeadWordIn(shortInput.toCharArray());
+        String actual = CharBufferTool.firstHeadWordIn(shortInput.toCharArray(), 50);
         assertEquals("", actual);
     }
 

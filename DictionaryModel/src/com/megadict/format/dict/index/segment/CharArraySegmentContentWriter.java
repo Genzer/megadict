@@ -5,7 +5,7 @@ import java.io.*;
 import com.megadict.exception.OperationFailedException;
 import com.megadict.exception.ResourceMissingException;
 
-public class CharArraySegmentContentWriter {
+class CharArraySegmentContentWriter {
     
     public CharArraySegmentContentWriter() {
         this.bufferEnabled = false;

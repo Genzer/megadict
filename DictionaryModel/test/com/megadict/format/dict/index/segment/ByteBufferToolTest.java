@@ -21,20 +21,20 @@ public class ByteBufferToolTest {
     @Test
     public void testGetFirstHeadWord() {
         String expected = "A shares";
-        String actual = ByteBufferTool.firstHeadWordIn(rawContent.getBytes());
+        String actual = ByteBufferTool.firstHeadWordIn(rawContent.getBytes(), 50);
         assertEquals(expected, actual);
     }
 
     @Test
     public void testGetFirstHeadWordkWithEmptyInput() {
-        String actual = ByteBufferTool.firstHeadWordIn(new byte[0]);
+        String actual = ByteBufferTool.firstHeadWordIn(new byte[0], 50);
         assertEquals("", actual);
     }
 
     @Test
     public void testGetFirstHeadWordWithShortInput() {
         String shortInput = "ds8 23324 tra";
-        String actual = ByteBufferTool.firstHeadWordIn(shortInput.getBytes());
+        String actual = ByteBufferTool.firstHeadWordIn(shortInput.getBytes(), 50);
         assertEquals("", actual);
     }
 

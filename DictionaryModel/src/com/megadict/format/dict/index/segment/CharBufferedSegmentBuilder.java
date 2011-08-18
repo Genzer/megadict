@@ -49,13 +49,27 @@ public class CharBufferedSegmentBuilder extends BaseSegmentBuilder implements Se
 
     private void readIndexFileAndSplitIt(FileReader reader) throws IOException {
         while (stillReceiveDataFrom(reader)) {
+            if (finalBytesWasRead()) {
+                appendTrailingNewlineCharBeforeProcess();
+            }
             cleanUpBufferContent();
             createAndSaveSegmentToFile();
+            Arrays.fill(buffer.inputBuffer, '\0');
+
         }
     }
 
     private boolean stillReceiveDataFrom(FileReader reader) throws IOException {
-        return reader.read(buffer.inputBuffer()) != -1;
+        readChars = reader.read(buffer.inputBuffer);
+        return readChars != -1;
+    }
+    
+    private boolean finalBytesWasRead() {
+        return readChars < buffer.inputBuffer.length;
+    }
+    
+    private void appendTrailingNewlineCharBeforeProcess() {
+        buffer.inputBuffer[readChars] = '\n';
     }
 
     private void cleanUpBufferContent() {
@@ -93,9 +107,10 @@ public class CharBufferedSegmentBuilder extends BaseSegmentBuilder implements Se
     }
 
     private void saveSegmentToFile(Segment segment) {
-        segmentWriter.write(segment, buffer.outputBuffer(), buffer.startPositionToWrite());
+        segmentWriter.write(segment, buffer.outputBuffer, buffer.startPositionToWrite());
     }
 
-    private CharArrayInnerBuffer buffer = new CharArrayInnerBuffer(BUFFER_SIZE_IN_BYTES);
+    private CharArrayBufferForSegmentBuilding buffer = new CharArrayBufferForSegmentBuilding(BUFFER_SIZE_IN_BYTES);
     private CharArraySegmentContentWriter segmentWriter = new CharArraySegmentContentWriter(true);
+    private int readChars = 0;
 }

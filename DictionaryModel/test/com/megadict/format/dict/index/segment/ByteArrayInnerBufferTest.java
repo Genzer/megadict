@@ -42,9 +42,9 @@ public class ByteArrayInnerBufferTest {
         this.givenPreviousLeftOver = previousLeftOver;
     }
 
-    private ByteArrayInnerBuffer makeBufferFromGivenInput() {
+    private ByteArrayBufferForSegmentBuilding makeBufferFromGivenInput() {
         int testBufferSize = this.givenInputBuffer.length;
-        ByteArrayInnerBuffer buffer = new ByteArrayInnerBuffer(testBufferSize);
+        ByteArrayBufferForSegmentBuilding buffer = new ByteArrayBufferForSegmentBuilding(testBufferSize);
         System.arraycopy(this.givenInputBuffer, 0, buffer.inputBuffer, 0, testBufferSize);
         return buffer;
     }
@@ -94,8 +94,8 @@ public class ByteArrayInnerBufferTest {
         assertEquals(expected, actual);
     }
 
-    private ByteArrayInnerBuffer makeBufferAndSetPreviousLeftOver() {
-        ByteArrayInnerBuffer buffer = makeBufferFromGivenInput();
+    private ByteArrayBufferForSegmentBuilding makeBufferAndSetPreviousLeftOver() {
+        ByteArrayBufferForSegmentBuilding buffer = makeBufferFromGivenInput();
 
         buffer.previousLeftOver = new byte[givenPreviousLeftOver.length];
 
@@ -166,7 +166,7 @@ public class ByteArrayInnerBufferTest {
         assertEquals(expectedLastWord, actualLastWord);
     }
 
-    private ByteArrayInnerBuffer testBuffer;
+    private ByteArrayBufferForSegmentBuilding testBuffer;
     private byte[] givenExpectedCleanInput;
     private byte[] givenInputBuffer;
     private byte[] givenPreviousLeftOver;

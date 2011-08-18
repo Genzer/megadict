@@ -3,7 +3,7 @@ package com.megadict.format.dict.index.segment;
 import java.io.*;
 import java.util.*;
 
-public class SegmentIndexWriter {
+class SegmentIndexWriter {
 
     public SegmentIndexWriter(File segmentIndexFile, List<Segment> segments) {
         this.indexFile = segmentIndexFile;

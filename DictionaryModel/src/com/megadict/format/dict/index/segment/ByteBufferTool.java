@@ -1,6 +1,6 @@
 package com.megadict.format.dict.index.segment;
 
-public class ByteBufferTool {
+class ByteBufferTool {
 
     private static enum SearchDirection {
         FORWARD(1) {
@@ -31,12 +31,11 @@ public class ByteBufferTool {
     private ByteBufferTool() {
     }
 
-    public static String firstHeadWordIn(byte[] buffer) {
-        return (buffer.length == 0) ? "" : findAndExtractFirstHeadWord(buffer);
+    public static String firstHeadWordIn(byte[] buffer, int maxCharsToFind) {
+        return (buffer.length == 0) ? "" : findAndExtractFirstHeadWord(buffer, maxCharsToFind);
     }
 
-    private static String findAndExtractFirstHeadWord(byte[] buffer) {
-        int maxCharsToFind = 300;
+    private static String findAndExtractFirstHeadWord(byte[] buffer, int maxCharsToFind) {
         int firstTabChar = findFirstTabCharInBeginningChars(maxCharsToFind, buffer);
         int lastNullChar = findBackwardFirstNullCharFromTabChar(firstTabChar, buffer);
 
@@ -56,7 +55,7 @@ public class ByteBufferTool {
         int end = Math.min(numOfChars, content.length);
         char tabChar = '\t';
 
-        return findFowardFirstOccurrenceOfCharInRange(content, start, end, tabChar);
+        return findForwardFirstOccurrenceOfCharInRange(content, start, end, tabChar);
     }
 
     private static int findBackwardFirstNullCharFromTabChar(int tabCharPos, byte[] content) {
@@ -78,19 +77,28 @@ public class ByteBufferTool {
         return new String(headWord);
     }
 
-    private static int findLastNewlineChar(byte[] byteArray) {
-        int start = byteArray.length - 1;
+    public static int findFirstNewlineChar(byte[] content) {
+        int start = 0;
+        int end = content.length;
+        char newlineChar = '\n';
+        
+        return findForwardFirstOccurrenceOfCharInRange(content, start, end, newlineChar);
+    }
+    
+    
+    public static int findLastNewlineChar(byte[] content) {
+        int start = content.length - 1;
         int end = 0;
         char newlineChar = '\n';
 
-        return findBackwardFirstOccurrenceOfCharInRange(byteArray, start, end, newlineChar);
+        return findBackwardFirstOccurrenceOfCharInRange(content, start, end, newlineChar);
     }
 
-    private static int findFowardFirstOccurrenceOfCharInRange(byte[] searchArray, int start, int end, char charToFind) {
+    public static int findForwardFirstOccurrenceOfCharInRange(byte[] searchArray, int start, int end, char charToFind) {
         return findFirstOccurrenceOfCharInRange(searchArray, start, end, charToFind, SearchDirection.FORWARD);
     }
 
-    private static int findBackwardFirstOccurrenceOfCharInRange(byte[] searchArray, int start, int end, char charToFind) {
+    public static int findBackwardFirstOccurrenceOfCharInRange(byte[] searchArray, int start, int end, char charToFind) {
         return findFirstOccurrenceOfCharInRange(searchArray, start, end, charToFind, SearchDirection.BACKWARD);
     }
 
@@ -105,7 +113,7 @@ public class ByteBufferTool {
         return -1;
     }
 
-    private static byte[] copyOfRange(byte[] original, int from, int to) {
+    public static byte[] copyOfRange(byte[] original, int from, int to) {
         int newLength = to - from;
 
         if (newLength < 0) {

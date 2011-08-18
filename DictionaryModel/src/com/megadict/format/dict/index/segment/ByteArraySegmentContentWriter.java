@@ -5,7 +5,7 @@ import java.io.*;
 import com.megadict.exception.OperationFailedException;
 import com.megadict.exception.ResourceMissingException;
 
-public class ByteArraySegmentContentWriter {
+class ByteArraySegmentContentWriter {
 
     public void write(Segment segment, byte[] content, int startPosition) {
         try {
