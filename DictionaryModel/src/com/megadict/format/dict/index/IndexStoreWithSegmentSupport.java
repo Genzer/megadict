@@ -3,7 +3,7 @@ package com.megadict.format.dict.index;
 import java.io.File;
 import java.util.Set;
 
-import com.megadict.format.dict.index.segment.ByteBufferedSegmentBuilder;
+import com.megadict.format.dict.index.segment.ByteBufferedSegmentIndexer;
 import com.megadict.format.dict.index.segment.SegmentBuilder;
 import com.megadict.format.dict.index.segment.SegmentStore;
 
@@ -26,7 +26,7 @@ class IndexStoreWithSegmentSupport extends BaseIndexStore implements IndexStore 
     }
     
     private SegmentBuilder makeSegmentBuilder() {
-        return new ByteBufferedSegmentBuilder(indexFile.asRawFile());
+        return new ByteBufferedSegmentIndexer(indexFile.asRawFile());
     }
     
     @Override

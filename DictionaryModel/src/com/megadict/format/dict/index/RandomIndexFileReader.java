@@ -1,17 +1,14 @@
 package com.megadict.format.dict.index;
 
 import java.io.*;
-import java.nio.CharBuffer;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
+import java.nio.*;
+import java.nio.channels.*;
 import java.nio.channels.FileChannel.MapMode;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
-import java.util.*;
+import java.nio.charset.*;
 
 import com.megadict.exception.*;
-import com.megadict.format.dict.index.segment.Segment;
 import com.megadict.format.dict.parser.*;
+import com.megadict.format.dict.index.segment.Segment;
 import com.megadict.format.dict.util.FileUtil;
 
 public class RandomIndexFileReader {

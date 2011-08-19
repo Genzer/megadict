@@ -32,11 +32,11 @@ class CharBufferTool {
     }
 
     public static String firstHeadWordIn(char[] buffer, int maxCharsToFind) {
-        return (buffer.length == 0) ? "" : findAndExtractFirstHeadWord(buffer, maxCharsToFind);
+        return (buffer.length == 0) ? "" : extractFirstHeadWord(buffer, maxCharsToFind);
     }
 
-    private static String findAndExtractFirstHeadWord(char[] buffer, int maxCharsToFind) {
-        int firstTabChar = findFirstTabCharInBeginningChars(maxCharsToFind, buffer);
+    private static String extractFirstHeadWord(char[] buffer, int maxCharsToFind) {
+        int firstTabChar = findFirstTabCharInBeginning(maxCharsToFind, buffer);
         int lastNullChar = findBackwardFirstNullCharFromTabChar(firstTabChar, buffer);
 
         int beginCopyPos = lastNullChar + 1;
@@ -50,28 +50,28 @@ class CharBufferTool {
         return returnedPosition == -1;
     }
 
-    private static int findFirstTabCharInBeginningChars(int numOfChars, char[] content) {
+    private static int findFirstTabCharInBeginning(int numOfChars, char[] content) {
         int start = 0;
         int end = Math.min(numOfChars, content.length);
         char tabChar = '\t';
 
-        return findForwardFirstOccurrenceOfCharInRange(content, start, end, tabChar);
+        return findForwardFirstCharInRange(content, start, end, tabChar);
     }
 
     private static int findBackwardFirstNullCharFromTabChar(int tabCharPos, char[] content) {
-        return findBackwardFirstOccurrenceOfCharInRange(content, tabCharPos, 0, '\0');
+        return findBackwardFirstCharInRange(content, tabCharPos, 0, '\0');
     }
 
     public static String lastHeadWordIn(char[] buffer) {
-        return (buffer.length == 0) ? "" : findAndExtractLastHeadWord(buffer);
+        return (buffer.length == 0) ? "" : extractLastHeadword(buffer);
     }
 
-    private static String findAndExtractLastHeadWord(char[] buffer) {
+    private static String extractLastHeadword(char[] buffer) {
         int newLineChar = findLastNewlineChar(buffer);
         char[] fullContent = wasNotFound(newLineChar) ? EMPTY_CONTENT : copyOfRange(buffer, newLineChar + 1,
                 buffer.length);
 
-        int firstTabChar = findFirstTabCharInBeginningChars(fullContent.length, fullContent);
+        int firstTabChar = findFirstTabCharInBeginning(fullContent.length, fullContent);
         char[] headWord = wasNotFound(firstTabChar) ? EMPTY_CONTENT : copyOfRange(fullContent, 0, firstTabChar);
 
         return new String(headWord);
@@ -82,7 +82,7 @@ class CharBufferTool {
         int end = content.length;
         char newlineChar = '\n';
 
-        return findForwardFirstOccurrenceOfCharInRange(content, start, end, newlineChar);
+        return findForwardFirstCharInRange(content, start, end, newlineChar);
     }
 
     public static int findLastNewlineChar(char[] byteArray) {
@@ -90,14 +90,14 @@ class CharBufferTool {
         int end = 0;
         char newlineChar = '\n';
 
-        return findBackwardFirstOccurrenceOfCharInRange(byteArray, start, end, newlineChar);
+        return findBackwardFirstCharInRange(byteArray, start, end, newlineChar);
     }
 
-    public static int findForwardFirstOccurrenceOfCharInRange(char[] searchArray, int start, int end, char charToFind) {
+    public static int findForwardFirstCharInRange(char[] searchArray, int start, int end, char charToFind) {
         return findFirstOccurrenceOfCharInRange(searchArray, start, end, charToFind, SearchDirection.FORWARD);
     }
 
-    public static int findBackwardFirstOccurrenceOfCharInRange(char[] searchArray, int start, int end, char charToFind) {
+    public static int findBackwardFirstCharInRange(char[] searchArray, int start, int end, char charToFind) {
         return findFirstOccurrenceOfCharInRange(searchArray, start, end, charToFind, SearchDirection.BACKWARD);
     }
 

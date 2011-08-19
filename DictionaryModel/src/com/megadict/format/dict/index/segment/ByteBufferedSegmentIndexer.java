@@ -152,7 +152,6 @@ public class ByteBufferedSegmentIndexer extends BaseSegmentBuilder implements Se
 
     private Segment createAndCountSegment() {
         Segment createdSegment = createSegmentWithBuiltBlock();
-        countCreatedSegment();
         return createdSegment;
     }
 

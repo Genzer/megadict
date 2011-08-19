@@ -3,7 +3,7 @@ package com.megadict.format.dict.index.segment;
 import java.io.*;
 import java.util.*;
 
-class SegmentIndexReader {
+public class SegmentIndexReader {
 
     public SegmentIndexReader(File segmentMapFile) {
         this.segmentIndexFile = segmentMapFile;
@@ -24,7 +24,7 @@ class SegmentIndexReader {
     private DataInputStream makeReader(File segmentIndexFile) {
         try {
             FileInputStream rawStream = new FileInputStream(segmentIndexFile);
-            BufferedInputStream bufferedStream = new BufferedInputStream(rawStream, 8 * 1024);
+            BufferedInputStream bufferedStream = new BufferedInputStream(rawStream, 16 * 1024);
             return new DataInputStream(bufferedStream);
         } catch (FileNotFoundException fnf) {
             throw new RuntimeException(fnf);
@@ -42,9 +42,10 @@ class SegmentIndexReader {
         for (int i = 0; i < numOfSegments; i++) {
             String lowerbound = readLowerbound(reader);
             String upperbound = readUpperbound(reader);
-            File file = readFile(reader);     
+            int offset = readOffset(reader);
+            int length = readLength(reader);    
 
-            Segment segment = new Segment(lowerbound, upperbound, file);
+            Segment segment = new Segment(lowerbound, upperbound, offset, length);
             segments.add(segment);
         }
 
@@ -65,6 +66,18 @@ class SegmentIndexReader {
         return new String(upperboundInByteArray);
     }
     
+    private int readOffset(DataInputStream reader) throws IOException {
+        int offset = reader.readInt();
+        return offset;
+    }
+    
+    private int readLength(DataInputStream reader) throws IOException {
+        int length = reader.readInt();
+        return length;
+    }
+    
+    @SuppressWarnings("unused")
+    //TODO: consider delete this method
     private File readFile(DataInputStream reader) throws IOException {
         int filePathSize = reader.readInt();
         byte[] filePathInByteArray = new byte[filePathSize];

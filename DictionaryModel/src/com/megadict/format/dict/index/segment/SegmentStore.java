@@ -6,33 +6,33 @@ import java.util.TreeMap;
 
 public class SegmentStore {
 
-    public SegmentStore(SortedMap<String, Segment> sortedMapOfSegments) {
-        if (sortedMapOfSegments.isEmpty()) {
-            throw new IllegalArgumentException("The map must not be empty");
-        }
-        this.map = sortedMapOfSegments;
-    }
-
     public SegmentStore(Collection<Segment> segments) {
         if (segments.isEmpty()) {
             throw new IllegalArgumentException("The store doesn't allow empty collection of segments.");
         }
+        addData(segments);
+    }
+    
+    private void addData(Collection<Segment> segments) {
+        createKeyCaseInsensitiveMap();
         putAllToMap(segments);
     }
+    
+    private void createKeyCaseInsensitiveMap() {
+        map = new TreeMap<String, Segment>(String.CASE_INSENSITIVE_ORDER);
+    }
 
-    private void putAllToMap(Collection<Segment> segments) {
-        map = new TreeMap<String, Segment>();
+    private void putAllToMap(Collection<Segment> segments) {       
         for (Segment segment : segments) {
             map.put(segment.upperbound(), segment);
         }
     }
-    
 
     public Segment findSegmentPossiblyContains(String word) {
-        return extract(word);
+        return find(word);
     }
 
-    private Segment extract(String word) {
+    private Segment find(String word) {
         SortedMap<String, Segment> greaterOrEqual = map.tailMap(word);
         String keyOfFirstMatch = greaterOrEqual.firstKey();
         return greaterOrEqual.get(keyOfFirstMatch);

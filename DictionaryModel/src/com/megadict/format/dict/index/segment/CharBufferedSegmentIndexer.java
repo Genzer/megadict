@@ -1,5 +1,6 @@
 package com.megadict.format.dict.index.segment;
 
+import static com.megadict.format.dict.index.segment.CharBufferTool.*;
 import java.io.*;
 import java.util.*;
 
@@ -89,10 +90,10 @@ public class CharBufferedSegmentIndexer extends BaseSegmentBuilder implements Se
     }
 
     private String extractHeadWordOfPaddingBlock() {
-        int firstNewlineChar = CharBufferTool.findFirstNewlineChar(coreBuffer);
+        int firstNewlineChar = findFirstNewlineChar(coreBuffer);
         int firstTabChar = CharBufferTool
-                .findForwardFirstOccurrenceOfCharInRange(coreBuffer, 0, firstNewlineChar, '\t');
-        char[] headword = CharBufferTool.copyOfRange(coreBuffer, 0, firstTabChar);
+                .findForwardFirstCharInRange(coreBuffer, 0, firstNewlineChar, '\t');
+        char[] headword = copyOfRange(coreBuffer, 0, firstTabChar);
         return new String(headword);
     }
 
@@ -123,22 +124,22 @@ public class CharBufferedSegmentIndexer extends BaseSegmentBuilder implements Se
     }
 
     private int computeHeadingLeftOverLength() {
-        int firstNewlineCharPos = CharBufferTool.findFirstNewlineChar(coreBuffer);
+        int firstNewlineCharPos = findFirstNewlineChar(coreBuffer);
         return firstNewlineCharPos + 1;
     }
 
     private int computeFooterLeftOverLength() {
-        int lastNewlineCharPos = CharBufferTool.findLastNewlineChar(coreBuffer);
+        int lastNewlineCharPos = findLastNewlineChar(coreBuffer);
         return coreBuffer.length - lastNewlineCharPos;
     }
 
     private String extractFirstWord() {
-        int firstNewlineChar = CharBufferTool.findFirstNewlineChar(coreBuffer);
+        int firstNewlineChar = findFirstNewlineChar(coreBuffer);
 
-        int nextTabChar = CharBufferTool.findForwardFirstOccurrenceOfCharInRange(coreBuffer, firstNewlineChar,
+        int nextTabChar = findForwardFirstCharInRange(coreBuffer, firstNewlineChar,
                 coreBuffer.length, '\t');
 
-        char[] headword = CharBufferTool.copyOfRange(coreBuffer, firstNewlineChar + 1, nextTabChar);
+        char[] headword = copyOfRange(coreBuffer, firstNewlineChar + 1, nextTabChar);
 
         return new String(headword);
     }
@@ -150,7 +151,6 @@ public class CharBufferedSegmentIndexer extends BaseSegmentBuilder implements Se
 
     private Segment createAndCountSegment() {
         Segment createdSegment = createSegmentWithBuiltBlock();
-        countCreatedSegment();
         return createdSegment;
     }
 
@@ -189,7 +189,7 @@ public class CharBufferedSegmentIndexer extends BaseSegmentBuilder implements Se
     }
 
     private String extractLastWordOfFinalBlock() {
-        int lastNewlineChar = findLastNewlineChar();
+        int lastNewlineChar = findLastNewlineCharOfBlock();
         int nextTabChar = findNextTabChar(lastNewlineChar);
 
         char[] headword = copyContent(lastNewlineChar + 1, nextTabChar);
@@ -197,10 +197,10 @@ public class CharBufferedSegmentIndexer extends BaseSegmentBuilder implements Se
         return new String(headword);
     }
 
-    private int findLastNewlineChar() {
+    private int findLastNewlineCharOfBlock() {
         int start = readCharsThisTime - 1;
         int end = 0;
-        return CharBufferTool.findBackwardFirstOccurrenceOfCharInRange(coreBuffer, start, end, '\n');
+        return findBackwardFirstCharInRange(coreBuffer, start, end, '\n');
     }
 
     private int determineLastByteRead() {
@@ -210,11 +210,11 @@ public class CharBufferedSegmentIndexer extends BaseSegmentBuilder implements Se
     private int findNextTabChar(int lastNewlineChar) {
         int start = lastNewlineChar;
         int end = coreBuffer.length;
-        return CharBufferTool.findForwardFirstOccurrenceOfCharInRange(coreBuffer, start, end, '\t');
+        return findForwardFirstCharInRange(coreBuffer, start, end, '\t');
     }
 
     private char[] copyContent(int start, int end) {
-        return CharBufferTool.copyOfRange(coreBuffer, start, end);
+        return copyOfRange(coreBuffer, start, end);
     }
 
     private static final char[] coreBuffer = new char[BUFFER_SIZE_IN_BYTES];
