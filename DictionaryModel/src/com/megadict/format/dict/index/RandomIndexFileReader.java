@@ -49,21 +49,22 @@ class RandomIndexFileReader extends BaseIndexFileReader implements IndexFileRead
     }
 
     @Override
-    protected synchronized int locateIndexStringOf(String headword) throws IOException {
+    protected int locateIndexStringOf(String headword) throws IOException {
+        synchronized (byteBuffer) {
+            Segment segment = determineContainingSegment(headword);
 
-        Segment segment = determineContainingSegment(headword);
+            randomReader.clear();
+            randomReader.position(segment.offset());
 
-        randomReader.clear();
-        randomReader.position(segment.offset());
+            int contentLength = determineContentLength(segment.length());
+            randomReader.get(byteBuffer, 0, contentLength);
 
-        int contentLength = determineContentLength(segment.length());
-        randomReader.get(byteBuffer, 0, contentLength);
+            decodeToCharArray(byteBuffer, charBuffer);
 
-        decodeToCharArray(byteBuffer, charBuffer);
-
-        builder.append(charBuffer);
-        int foundPosition = builder.indexOf(headword);
-        return (foundPosition != -1) ? foundPosition : -1;
+            builder.append(charBuffer);
+            int foundPosition = builder.indexOf(headword);
+            return (foundPosition != -1) ? foundPosition : -1;
+        }        
     }
 
     private Segment determineContainingSegment(String headword) {
@@ -82,12 +83,10 @@ class RandomIndexFileReader extends BaseIndexFileReader implements IndexFileRead
     }
 
     private void decodeToCharArray(byte[] sourceByteArray, char[] destCharArray) throws IOException {
-        synchronized (this) {
-            updateNewContent(sourceByteArray);
-            decode();
-            copyContentToArray(destCharArray);
-            cleanUp();
-        }        
+        updateNewContent(sourceByteArray);
+        decode();
+        copyContentToArray(destCharArray);
+        cleanUp();
     }
 
     private void updateNewContent(byte[] newContent) {

@@ -16,7 +16,7 @@ public class UnicodeDecoder {
     private UnicodeDecoder() {
     }
 
-    public static CharBuffer decode(ByteBuffer input) {
+    public synchronized static CharBuffer decode(ByteBuffer input) {
         try {
             CharBuffer decoded = decoder.decode(input);
             decoder.reset();
@@ -26,7 +26,7 @@ public class UnicodeDecoder {
         }
     }
 
-    public static void decode(ByteBuffer in, CharBuffer out, boolean endOfInput) {
+    public synchronized static void decode(ByteBuffer in, CharBuffer out, boolean endOfInput) {
         decoder.decode(in, out, true);
         decoder.flush(out);
         decoder.reset();
