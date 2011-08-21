@@ -47,7 +47,7 @@ public class SearchTask extends BaseSearchTask {
 	@Override
 	protected void onPostExecute(final String content) {
 		super.onPostExecute(content);
-		dictionaryComponent.getResultTextMaker().appendContent(content, dictionaryName);
+		dictionaryComponent.getResultTextMaker().appendContent(word, content, dictionaryName);
 		dictionaryComponent.getResultView().loadDataWithBaseURL(ResultTextMaker.ASSET_URL, dictionaryComponent.getResultTextMaker().getResultHTML(), "text/html", "utf-8", null);
 
 		// Hide progress bar if all tasks finished.
@@ -64,9 +64,5 @@ public class SearchTask extends BaseSearchTask {
 
 	public void setNoDefinitionStr(final String noDefinitionStr) {
 		this.noDefinitionStr = noDefinitionStr;
-	}
-
-	public Dictionary getDictionary() {
-		return dictionary;
 	}
 }

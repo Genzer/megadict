@@ -1,4 +1,4 @@
-package com.megadict.business.scanning;
+package com.megadict.thread;
 
 import java.util.concurrent.Callable;
 

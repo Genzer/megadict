@@ -2,7 +2,7 @@ package com.megadict.bean;
 
 import com.megadict.model.ChosenModel;
 
-@Deprecated
+
 public class DictionaryBean {
 	private final int id;
 	private final String name;
@@ -13,16 +13,20 @@ public class DictionaryBean {
 	public static class Builder {
 		// Required.
 		private final int id;
-		private final String name;
 
 		// Optional.
-		private String path = "";
+		private String name = "No name";
+		private String path = "No path";
 		private String type = ChosenModel.LOCAL_DICTIONARY;
 		private int enabled = 0;
 
-		public Builder(final int id, final String name) {
+		public Builder(final int id) {
 			this.id = id;
+		}
+
+		public Builder name(final String name) {
 			this.name = name;
+			return this;
 		}
 
 		public Builder path(final String path) {

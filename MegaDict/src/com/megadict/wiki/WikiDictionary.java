@@ -47,7 +47,9 @@ public class WikiDictionary implements Dictionary {
 
 					builder.append(pTags.get(i));
 				}
-				final String result =  Jsoup.parseBodyFragment(builder.toString()).toString();
+
+				builder.append("<a href=\"http://en.wikipedia.org/wiki/" + word + "\">Full Article..</a>");
+				final String result = builder.toString();
 				definition = new Definition(word, result, "dictionarry name");
 			}
 		} catch(final Exception e) {

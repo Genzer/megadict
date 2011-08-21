@@ -1,7 +1,6 @@
 package com.megadict.business.scanning;
 
 import android.database.sqlite.SQLiteDatabase;
-import android.os.AsyncTask;
 
 import com.megadict.bean.RescanComponent;
 import com.megadict.model.ChosenModel;
@@ -10,11 +9,10 @@ import com.megadict.model.ModelMap;
 import com.megadict.utility.DatabaseHelper;
 import com.megadict.wiki.WikiDictionary;
 
-public class AddWikiTask extends AsyncTask<String, Void, Void> {
+public class AddWikiTask extends AbstractAddWikiTask {
 	private final DictionaryScanner scanner;
 	private final RescanComponent rescanComponent;
 	private final ModelMap models;
-	private boolean scanning;
 
 	public AddWikiTask(final DictionaryScanner scanner, final ModelMap modelMap, final RescanComponent rescanComponent) {
 		super();
@@ -25,8 +23,8 @@ public class AddWikiTask extends AsyncTask<String, Void, Void> {
 
 	@Override
 	protected void onPreExecute() {
+		super.onPreExecute();
 		rescanComponent.getProgressDialog().show();
-		scanning = true;
 	}
 
 	@Override
@@ -47,18 +45,13 @@ public class AddWikiTask extends AsyncTask<String, Void, Void> {
 
 	@Override
 	protected void onPostExecute(final Void result) {
-		scanning = false;
-
-		if(scanner.didAllAddTasksFinish()) {
+		super.onPostExecute(result);
+		if(scanner.didAllAddWikiTasksFinish()) {
 			scanner.dictionaryModelsChanged();
 			// Requery the cursor to update list view.
 			rescanComponent.getCursor().requery();
 			// Close progress dialog.
 			rescanComponent.getProgressDialog().dismiss();
 		}
-	}
-
-	public boolean isScanning() {
-		return scanning;
 	}
 }

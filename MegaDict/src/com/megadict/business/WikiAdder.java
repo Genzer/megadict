@@ -11,6 +11,7 @@ import android.content.DialogInterface.OnClickListener;
 import com.megadict.R;
 import com.megadict.bean.RescanComponent;
 import com.megadict.business.scanning.DictionaryScanner;
+import com.megadict.utility.Utility;
 import com.megadict.wiki.Wiki;
 
 public class WikiAdder {
@@ -42,7 +43,9 @@ public class WikiAdder {
 		.setPositiveButton(R.string.ok, new OnClickListener() {
 			@Override
 			public void onClick(final DialogInterface dialog, final int which) {
-				scanner.addWikiDictionaries(addedCodes, rescanComponent);
+				if(!scanner.addWikiDictionaries(addedCodes, rescanComponent)) {
+					Utility.messageBox(context, R.string.scanning);
+				}
 			}
 		})
 		.setNegativeButton(R.string.cancel, new OnClickListener() {

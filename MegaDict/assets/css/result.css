@@ -7,6 +7,11 @@ body {
 	font-family: 'DejaVuSans';
 }
 
+p {
+	margin: 0;
+	padding: 0;
+}
+
 .dictionaryBlock {
 	padding: 0.5em;
 	
@@ -15,7 +20,7 @@ body {
 	border-width: 0.1em;
 	border-radius: 0.6em;
 	border-color: black;
-	margin-bottom: 0.8em;
+	margin-bottom: 0.6em;
 }
 
 .welcomeBlock {
@@ -26,6 +31,12 @@ body {
 .noDictionaryBlock {
 	font-size: 1em;
 	color: red;
+}
+
+.searchedWord {
+	font-size: 1em;
+	margin-bottom: 0.4em;
+	color: green;
 }
 
 .dictionaryContent {

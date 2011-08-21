@@ -11,7 +11,7 @@ public final class ChosenModel {
 
 	public static final String TABLE_NAME = "chosen";
 	public static final String ID_COLUMN = "_id";
-	public static final String DICTIONARY_NAME_COLUMN = "dictionary_name";
+	public static final String DICTIONARY_NAME_COLUMN = "name";
 	public static final String DICTIONARY_PATH_COLUMN = "path";
 	public static final String DICTIONARY_TYPE_COLUMN = "type";
 	public static final String ENABLED_COLUMN = "enabled";
@@ -26,15 +26,6 @@ public final class ChosenModel {
 			"DROP TABLE IF EXISTS " + TABLE_NAME;
 
 	private ChosenModel() {}
-
-	public static int insertDictionary(final SQLiteDatabase database, final String dictionaryName, final String dictionaryPath, final String dictionaryType, final int enabled) {
-		final ContentValues value = new ContentValues();
-		value.put(ChosenModel.DICTIONARY_NAME_COLUMN, dictionaryName);
-		value.put(ChosenModel.DICTIONARY_PATH_COLUMN, dictionaryPath);
-		value.put(ChosenModel.DICTIONARY_TYPE_COLUMN, dictionaryType);
-		value.put(ChosenModel.ENABLED_COLUMN, enabled);
-		return (int)database.insert(ChosenModel.TABLE_NAME, null, value);
-	}
 
 	public static Cursor selectChosenDictionaryPaths(final SQLiteDatabase database)
 	{
@@ -92,5 +83,24 @@ public final class ChosenModel {
 		return cursor;
 	}
 
+	public static int insertDictionary(final SQLiteDatabase database, final String dictionaryName, final String dictionaryPath, final String dictionaryType, final int enabled) {
+		final ContentValues value = new ContentValues();
+		value.put(ChosenModel.DICTIONARY_NAME_COLUMN, dictionaryName);
+		value.put(ChosenModel.DICTIONARY_PATH_COLUMN, dictionaryPath);
+		value.put(ChosenModel.DICTIONARY_TYPE_COLUMN, dictionaryType);
+		value.put(ChosenModel.ENABLED_COLUMN, enabled);
+		return (int)database.insert(ChosenModel.TABLE_NAME, null, value);
+	}
 
+	public static int getID(final Cursor cursor) {
+		return cursor.getInt(cursor.getColumnIndex(ID_COLUMN));
+	}
+
+	public static String getType(final Cursor cursor) {
+		return cursor.getString(cursor.getColumnIndex(DICTIONARY_TYPE_COLUMN));
+	}
+
+	public static String getPath(final Cursor cursor) {
+		return cursor.getString(cursor.getColumnIndex(DICTIONARY_PATH_COLUMN));
+	}
 }

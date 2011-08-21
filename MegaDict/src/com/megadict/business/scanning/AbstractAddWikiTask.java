@@ -2,9 +2,7 @@ package com.megadict.business.scanning;
 
 import android.os.AsyncTask;
 
-import com.megadict.bean.DictionaryBean;
-
-public abstract class AbstractScanTask extends AsyncTask<DictionaryBean, Void, Void> implements Workable {
+public abstract class AbstractAddWikiTask extends AsyncTask<String, Void, Void> implements Workable {
 	private boolean working;
 
 	@Override
@@ -13,7 +11,7 @@ public abstract class AbstractScanTask extends AsyncTask<DictionaryBean, Void, V
 	}
 
 	@Override
-	protected abstract Void doInBackground(final DictionaryBean... params);
+	protected abstract Void doInBackground(final String... params);
 
 	@Override
 	protected void onPostExecute(final Void result) {

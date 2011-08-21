@@ -1,7 +1,7 @@
 package com.megadict.model;
 
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.HashMap;
 
-public class ModelMap extends ConcurrentHashMap<Integer, Dictionary> {
+public class ModelMap extends HashMap<Integer, Dictionary> {
 
 }

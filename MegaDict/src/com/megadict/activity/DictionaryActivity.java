@@ -66,7 +66,7 @@ public final class DictionaryActivity extends BaseActivity {
 	@Override
 	protected void onRestart() {
 		super.onRestart();
-		scanner.updateDictionaryModels(this, dictionaryComponent);
+		scanner.updateDictionaryModels(dictionaryComponent);
 	}
 
 	@Override
@@ -110,7 +110,6 @@ public final class DictionaryActivity extends BaseActivity {
 
 	// ========================= Private functions ======================= //
 	private void initSomething() {
-
 		// Create UI components.
 		final ProgressBar progressBar = (ProgressBar)findViewById(R.id.progressBar);
 		final Button searchButton = (Button) findViewById(R.id.searchButton);
@@ -162,7 +161,7 @@ public final class DictionaryActivity extends BaseActivity {
 	}
 
 	private void doScanningStorage() {
-		if(!scanner.scanStorage(this, dictionaryComponent)) {
+		if(!scanner.scanStorage(dictionaryComponent)) {
 			Utility.messageBox(this, R.string.scanning);
 		}
 	}

@@ -43,6 +43,8 @@ public class RecommendTask extends BaseRecommendTask {
 		// Create callable list.
 		final List<Callable<List<String>>> callables = new ArrayList<Callable<List<String>>>();
 		for(final Dictionary model : dictionaryModels) {
+			// Just create recommend task for DICTDictionary, not Wiki!
+			/// Wiki no support recommend. Remember that!
 			if(model instanceof DICTDictionary) {
 				final RecommendThread thread = new RecommendThread(params[0], model);
 				callables.add(thread);
