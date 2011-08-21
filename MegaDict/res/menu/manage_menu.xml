@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu
   xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:title="@string/rescanMenuItemTitle" android:id="@+id/rescanMenuItem"></item>
+  
+  <item android:title="@string/rescanMenuItemTitle" 
+  		android:id="@+id/rescanMenuItem" 
+  		android:icon="@drawable/crystal_rescan"></item>
+    
+  <item android:title="@string/wikiMenuItemTitle" android:id="@+id/wikiMenuItem" android:icon="@drawable/crystal_browser"></item>
     
 </menu>

@@ -2,12 +2,12 @@ package com.megadict.business.scanning;
 
 import android.os.AsyncTask;
 
-public abstract class BaseScanTask extends AsyncTask<Void, Void, Void> {
-	private boolean scanning;
+public abstract class AbstractScanTask extends AsyncTask<Void, Void, Void> implements Workable {
+	private boolean working;
 
 	@Override
 	protected void onPreExecute() {
-		scanning = true;
+		working = true;
 	}
 
 	@Override
@@ -15,10 +15,11 @@ public abstract class BaseScanTask extends AsyncTask<Void, Void, Void> {
 
 	@Override
 	protected void onPostExecute(final Void result) {
-		scanning = false;
+		working = false;
 	}
 
-	public boolean isScanning() {
-		return scanning;
+	@Override
+	public boolean isWorking() {
+		return working;
 	}
 }

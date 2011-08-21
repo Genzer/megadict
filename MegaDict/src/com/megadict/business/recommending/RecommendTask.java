@@ -17,6 +17,7 @@ import android.widget.ArrayAdapter;
 
 import com.megadict.bean.DictionaryComponent;
 import com.megadict.exception.RecommendingException;
+import com.megadict.format.dict.DICTDictionary;
 import com.megadict.model.Dictionary;
 
 public class RecommendTask extends BaseRecommendTask {
@@ -42,8 +43,10 @@ public class RecommendTask extends BaseRecommendTask {
 		// Create callable list.
 		final List<Callable<List<String>>> callables = new ArrayList<Callable<List<String>>>();
 		for(final Dictionary model : dictionaryModels) {
-			final RecommendThread thread = new RecommendThread(params[0], model);
-			callables.add(thread);
+			if(model instanceof DICTDictionary) {
+				final RecommendThread thread = new RecommendThread(params[0], model);
+				callables.add(thread);
+			}
 		}
 
 		// Invoke callables.

@@ -33,10 +33,10 @@ public final class DictionaryActivity extends BaseActivity {
 	private static final String TAG = "DictionaryActivity";
 
 	// Activity control variables.
-	public ResultView resultView;
+	private ResultView resultView;
 
 	// Member variables
-	public DictionaryComponent dictionaryComponent;
+	private DictionaryComponent dictionaryComponent;
 	private WordSearcher searcher;
 	private DictionaryScanner scanner;
 	private TextSelector textSelector;

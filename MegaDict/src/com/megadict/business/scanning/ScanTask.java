@@ -1,6 +1,14 @@
 package com.megadict.business.scanning;
 
-import android.app.Activity;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
@@ -9,21 +17,22 @@ import com.megadict.bean.DictionaryComponent;
 import com.megadict.business.ResultTextMaker;
 import com.megadict.exception.DataFileNotFoundException;
 import com.megadict.exception.IndexFileNotFoundException;
+import com.megadict.exception.ScanningException;
 import com.megadict.format.dict.index.IndexFile;
 import com.megadict.format.dict.reader.DictionaryFile;
 import com.megadict.model.ChosenModel;
 import com.megadict.model.Dictionary;
 import com.megadict.model.DictionaryInformation;
 import com.megadict.model.ModelMap;
-import com.megadict.model.UsedDictionary;
 import com.megadict.utility.DatabaseHelper;
 
-public class ScanStorageAllTask extends BaseScanTask {
+public class ScanTask extends AbstractScanTask {
+	private final static int TIMEOUT_IN_SECONDS = 3;
 	private final DictionaryScanner scanner;
 	private final DictionaryComponent dictionaryComponent;
 	private final ModelMap models;
 
-	public ScanStorageAllTask(final DictionaryScanner scanner, final ModelMap models, final Activity activity,
+	public ScanTask(final DictionaryScanner scanner, final ModelMap models,
 			final DictionaryComponent dictionaryComponent) {
 		super();
 		this.scanner = scanner;
@@ -35,25 +44,46 @@ public class ScanStorageAllTask extends BaseScanTask {
 	protected Void doInBackground(final Void... params) {
 		// Remove old dicts.
 		models.clear();
-		// Read from database.
 
+		final List<Callable<Dictionary>> callables = new ArrayList<Callable<Dictionary>>();
+		final List<Integer> ids = new ArrayList<Integer>();
+
+		// Prepare callables.
+		prepareCallables(callables, ids);
+
+		// Invoke callables.
+		invokeCallables(callables, ids);
+
+		return null;
+	}
+
+	private void prepareCallables(final List<Callable<Dictionary>> callables, final List<Integer> ids) {
 		final SQLiteDatabase database = DatabaseHelper.getDatabase(dictionaryComponent.getContext());
-
 		final Cursor cursor = ChosenModel.selectChosenDictionaryIDsAndPaths(database);
 
+		// Loop through cursor.
 		for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
 			try {
 				final String dictPath = cursor.getString(cursor.getColumnIndex(ChosenModel.DICTIONARY_PATH_COLUMN));
 				final DictionaryInformation info = DictionaryInformation.newInstance(dictPath);
+
 				// Create necessary files.
 				final IndexFile indexFile = IndexFile.makeFile(info.getIndexFile());
 				final DictionaryFile dictionaryFile = DictionaryFile.makeRandomAccessFile( info.getDataFile());
-				// Create model.
-				final Dictionary model = UsedDictionary.newInstance(indexFile, dictionaryFile);
+
+				// Get dictionary type.
+				final String type = cursor.getString(cursor.getColumnIndex(ChosenModel.DICTIONARY_TYPE_COLUMN));
+
+				// Create callables.
+				if(type.equals(ChosenModel.LOCAL_DICTIONARY)) {
+					callables.add(new CreateDICTThread(indexFile, dictionaryFile));
+				} else {
+					callables.add(new CreateWikiThread(dictPath));
+				}
+
 				// Get dictionary ID.
 				final int dictID = (int)cursor.getLong(cursor.getColumnIndex(ChosenModel.ID_COLUMN));
-				// Store model.
-				models.put(dictID, model);
+				ids.add(dictID);
 			} catch (final IndexFileNotFoundException e) {
 				DictionaryScanner.log(e.getMessage());
 			} catch (final DataFileNotFoundException e) {
@@ -61,7 +91,29 @@ public class ScanStorageAllTask extends BaseScanTask {
 			}
 		}
 		cursor.close();
-		return null;
+	}
+
+	private void invokeCallables(final List<Callable<Dictionary>> callables, final List<Integer> ids) {
+		final ExecutorService service = Executors.newFixedThreadPool(Math.max(1, callables.size()));
+		try {
+			// Invoke all callables.
+			final List<Future<Dictionary>> futures = service.invokeAll(callables);
+			// Wait them to finish.
+			service.awaitTermination(TIMEOUT_IN_SECONDS, TimeUnit.SECONDS);
+			final int futureCount = futures.size();
+			// Store dictionary and its ID.
+			for(int i = 0; i < futureCount; ++i) {
+				final Dictionary dictionary = futures.get(i).get();
+				models.put(ids.get(i), dictionary);
+			}
+			System.out.println("Size: " + models.size());
+			service.shutdown();
+			System.out.println("Shutdown finished.");
+		} catch (final InterruptedException e) {
+			throw new ScanningException(e);
+		} catch (final ExecutionException e) {
+			throw new ScanningException(e);
+		}
 	}
 
 	@Override

@@ -15,6 +15,7 @@
     <string name="aboutMenuItemTitle">About</string>
     <string name="selectTextMenuItemTitle">Select text</string>    
     <string name="historyMenuItemTitle">History</string>
+    <string name="wikiMenuItemTitle">Wikipedia</string>
     
     <!-- Common Strings -->
     <string name="noDefinition">There is no definition. Don\'t be silly, guy!</string>    
@@ -39,6 +40,7 @@
     <!-- Dialog title -->
     <string name="wordListDialogTitle">Pick a word</string>
     <string name="historyDialogTitle">History</string>
+    <string name="wikiDialogTitle">New Wikipedia</string>
     
     <!-- Others -->
     <string name="appName">MegaDict</string>    

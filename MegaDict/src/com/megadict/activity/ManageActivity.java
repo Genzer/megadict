@@ -15,6 +15,7 @@ import com.megadict.activity.base.BaseListActivity;
 import com.megadict.adapter.ChosenDictionaryCheckBoxAdapter;
 import com.megadict.application.MegaDictApp;
 import com.megadict.bean.RescanComponent;
+import com.megadict.business.WikiAdder;
 import com.megadict.business.scanning.DictionaryScanner;
 import com.megadict.model.ChosenModel;
 import com.megadict.utility.DatabaseHelper;
@@ -23,6 +24,7 @@ import com.megadict.utility.Utility;
 public class ManageActivity extends BaseListActivity {
 	private DictionaryScanner scanner;
 	private RescanComponent rescanComponent;
+	private WikiAdder wikiAdder;
 	private Cursor listViewCursor;
 
 	public ManageActivity() {
@@ -41,7 +43,6 @@ public class ManageActivity extends BaseListActivity {
 
 		listViewCursor =
 				database.query(ChosenModel.TABLE_NAME, null, null, null, null, null, null);
-		//startManagingCursor(listViewCursor);
 		final ChosenDictionaryCheckBoxAdapter adapter =
 				new ChosenDictionaryCheckBoxAdapter(this, listViewCursor);
 		setListAdapter(adapter);
@@ -50,6 +51,7 @@ public class ManageActivity extends BaseListActivity {
 		progressDialog.setMessage("Scanning storage... ");
 
 		rescanComponent = new RescanComponent(this, progressDialog, listViewCursor);
+		wikiAdder = new WikiAdder(this, rescanComponent, scanner);
 	}
 
 	@Override
@@ -62,9 +64,12 @@ public class ManageActivity extends BaseListActivity {
 	public boolean onMenuItemSelected(final int featureId, final MenuItem item) {
 		if (item.getItemId() == R.id.rescanMenuItem) {
 			doRescanning();
+		} else if(item.getItemId() == R.id.wikiMenuItem) {
+			wikiAdder.showDialog();
 		}
 		return true;
 	}
+
 
 	@Override
 	public boolean onCreateOptionsMenu(final Menu menu) {
