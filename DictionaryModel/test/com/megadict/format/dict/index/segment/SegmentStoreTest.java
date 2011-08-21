@@ -1,12 +1,10 @@
 package com.megadict.format.dict.index.segment;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
-import java.util.*;
-import org.junit.*;
+import java.util.Arrays;
 
-import com.megadict.format.dict.index.segment.Segment;
-import com.megadict.format.dict.index.segment.SegmentStore;
+import org.junit.Test;
 
 public class SegmentStoreTest {
 

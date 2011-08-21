@@ -42,9 +42,13 @@ public class ByteBufferedSegmentIndexerTest {
 
         assertNotNull(results);
         assertFalse(results.isEmpty());
+        
+        for (List<Segment> result : results) {
+            assertFalse(result.isEmpty());
+        }
     }
 
-    @Test
+    @Ignore @Test
     public void testSerializeSegments() {
         File indexFile = new File("C:/test/fora.index");
         SegmentBuilder builder = new ByteBufferedSegmentIndexer(indexFile);
@@ -57,7 +61,7 @@ public class ByteBufferedSegmentIndexerTest {
         writer.write();
     }
     
-    @Test
+    @Ignore @Test
     public void testDeserializeSegments() {
         File serializedIndex = new File("C:/test/foraIndexFileTestRead.sif");
         SegmentIndexReader reader = new SegmentIndexReader(serializedIndex);

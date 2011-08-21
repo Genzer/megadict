@@ -7,10 +7,16 @@ class BaseIndexStore implements IndexStore {
     public BaseIndexStore(IndexFile indexFile) {
         this.indexFile = indexFile;
         buildCache();
+        cacheFirstEntry();
     }
 
     private void buildCache() {
         cache = new TreeMap<String, Index>();
+    }
+    
+    private void cacheFirstEntry() {
+        Index firstIndex = FirstEntryReader.read(indexFile);
+        cache(firstIndex);
     }
 
     @Override
@@ -40,14 +46,18 @@ class BaseIndexStore implements IndexStore {
     }
 
     protected Set<Index> findInFile(String headword) {
-        IndexFileReader reader = new IndexFileReader(indexFile.asRawFile());
-        return reader.getIndexesStartFrom(headword);
+        IndexFileReader reader = new RegularIndexFileReader(indexFile.asRawFile());
+        return reader.getIndexesSurrounding(headword);
     }
 
     private void cacheAll(Iterable<Index> indexes) {
         for (Index index : indexes) {
-            cache.put(index.getWord(), index);
+            cache(index);
         }
+    }
+    
+    private void cache(Index index) {
+        cache.put(index.getWord(), index);
     }
 
     private Index getFromCache(String headword) {

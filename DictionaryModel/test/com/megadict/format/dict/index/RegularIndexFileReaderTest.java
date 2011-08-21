@@ -9,7 +9,7 @@ import com.megadict.format.dict.parser.*;
 import com.megadict.test.toolbox.samples.IndexTestSample;
 import com.megadict.test.toolbox.samples.TestSamples;
 
-public class IndexFileReaderTest {
+public class RegularIndexFileReaderTest {
 
     private IndexTestSample sampleSet;
     private IndexParser parser;
@@ -17,9 +17,9 @@ public class IndexFileReaderTest {
 
     @Before
     public void prepareTests() {
-        parser = IndexParsers.newInstance();
+        parser = IndexParsers.newParser();
         sampleSet = TestSamples.getCurrentIndexSample();
-        testee = new IndexFileReader(sampleSet.getIndexFile());
+        testee = new RegularIndexFileReader(sampleSet.getIndexFile());
     }
 
     @Test
@@ -87,7 +87,7 @@ public class IndexFileReaderTest {
     public void testGetIndexesFromHeadword() {
         String word = "00-database-short";
         
-        Set<Index> found = testee.getIndexesStartFrom(word);
+        Set<Index> found = testee.getIndexesSurrounding(word);
         
         boolean empty = found.isEmpty();
         assertFalse(empty);

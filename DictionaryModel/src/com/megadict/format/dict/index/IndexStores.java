@@ -1,8 +1,8 @@
 package com.megadict.format.dict.index;
 
-public class IndexStoreFactory {
+public class IndexStores {
     
-    private IndexStoreFactory() {
+    private IndexStores() {
     }
 
     public static IndexStore newDefaultIndexStore(IndexFile indexFile) {

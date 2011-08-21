@@ -24,7 +24,7 @@ public class DefinitionFinderTest {
         Index[] testIndexes = loadIndexes();
         
         for (Index index : testIndexes) {
-            String content = finder.getDefinitionAt(index);
+            String content = finder.getContentAt(index);
             assertNotNull(content);
             System.out.println(content);
         }
@@ -46,7 +46,7 @@ public class DefinitionFinderTest {
                 "Z-score\tsmpF\tm",
         };
         
-        IndexParser parser = IndexParsers.newInstance();
+        IndexParser parser = IndexParsers.newParser();
         
         Index[] result = new Index[indexStrings.length];
         

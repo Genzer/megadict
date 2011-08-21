@@ -35,7 +35,7 @@ public class DICTDictionary implements Dictionary {
         this.indexFile = builder.indexFile;
         this.dictFile  = builder.dictFile;
         if (builder.segmentEnabled) {
-            initializeWithSegment();
+            initializeWithSegmentMode();
         } else {
             initialize();
         }
@@ -54,7 +54,7 @@ public class DICTDictionary implements Dictionary {
         loadDictionaryMetadata();
     }
     
-    private void initializeWithSegment() {
+    private void initializeWithSegmentMode() {
         checkFileExistence();
         prepareIndexStoreWithSegment();
         prepareDefinitions();
@@ -63,20 +63,20 @@ public class DICTDictionary implements Dictionary {
 
     private void checkFileExistence() {
         if (!(indexFile.exists())) {
-            throw new ResourceMissingException("Index file " + indexFile);
+            throw new ResourceMissingException(indexFile.toString());
         }
 
         if (!(dictFile.exists())) {
-            throw new ResourceMissingException("Dict file " + dictFile);
+            throw new ResourceMissingException(dictFile.toString());
         }
     }
 
     private void prepareIndexStore() {
-        supportedWords = IndexStoreFactory.newDefaultIndexStore(indexFile);
+        supportedWords = IndexStores.newDefaultIndexStore(indexFile);
     }
     
     private void prepareIndexStoreWithSegment() {
-        supportedWords = IndexStoreFactory.newIndexStoreSupportSegment(indexFile);
+        supportedWords = IndexStores.newIndexStoreSupportSegment(indexFile);
     }
 
     private void prepareDefinitions() {
@@ -89,7 +89,7 @@ public class DICTDictionary implements Dictionary {
 
     private void loadDictionaryName() {
         Index nameEntry = supportedWords.getIndexOf(MetaDataEntry.SHORT_NAME.tagName());
-        String name = definitionFinder.getDefinitionAt(nameEntry);
+        String name = definitionFinder.getContentAt(nameEntry);
         this.name = cleanedUpName(name);
     }
 
@@ -143,7 +143,7 @@ public class DICTDictionary implements Dictionary {
     }
 
     private Definition loadAndCacheDefinition(Index index) {
-        String definitionContent = definitionFinder.getDefinitionAt(index);
+        String definitionContent = definitionFinder.getContentAt(index);
         Definition def = new Definition(index.getWord(), definitionContent, this.name);
         cacheDefinition(def);
         return def;
@@ -160,20 +160,19 @@ public class DICTDictionary implements Dictionary {
 
     @Override
     public String toString() {
-        if (toStringCache == null) {
-            toStringCache = String.format(TO_STRING_PATTERN, name, indexFile, dictFile);
-        }
-        return toStringCache;
+        return String.format(TO_STRING_PATTERN, name, indexFile, dictFile);
     }
 
     private final IndexFile indexFile;
     private final DictionaryFile dictFile;
+    
     private String name;
-    private DefinitionFinder definitionFinder;
-    private Map<String, Definition> definitionCache = new HashMap<String, Definition>();
+    
     private IndexStore supportedWords;
+    private DefinitionFinder definitionFinder;    
+    
+    private Map<String, Definition> definitionCache = new HashMap<String, Definition>();
 
     private static final String NAME_REDUNDANT_STRING = "@00-database-short- FVDP ";
     private static final String TO_STRING_PATTERN = "DICTDictionary[name: %s; indexFile: %s; dictFile: %s]";
-    private String toStringCache;
 }

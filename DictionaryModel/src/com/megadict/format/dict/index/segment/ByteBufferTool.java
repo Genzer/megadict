@@ -1,6 +1,6 @@
 package com.megadict.format.dict.index.segment;
 
-class ByteBufferTool {
+public class ByteBufferTool {
 
     private static enum SearchDirection {
         FORWARD(1) {
@@ -31,78 +31,31 @@ class ByteBufferTool {
     private ByteBufferTool() {
     }
 
-    public static String firstHeadWordIn(byte[] buffer, int maxCharsToFind) {
-        return (buffer.length == 0) ? "" : findAndExtractFirstHeadWord(buffer, maxCharsToFind);
-    }
-
-    private static String findAndExtractFirstHeadWord(byte[] buffer, int maxCharsToFind) {
-        int firstTabChar = findFirstTabCharInBeginningChars(maxCharsToFind, buffer);
-        int lastNullChar = findBackwardFirstNullCharFromTabChar(firstTabChar, buffer);
-
-        int beginCopyPos = lastNullChar + 1;
-        byte[] firstWordInBytes = wasNotFound(firstTabChar) ? EMPTY_CONTENT : copyOfRange(buffer, beginCopyPos,
-                firstTabChar);
-
-        return new String(firstWordInBytes);
-    }
-
-    private static boolean wasNotFound(int returnedPosition) {
-        return returnedPosition == -1;
-    }
-
-    private static int findFirstTabCharInBeginningChars(int numOfChars, byte[] content) {
-        int start = 0;
-        int end = Math.min(numOfChars, content.length);
-        char tabChar = '\t';
-
-        return findForwardFirstOccurrenceOfCharInRange(content, start, end, tabChar);
-    }
-
-    private static int findBackwardFirstNullCharFromTabChar(int tabCharPos, byte[] content) {
-        return findBackwardFirstOccurrenceOfCharInRange(content, tabCharPos, 0, '\0');
-    }
-
-    public static String lastHeadWordIn(byte[] buffer) {
-        return (buffer.length == 0) ? "" : findAndExtractLastHeadWord(buffer);
-    }
-
-    private static String findAndExtractLastHeadWord(byte[] buffer) {
-        int newLineChar = findLastNewlineChar(buffer);
-        byte[] fullContent = wasNotFound(newLineChar) ? EMPTY_CONTENT : copyOfRange(buffer, newLineChar + 1,
-                buffer.length);
-
-        int firstTabChar = findFirstTabCharInBeginningChars(fullContent.length, fullContent);
-        byte[] headWord = wasNotFound(firstTabChar) ? EMPTY_CONTENT : copyOfRange(fullContent, 0, firstTabChar);
-
-        return new String(headWord);
-    }
-
     public static int findFirstNewlineChar(byte[] content) {
         int start = 0;
         int end = content.length;
         char newlineChar = '\n';
-        
-        return findForwardFirstOccurrenceOfCharInRange(content, start, end, newlineChar);
+
+        return findForwardFirstCharInRange(content, start, end, newlineChar);
     }
-    
-    
+
     public static int findLastNewlineChar(byte[] content) {
         int start = content.length - 1;
         int end = 0;
         char newlineChar = '\n';
 
-        return findBackwardFirstOccurrenceOfCharInRange(content, start, end, newlineChar);
+        return findBackwardFirstCharInRange(content, start, end, newlineChar);
     }
 
-    public static int findForwardFirstOccurrenceOfCharInRange(byte[] searchArray, int start, int end, char charToFind) {
-        return findFirstOccurrenceOfCharInRange(searchArray, start, end, charToFind, SearchDirection.FORWARD);
+    public static int findForwardFirstCharInRange(byte[] searchArray, int start, int end, char charToFind) {
+        return findFirstCharInRange(searchArray, start, end, charToFind, SearchDirection.FORWARD);
     }
 
-    public static int findBackwardFirstOccurrenceOfCharInRange(byte[] searchArray, int start, int end, char charToFind) {
-        return findFirstOccurrenceOfCharInRange(searchArray, start, end, charToFind, SearchDirection.BACKWARD);
+    public static int findBackwardFirstCharInRange(byte[] searchArray, int start, int end, char charToFind) {
+        return findFirstCharInRange(searchArray, start, end, charToFind, SearchDirection.BACKWARD);
     }
 
-    private static int findFirstOccurrenceOfCharInRange(byte[] searchArray, int start, int end, char charToFind,
+    private static int findFirstCharInRange(byte[] searchArray, int start, int end, char charToFind,
             SearchDirection search) {
 
         for (int i = start; search.isOver(i, end); i = search.next(i)) {
@@ -126,63 +79,4 @@ class ByteBufferTool {
 
         return copy;
     }
-
-    public static byte[] extractBufferLeftOver(byte[] buffer) {
-
-        int lastPositionOfNewlineChar = findLastNewlineChar(buffer);
-
-        int leftOverLength = (buffer.length - 1) - lastPositionOfNewlineChar;
-        byte[] leftOver = new byte[leftOverLength];
-
-        int leftOverIndex = 0;
-        for (int i = lastPositionOfNewlineChar + 1; i < buffer.length; i++) {
-            leftOver[leftOverIndex] = buffer[i];
-            leftOverIndex++;
-        }
-
-        return leftOver;
-    }
-
-    public static byte[] copyBackwardFromSourceOffset(byte[] source, int offsetBackward, byte[] dest) {
-        int sourceLengthToCopy = source.length - offsetBackward;
-
-        if (dest.length < sourceLengthToCopy) {
-            throw new IllegalArgumentException("The dest does not have enough spaces to hold the source content: "
-                    + dest.length + "<" + sourceLengthToCopy);
-        }
-
-        int srcPos = sourceLengthToCopy - 1;
-        int destPos = dest.length - 1;
-        SearchDirection search = SearchDirection.BACKWARD;
-
-        for (; search.isOver(srcPos, 0); srcPos = search.next(srcPos)) {
-
-            dest[destPos] = source[srcPos];
-            destPos = search.next(destPos);
-        }
-
-        return dest;
-    }
-
-    public static byte[] copyBackwardToDestOffset(byte[] source, byte[] dest, int offsetBackward) {
-        int remainingSpaceInDest = dest.length - offsetBackward;
-
-        if (remainingSpaceInDest < source.length) {
-            throw new IllegalArgumentException("Length of source array is bigger than"
-                    + " the remaining spaces of dest array: " + source.length + ">" + remainingSpaceInDest);
-
-        }
-
-        int sourceTracker = source.length - 1;
-        int destTracker = remainingSpaceInDest - 1;
-
-        for (; sourceTracker >= 0; sourceTracker--) {
-            dest[destTracker] = source[sourceTracker];
-            destTracker--;
-        }
-
-        return dest;
-    }
-    
-    private static final byte[] EMPTY_CONTENT = new byte[0];
 }

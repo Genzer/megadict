@@ -34,6 +34,7 @@ public class DICTDictionaryTest {
         testee = new DICTDictionary.Builder(indexFile, dictFile).build();
     }
 
+    //@Ignore ("expected values belongs to Fora Dictionary") 
     @Test
     public void testRecommendWord() {
         String[] expectedSimilarWords = {
@@ -145,7 +146,7 @@ public class DICTDictionaryTest {
     @Test
     public void testCreateWithNotExistingIndexFile() throws ResourceMissingException {
         expectedException.expect(ResourceMissingException.class);
-        expectedException.expectMessage("Index file C:\\not\\exists\\file.index does not exist.");
+        expectedException.expectMessage("C:\\not\\exists\\file.index does not exist.");
 
         IndexFile notExist = IndexFile.makeFile("C:/not/exists/file.index");
         DictionaryFile dictFile = DictionaryFile.makeBufferedFile(sampleTest.getDictionaryFile());
@@ -155,7 +156,7 @@ public class DICTDictionaryTest {
     @Test
     public void testCreateWithNotExistingDictFile() throws ResourceMissingException {
         expectedException.expect(ResourceMissingException.class);
-        expectedException.expectMessage("Dict file C:\\not\\exists\\file.dict does not exist.");
+        expectedException.expectMessage("C:\\not\\exists\\file.dict does not exist.");
 
         IndexFile indexFile = IndexFile.makeFile(sampleTest.getIndexFile());
         DictionaryFile notExist = DictionaryFile.makeBufferedFile("C:/not/exists/file.dict");

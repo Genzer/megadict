@@ -62,7 +62,7 @@ public class MappedDictFileReaderTest {
                 "zymotic\toN2l\tBJ", "decorously\tuSf3\t4", "Forecast error\tqnR8\tDC", "procrastinating\tahbX\tBN",
                 "two-master\tk+2K\tBU", "voidable\tm0Yz\tBa", "Z-score\tsmpF\tm", };
 
-        IndexParser parser = IndexParsers.newInstance();
+        IndexParser parser = IndexParsers.newParser();
 
         Index[] result = new Index[indexStrings.length];
 

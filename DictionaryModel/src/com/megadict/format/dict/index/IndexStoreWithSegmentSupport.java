@@ -1,6 +1,5 @@
 package com.megadict.format.dict.index;
 
-import java.io.File;
 import java.util.Set;
 
 import com.megadict.format.dict.index.segment.ByteBufferedSegmentIndexer;
@@ -8,37 +7,27 @@ import com.megadict.format.dict.index.segment.SegmentBuilder;
 import com.megadict.format.dict.index.segment.SegmentStore;
 
 class IndexStoreWithSegmentSupport extends BaseIndexStore implements IndexStore {
-
-    public IndexStoreWithSegmentSupport(IndexFile indexFile) {
-        super(indexFile);
-        buildSegments();
-    }  
-
-    private void buildSegments() {
-        SegmentBuilder builder = makeSegmentBuilder();
-        if (builder.checkIfSegmentIndexExists()) {
-            builder.loadSavedSegmentIndex();
-        } else {
-            builder.build();
-            builder.saveSegmentIndex();
-        }        
-        segmentStore = new SegmentStore(builder.builtSegments());
-    }
+   
+    private final IndexFileReader reader;
     
-    private SegmentBuilder makeSegmentBuilder() {
-        return new ByteBufferedSegmentIndexer(indexFile.asRawFile());
+    public IndexStoreWithSegmentSupport(IndexFile indexFile) {
+        super(indexFile);        
+        reader = buildReader();
+    }  
+    
+    private IndexFileReader buildReader() {
+        SegmentStore segmentStore = buildSegments();
+        return new RandomIndexFileReader(indexFile.asRawFile(), segmentStore);
+    }
+
+    private SegmentStore buildSegments() {
+        SegmentBuilder builder = new ByteBufferedSegmentIndexer(indexFile.asRawFile());
+        builder.build();
+        return new SegmentStore(builder.builtSegments());
     }
     
     @Override
     protected Set<Index> findInFile(String word) {
-        File segmentFile = determineWhichSegmentContains(word);
-        IndexFileReader reader = new IndexFileReader(segmentFile);
-        return reader.getIndexesStartFrom(word);
+        return reader.getIndexesSurrounding(word);
     }
-    
-    private File determineWhichSegmentContains(String word) {
-        return segmentStore.findSegmentPossiblyContains(word).file();
-    }
-    
-    private SegmentStore segmentStore;
 }

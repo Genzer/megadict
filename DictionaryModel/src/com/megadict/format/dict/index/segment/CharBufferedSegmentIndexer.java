@@ -14,11 +14,6 @@ public class CharBufferedSegmentIndexer extends BaseSegmentBuilder implements Se
     }
 
     @Override
-    public List<Segment> builtSegments() {
-        return super.getCreatedSegment();
-    }
-
-    @Override
     public void build() {
 
         Reader reader = null;
@@ -32,7 +27,7 @@ public class CharBufferedSegmentIndexer extends BaseSegmentBuilder implements Se
         } catch (IOException ioe) {
             throw new OperationFailedException("reading index file", ioe);
         } finally {
-            closeReaderIfNotNull(reader);
+            closeReader(reader);
         }
     }
 
@@ -40,24 +35,20 @@ public class CharBufferedSegmentIndexer extends BaseSegmentBuilder implements Se
         return FileUtil.newFileReader(indexFile());
     }
 
-    private void closeReaderIfNotNull(Reader reader) {
-        try {
-            if (reader != null) {
-                reader.close();
-            }
-        } catch (IOException ioe) {
-            throw new OperationFailedException("closing data input stream", ioe);
-        }
+    private void closeReader(Reader reader) {
+        FileUtil.closeReader(reader);
     }
 
     private void performIndexingFileIntoSegments(Reader reader) throws IOException {
+        
         while (stillReceiveDataFrom(reader)) {
-
+            
             if (firstBytesWasRead()) {
                 createFirstPaddingBlock();
                 continue;
             } else if (finalBytesWasRead()) {
                 removeRedundantValuesBeforeProcess();
+                readCharsThisTime = BUFFER_SIZE_IN_BYTES;
             }
 
             currentBlock = determineCurrentBlock();
@@ -83,16 +74,17 @@ public class CharBufferedSegmentIndexer extends BaseSegmentBuilder implements Se
     }
 
     private void createFirstPaddingBlock() {
-        String headword = extractHeadWordOfPaddingBlock();
+        int headLeftOverLength = 0;
         int footerLeftOverLength = computeFooterLeftOverLength();
-        Block block = new Block(0, footerLeftOverLength, headword, 0);
+        String headword = extractHeadWordOfPaddingBlock();
+        int offset = 0;
+        Block block = new Block(headLeftOverLength, footerLeftOverLength, headword, offset);
         updatePreviousBlock(block);
     }
 
     private String extractHeadWordOfPaddingBlock() {
         int firstNewlineChar = findFirstNewlineChar(coreBuffer);
-        int firstTabChar = CharBufferTool
-                .findForwardFirstCharInRange(coreBuffer, 0, firstNewlineChar, '\t');
+        int firstTabChar = findForwardFirstCharInRange(coreBuffer, 0, firstNewlineChar, '\t');
         char[] headword = copyOfRange(coreBuffer, 0, firstTabChar);
         return new String(headword);
     }
@@ -107,8 +99,8 @@ public class CharBufferedSegmentIndexer extends BaseSegmentBuilder implements Se
     }
     
     private int determineStartPositionToWipeOutRedundantValues() {
-        int lastCharOfBlockPos = readCharsThisTime - 1;
-        return isNewlineChar(lastCharOfBlockPos) ? lastCharOfBlockPos - 1 : lastCharOfBlockPos;
+        int positionOfLastValue = readCharsThisTime - 1;
+        return isNewlineChar(positionOfLastValue) ? positionOfLastValue - 1 : positionOfLastValue;
     }
     
     private boolean isNewlineChar(int position) {
@@ -118,14 +110,14 @@ public class CharBufferedSegmentIndexer extends BaseSegmentBuilder implements Se
     private Block determineCurrentBlock() {
         int headerLeftOverLength = computeHeadingLeftOverLength();
         int footerLeftOverLength = computeFooterLeftOverLength();
-        String firstWord = extractFirstWord();
-        int offset = totalCharsRead - BUFFER_SIZE_IN_BYTES + headerLeftOverLength;
-        return new Block(headerLeftOverLength, footerLeftOverLength, firstWord, offset);
+        String headword = extractBlockHeadingWord();        
+        int offset = totalCharsRead - BUFFER_SIZE_IN_BYTES + headerLeftOverLength;        
+        return new Block(headerLeftOverLength, footerLeftOverLength, headword, offset);
     }
 
     private int computeHeadingLeftOverLength() {
         int firstNewlineCharPos = findFirstNewlineChar(coreBuffer);
-        return firstNewlineCharPos + 1;
+        return firstNewlineCharPos;
     }
 
     private int computeFooterLeftOverLength() {
@@ -133,7 +125,7 @@ public class CharBufferedSegmentIndexer extends BaseSegmentBuilder implements Se
         return coreBuffer.length - lastNewlineCharPos;
     }
 
-    private String extractFirstWord() {
+    private String extractBlockHeadingWord() {
         int firstNewlineChar = findFirstNewlineChar(coreBuffer);
 
         int nextTabChar = findForwardFirstCharInRange(coreBuffer, firstNewlineChar,
@@ -145,13 +137,8 @@ public class CharBufferedSegmentIndexer extends BaseSegmentBuilder implements Se
     }
 
     private void createAndStoreSegment() {
-        Segment newSegment = createAndCountSegment();
+        Segment newSegment = createSegmentWithBuiltBlock();
         storeCreatedSegment(newSegment);
-    }
-
-    private Segment createAndCountSegment() {
-        Segment createdSegment = createSegmentWithBuiltBlock();
-        return createdSegment;
     }
 
     private Segment createSegmentWithBuiltBlock() {
@@ -217,6 +204,7 @@ public class CharBufferedSegmentIndexer extends BaseSegmentBuilder implements Se
         return copyOfRange(coreBuffer, start, end);
     }
 
+    private static final int BUFFER_SIZE_IN_BYTES = FileUtil.DEFAULT_BUFFER_SIZE_IN_BYTES;
     private static final char[] coreBuffer = new char[BUFFER_SIZE_IN_BYTES];
 
     private Block previousBlock;

@@ -1,6 +1,7 @@
 package com.megadict.format.dict.index.segment;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -32,11 +33,46 @@ public class SegmentStore {
         return find(word);
     }
 
-    private Segment find(String word) {
-        SortedMap<String, Segment> greaterOrEqual = map.tailMap(word);
-        String keyOfFirstMatch = greaterOrEqual.firstKey();
-        return greaterOrEqual.get(keyOfFirstMatch);
+    private Segment find(String findingWord) {
+        Segment result = null;
+        
+        SortedMap<String, Segment> greaterOrEqualKeys = map.tailMap(findingWord);
+        
+        if (!greaterOrEqualKeys.isEmpty()) {
+            
+            String matchedKey = greaterOrEqualKeys.firstKey();
+            
+            if (areTheSame(matchedKey, findingWord) && hasMoreElement(greaterOrEqualKeys)) {
+                String keyOfNextSegment = nextKey(greaterOrEqualKeys, findingWord);
+                matchedKey = keyOfNextSegment;
+            }
+            
+            result = greaterOrEqualKeys.get(matchedKey);
+        }
+        
+        return result;
+    }
+    
+    private boolean areTheSame(String matchedKey, String word) {
+        return matchedKey.equalsIgnoreCase(word);
+    }
+    
+    private boolean hasMoreElement(SortedMap<String, Segment> map) {
+        return map.size() != 1;
     }
 
-    private SortedMap<String, Segment> map;
+    private String nextKey(SortedMap<String,Segment> map, String keyToFind) {
+        Iterator<String> keys = map.keySet().iterator();
+        
+        while(keys.hasNext()) {
+            String key = keys.next();
+            if (key.equalsIgnoreCase(keyToFind)) {
+                return keys.next();
+            }            
+        }
+        
+        return null;
+    }
+
+    private TreeMap<String, Segment> map;
 }

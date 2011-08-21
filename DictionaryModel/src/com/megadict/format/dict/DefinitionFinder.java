@@ -11,7 +11,7 @@ public class DefinitionFinder {
         this.fileReader = reader;
     }    
     
-    public String getDefinitionAt(Index index) {
+    public String getContentAt(Index index) {
         if (index == null) {
             return "";
         }

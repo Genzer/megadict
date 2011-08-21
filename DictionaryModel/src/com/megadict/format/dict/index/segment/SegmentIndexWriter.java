@@ -3,24 +3,31 @@ package com.megadict.format.dict.index.segment;
 import java.io.*;
 import java.util.*;
 
+import com.megadict.exception.ResourceMissingException;
+import com.megadict.format.dict.util.FileUtil;
+
 public class SegmentIndexWriter {
 
     public SegmentIndexWriter(File segmentIndexFile, Collection<Segment> segments) {
         this.indexFile = segmentIndexFile;
         this.segments = segments;
-        this.writingStrategy = new SegmentIndexWritingStrategy();
+        this.writingStrategy = new EffectiveForReadingWritingStrategy();
     }
-    
+
     public void write(SegmentIndexWritingStrategy strategy) {
         this.writingStrategy = strategy;
         write();
     }
 
     public void write() {
-        DataOutputStream writer = makeWriter(indexFile);
+        DataOutputStream writer = null;
+
         try {
+            writer = makeWriter(indexFile);
             doWrite(writer);
             writer.flush();
+        } catch (FileNotFoundException fnf) {
+            throw new ResourceMissingException(indexFile);
         } catch (IOException ioe) {
             throw new RuntimeException(ioe);
         } finally {
@@ -28,14 +35,10 @@ public class SegmentIndexWriter {
         }
     }
 
-    private DataOutputStream makeWriter(File file) {
-        try {
-            FileOutputStream rawStream = new FileOutputStream(file);
-            BufferedOutputStream bufferedStream = new BufferedOutputStream(rawStream, 16 * 1024);
-            return new DataOutputStream(bufferedStream);
-        } catch (FileNotFoundException fnf) {
-            throw new RuntimeException(fnf);
-        }
+    private DataOutputStream makeWriter(File file) throws IOException {
+        FileOutputStream rawStream = new FileOutputStream(file);
+        BufferedOutputStream bufferedStream = new BufferedOutputStream(rawStream, 16 * 1024);
+        return new DataOutputStream(bufferedStream);
     }
 
     private void doWrite(DataOutputStream writer) throws IOException {
@@ -43,13 +46,7 @@ public class SegmentIndexWriter {
     }
 
     private void closeWriter(DataOutputStream writer) {
-        try {
-            if (writer != null) {
-                writer.close();
-            }
-        } catch (IOException ioe) {
-            throw new RuntimeException(ioe);
-        }
+        FileUtil.closeOutputStream(writer);
     }
 
     private Collection<Segment> segments;

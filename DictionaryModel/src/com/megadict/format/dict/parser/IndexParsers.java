@@ -5,7 +5,7 @@ public class IndexParsers {
     private IndexParsers() {
     }
     
-    public static IndexParser newInstance() {
+    public static IndexParser newParser() {
         return new BackedByByteArrayParser();
     }
 }
