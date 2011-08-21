@@ -15,6 +15,17 @@ import com.megadict.format.dict.util.FileUtil;
 
 abstract class BaseIndexFileReader implements IndexFileReader {
 
+    private static final String[] EMPTY_STRING_ARRAY = new String[0];
+    private static final String HEAD_WORD_PREFIX = "\n";
+    private static final String HEAD_WORD_SUFFIX = "\t";
+    
+    protected static final int CHAR_BUFFER_SIZE;
+    private static final int NUM_OF_CHAR_TO_BE_READ_ON;
+    
+    protected final StringBuilder builder = new StringBuilder(CHAR_BUFFER_SIZE);
+    private final IndexParser indexParser = IndexParsers.newParser();
+    protected final File indexFile;
+    
     static {
         CHAR_BUFFER_SIZE = determineCharBufferSize(FileUtil.DEFAULT_BUFFER_SIZE_IN_BYTES);
         NUM_OF_CHAR_TO_BE_READ_ON = determineNumOfCharShouldBeReadOn(100);
@@ -134,15 +145,4 @@ abstract class BaseIndexFileReader implements IndexFileReader {
             indexes.add(newIndex);
         }
     }
-
-    private static final String[] EMPTY_STRING_ARRAY = new String[0];
-    private static final String HEAD_WORD_PREFIX = "\n";
-    private static final String HEAD_WORD_SUFFIX = "\t";
-    
-    protected static final int CHAR_BUFFER_SIZE;
-    private static final int NUM_OF_CHAR_TO_BE_READ_ON;
-    
-    protected final StringBuilder builder = new StringBuilder(CHAR_BUFFER_SIZE);
-    private final IndexParser indexParser = IndexParsers.newParser();
-    protected final File indexFile;
 }

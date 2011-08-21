@@ -13,13 +13,14 @@ class HumanReadableWritingStrategy implements SegmentIndexWritingStrategy {
     }
     
     private void writeNumOfSegments(DataOutputStream writer, int numOfSegments) throws IOException {
-        writer.writeBytes(Integer.toString(numOfSegments));
+        byte[] unicodeContent = Integer.toString(numOfSegments).getBytes("UTF-8");
+        writer.write(unicodeContent);
         writer.write('\n');
     }
     
     private void writeAllSegments(DataOutputStream writer, Collection<Segment> segments) throws IOException {
         for (Segment segment : segments) {
-            writer.writeBytes(segment.toString());
+            writer.write(segment.toString().getBytes("UTF-8"));
             writer.write('\n');
         }
     }

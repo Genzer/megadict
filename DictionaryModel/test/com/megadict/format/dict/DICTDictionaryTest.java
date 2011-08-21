@@ -31,7 +31,7 @@ public class DICTDictionaryTest {
         IndexFile indexFile = IndexFile.makeFile(sampleTest.getIndexFile());
         DictionaryFile dictFile = DictionaryFile.makeRandomAccessFile(sampleTest.getDictionaryFile());
 
-        testee = new DICTDictionary.Builder(indexFile, dictFile).build();
+        testee = new DICTDictionary.Builder(indexFile, dictFile).enableSplittingIndexFile().build();
     }
 
     //@Ignore ("expected values belongs to Fora Dictionary") 

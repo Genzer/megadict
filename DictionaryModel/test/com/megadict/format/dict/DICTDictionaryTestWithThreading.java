@@ -13,6 +13,16 @@ import com.megadict.test.toolbox.TaskExecutor;
 
 public class DICTDictionaryTestWithThreading {
 
+    private static final IndexFile packOneIndex = IndexFile
+            .makeFile("D:/Workspace/@MainProjects/OU/MegaDict/Project/DictionaryModel/testset/hnd/ev/ev.index");
+    private static final DictionaryFile packOneDict = DictionaryFile
+            .makeRandomAccessFile("D:/Workspace/@MainProjects/OU/MegaDict/Project/DictionaryModel/testset/hnd/ev/ev.dict");
+
+    private static final IndexFile packTwoIndex = IndexFile
+            .makeFile("D:/Workspace/@MainProjects/OU/MegaDict/Project/DictionaryModel/testset/hnd/ve/ve.index");
+    private static final DictionaryFile packTwoDict = DictionaryFile
+            .makeRandomAccessFile("D:/Workspace/@MainProjects/OU/MegaDict/Project/DictionaryModel/testset/hnd/ve/ve.dict");
+
     @Test
     public void testSimultaneouslyLookUpWithTwoDictionaries() {
 
@@ -26,14 +36,14 @@ public class DICTDictionaryTestWithThreading {
             System.out.println(result);
         }
     }
-    
+
     @Test
     public void testSimultaneouslyGetNameOfTwoDictionaries() {
-         List<Runnable> tasks = new ArrayList<Runnable>(2);
-         tasks.add(new GetNameTask(packOneIndex, packOneDict));
-         tasks.add(new GetNameTask(packTwoIndex, packTwoDict));
-        
-         TaskExecutor.execute(tasks);
+        List<Runnable> tasks = new ArrayList<Runnable>(2);
+        tasks.add(new GetNameTask(packOneIndex, packOneDict));
+        tasks.add(new GetNameTask(packTwoIndex, packTwoDict));
+
+        TaskExecutor.execute(tasks);
     }
 
     static class GetNameTask implements Runnable {
@@ -45,7 +55,8 @@ public class DICTDictionaryTestWithThreading {
 
         @Override
         public void run() {
-            Dictionary dictionary = new DICTDictionary(indexFile, dictFile);
+            Dictionary dictionary =
+                    new DICTDictionary(indexFile, dictFile);
             System.out.println(dictionary.getName());
         }
 
@@ -53,9 +64,9 @@ public class DICTDictionaryTestWithThreading {
         private final DictionaryFile dictFile;
 
     }
-    
+
     static class LookUpTask implements Callable<String> {
-        
+
         public LookUpTask(IndexFile indexFile, DictionaryFile dictFile, String wordToLookUp) {
             this.dictFile = dictFile;
             this.indexFile = indexFile;
@@ -73,14 +84,4 @@ public class DICTDictionaryTestWithThreading {
         private final DictionaryFile dictFile;
         private final String wordToLookUp;
     }
-
-    private static final IndexFile packOneIndex = IndexFile
-            .makeFile("D:/Workspace/@MainProjects/OU/MegaDict/Project/DictionaryModel/testset/hnd/ev/ev.index");
-    private static final DictionaryFile packOneDict = DictionaryFile
-            .makeRandomAccessFile("D:/Workspace/@MainProjects/OU/MegaDict/Project/DictionaryModel/testset/hnd/ev/ev.dict");
-
-    private static final IndexFile packTwoIndex = IndexFile
-            .makeFile("D:/Workspace/@MainProjects/OU/MegaDict/Project/DictionaryModel/testset/hnd/ve/ve.index");
-    private static final DictionaryFile packTwoDict = DictionaryFile
-            .makeRandomAccessFile("D:/Workspace/@MainProjects/OU/MegaDict/Project/DictionaryModel/testset/hnd/ve/ve.dict");
 }
