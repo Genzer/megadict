@@ -36,6 +36,7 @@
     <string name="clear">Xóa hết</string>
     <string name="close">Đóng</string>
     <string name="searchBarHint">Nhập từ cần tra</string>
+    <string name="adding">Đang thêm từ điển... Làm ơn chờ.</string>
     
     <!-- Dialog title -->
     <string name="wordListDialogTitle">Chọn một từ</string>

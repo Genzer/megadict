@@ -33,4 +33,8 @@ public class RescanComponent {
 	public ProgressDialog getProgressDialog() {
 		return progressDialog;
 	}
+
+	public void setProgressDialogMessage(final int resID) {
+		progressDialog.setMessage(context.getString(resID));
+	}
 }

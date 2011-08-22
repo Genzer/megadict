@@ -11,8 +11,11 @@ import com.megadict.exception.IndexFileNotFoundException;
 import com.megadict.model.DictionaryInformation;
 
 public class ExternalReader {
+	// Init logger for debugging.
+	final static Logger LOGGER = Logger.getLogger("ExternalReader");
+	static { LOGGER.addHandler(new ConsoleHandler()); }
+
 	private final List<DictionaryInformation> infos = new ArrayList<DictionaryInformation>();
-	private final static Logger LOGGER = Logger.getLogger("ExternalReader");
 	public static final String NO_DICTIONARY = "There is no dictionary.";
 	public static final String INDEX_FILE_NOT_FOUND = "Index file not found.";
 	public static final String DATA_FILE_NOT_FOUND = "Data file not found.";
@@ -26,7 +29,7 @@ public class ExternalReader {
 	}
 
 	private void init(final File externalFile) {
-		LOGGER.addHandler(new ConsoleHandler());
+
 		final File files[] = externalFile.listFiles();
 		if (files == null) throw new IllegalArgumentException("External storage is not a valid directory.");
 		for (final File file : files) {
@@ -35,9 +38,9 @@ public class ExternalReader {
 					final DictionaryInformation info = createDictionaryInformation(file);
 					infos.add(info);
 				} catch (final IndexFileNotFoundException e) {
-					log(e.getMessage());
+					LOGGER.warning(e.getMessage());
 				} catch (final DataFileNotFoundException e) {
-					log(e.getMessage());
+					LOGGER.warning(e.getMessage());
 				}
 			}
 		}
@@ -45,9 +48,5 @@ public class ExternalReader {
 
 	private DictionaryInformation createDictionaryInformation(final File parentFilePath) throws IndexFileNotFoundException, DataFileNotFoundException {
 		return new DictionaryInformation(parentFilePath);
-	}
-
-	private static void log(final String message) {
-		LOGGER.warning(message);
 	}
 }

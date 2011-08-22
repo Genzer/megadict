@@ -23,10 +23,11 @@ import com.megadict.model.ModelMap;
 import com.megadict.utility.DatabaseHelper;
 
 public final class DictionaryScanner extends Observable implements TaskManager {
+	// Init logger for debugging.
 	private static final Logger LOGGER = Logger.getLogger("DictionaryScanner");
-	private final ExternalReader externalReader = new ExternalReader(ExternalStorage.getExternalDirectory());
-	private final ModelMap models = new ModelMap();
+	static { LOGGER.addHandler(new ConsoleHandler()); }
 
+	private final ModelMap models = new ModelMap();
 	private final List<AbstractRescanTask> rescanTasks = new ArrayList<AbstractRescanTask>();
 	private final List<AbstractScanTask> scanTasks = new ArrayList<AbstractScanTask>();
 	private final List<AbstractUpdateTask> updateTasks = new ArrayList<AbstractUpdateTask>();
@@ -34,7 +35,6 @@ public final class DictionaryScanner extends Observable implements TaskManager {
 
 	public DictionaryScanner() {
 		super();
-		LOGGER.addHandler(new ConsoleHandler());
 	}
 
 	public List<Dictionary> getDictionaryModels() {
@@ -74,7 +74,11 @@ public final class DictionaryScanner extends Observable implements TaskManager {
 			models.clear();
 			// Clear all tasks.
 			rescanTasks.clear();
+			// Change ProgressDialog message.
+			rescanComponent.setProgressDialogMessage(R.string.scanning);
 
+			// Scan storage.
+			final ExternalReader externalReader = new ExternalReader(ExternalStorage.getExternalDirectory());
 			// Read from external storage.
 			final List<DictionaryInformation> infos = externalReader.getInfos();
 			// Get database.
@@ -142,6 +146,8 @@ public final class DictionaryScanner extends Observable implements TaskManager {
 		if(didAllAddWikiTasksFinish()) {
 			// Clear all tasks.
 			wikiTasks.clear();
+			// Change ProgressDialog message
+			rescanComponent.setProgressDialogMessage(R.string.adding);
 
 			for(final String code : countryCodes) {
 				final AbstractAddWikiTask task = new AddWikiTask(this, models, rescanComponent);

@@ -40,9 +40,7 @@ public class ManageActivity extends BaseListActivity {
 
 		// Create or open database.
 		final SQLiteDatabase database = DatabaseHelper.getDatabase(this);
-
-		listViewCursor =
-				database.query(ChosenModel.TABLE_NAME, null, null, null, null, null, null);
+		listViewCursor = ChosenModel.selectChosenDictionaryIDsNameAndEnabled(database);
 		final ChosenDictionaryCheckBoxAdapter adapter =
 				new ChosenDictionaryCheckBoxAdapter(this, listViewCursor);
 		setListAdapter(adapter);

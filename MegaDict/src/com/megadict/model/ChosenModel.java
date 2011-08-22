@@ -83,6 +83,20 @@ public final class ChosenModel {
 		return cursor;
 	}
 
+	public static Cursor selectChosenDictionaryIDsNameAndEnabled(final SQLiteDatabase database)
+	{
+		final Cursor cursor =
+				database.query(
+						ChosenModel.TABLE_NAME,
+						new String[] { ChosenModel.ID_COLUMN, ChosenModel.DICTIONARY_NAME_COLUMN, ChosenModel.ENABLED_COLUMN },
+						null,
+						null,
+						null,
+						null,
+						ChosenModel.DICTIONARY_NAME_COLUMN);
+		return cursor;
+	}
+
 	public static int insertDictionary(final SQLiteDatabase database, final String dictionaryName, final String dictionaryPath, final String dictionaryType, final int enabled) {
 		final ContentValues value = new ContentValues();
 		value.put(ChosenModel.DICTIONARY_NAME_COLUMN, dictionaryName);
