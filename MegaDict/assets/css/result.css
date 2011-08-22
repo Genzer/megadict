@@ -34,19 +34,19 @@ p {
 }
 
 .searchedWord {
-	font-size: 1em;
+	font-size: 0.9em;
 	margin-bottom: 0.4em;
 	color: green;
 }
 
 .dictionaryContent {
-	font-size: 1em;	
+	font-size: 0.8em;	
 	margin-bottom: 0.8em;
 	color: black;
 }
 
 .dictionaryName {
-	font-size: 0.9em;
+	font-size: 0.8em;
 	color: gray;
 	text-align: right;
 }

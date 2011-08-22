@@ -11,6 +11,7 @@ import android.os.Message;
 
 import com.megadict.bean.DictionaryComponent;
 import com.megadict.business.scanning.DictionaryScanner;
+import com.megadict.format.dict.DICTDictionary;
 import com.megadict.initializer.AbstractInitializer;
 import com.megadict.model.Dictionary;
 
@@ -36,8 +37,10 @@ public final class WordRecommender implements Observer {
 			if("".equals(recommendedWord)) {
 				/* Do nothing if recommendedWord is empty. */
 			} else {
-				recommendTask = new RecommendTask(dictionaryModels, dictionaryComponent);
-				recommendTask.execute(recommendedWord);
+				if(doesContainLocalDictionary()) {
+					recommendTask = new RecommendTask(dictionaryModels, dictionaryComponent);
+					recommendTask.execute(recommendedWord);
+				}
 			}
 			result = true;
 		} else {
@@ -50,6 +53,15 @@ public final class WordRecommender implements Observer {
 		return recommendTask == null ? false : recommendTask.isRecommending();
 	}
 
+	private boolean doesContainLocalDictionary() {
+		for(final Dictionary dictionary : dictionaryModels) {
+			if(dictionary instanceof DICTDictionary) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	private class RecommendHandler extends Handler {
 		@Override
 		public void handleMessage(final Message msg) {
@@ -58,6 +70,7 @@ public final class WordRecommender implements Observer {
 		}
 	}
 
+	//============= Inner class ===============//
 	private class RecommendRunnable implements Runnable {
 		private final String word;
 		public RecommendRunnable(final String word) {

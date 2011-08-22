@@ -1,5 +1,7 @@
 package com.megadict.wiki;
 
+import java.io.File;
+import java.io.PrintWriter;
 import java.util.List;
 
 import org.jsoup.Jsoup;
@@ -29,10 +31,12 @@ public class WikiDictionary implements Dictionary {
 
 	@Override
 	public Definition lookUp(final String word) {
-		final String query = "http://" + countryCode + ".wikipedia.org/w/index.php?title=" + word + "&action=render";
+		final String searchedWord = word.replace(" ", "_");
+		final String query = "http://" + countryCode + ".wikipedia.org/w/index.php?title=" + searchedWord + "&action=render";
+		System.out.println(query);
 		Definition definition;
 		try {
-			final StringBuilder builder = new StringBuilder();
+			final StringBuffer builder = new StringBuffer();
 			final Document doc = Jsoup.connect(query).get();
 			final Elements pTags = doc.select("p");
 			if(pTags.size() < ALLOWED_PARAGRAPH_COUNT) {
@@ -48,8 +52,10 @@ public class WikiDictionary implements Dictionary {
 					builder.append(pTags.get(i));
 				}
 
-				builder.append("<a href=\"http://en.wikipedia.org/wiki/" + word + "\">Full Article..</a>");
+				builder.append("<a href=\"http://en.wikipedia.org/wiki/" + searchedWord + "\">Full Article..</a>");
 				final String result = builder.toString();
+				final PrintWriter writer = new PrintWriter(new File("/sdcard/Download/megadict/debug.html"));
+				writer.println(builder.toString());
 				definition = new Definition(word, result, "dictionarry name");
 			}
 		} catch(final Exception e) {
