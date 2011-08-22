@@ -18,6 +18,6 @@ public class CreateDICTThread implements Callable<Dictionary> {
 
 	@Override
 	public Dictionary call() throws Exception {
-		return new DICTDictionary(indexFile, dictionaryFile);
+		return new DICTDictionary.Builder(indexFile, dictionaryFile).build();
 	}
 }
