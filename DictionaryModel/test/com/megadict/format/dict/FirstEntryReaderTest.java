@@ -1,4 +1,4 @@
-package com.megadict.format.dict.index;
+package com.megadict.format.dict;
 
 import static org.junit.Assert.assertEquals;
 
@@ -6,6 +6,8 @@ import java.io.ByteArrayInputStream;
 
 import org.junit.Test;
 
+import com.megadict.format.dict.FirstEntryReader;
+import com.megadict.format.dict.index.Index;
 import com.megadict.format.dict.parser.IndexParser;
 import com.megadict.format.dict.parser.IndexParsers;
 
@@ -23,7 +25,7 @@ public class FirstEntryReaderTest {
 
         Index expected = makeIndex(givenFirstIndexString);
 
-        Index actual = FirstEntryReader.read(testInputData);
+        Index actual = new FirstEntryReader(testInputData).read();
 
         assertEquals(expected, actual);
     }

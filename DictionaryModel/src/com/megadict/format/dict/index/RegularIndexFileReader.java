@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 import com.megadict.format.dict.util.FileUtil;
 
-class RegularIndexFileReader extends BaseIndexFileReader implements IndexFileReader {
+public class RegularIndexFileReader extends BaseIndexFileReader implements IndexFileReader {
     
     private final char[] charBuffer = new char[CHAR_BUFFER_SIZE];
     private Reader reader;

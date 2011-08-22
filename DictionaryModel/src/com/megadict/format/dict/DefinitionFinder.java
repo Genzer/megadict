@@ -5,16 +5,13 @@ import java.io.UnsupportedEncodingException;
 import com.megadict.format.dict.index.Index;
 import com.megadict.format.dict.reader.DictFileReader;
 
-public class DefinitionFinder {
+class DefinitionFinder {
     
     public DefinitionFinder(DictFileReader reader) {
         this.fileReader = reader;
     }    
     
     public String getContentAt(Index index) {
-        if (index == null) {
-            return "";
-        }
         byte[] contentInBytes = readDictionaryFile(index);
         return newUnicodeStringFrom(contentInBytes);
     }

@@ -31,7 +31,7 @@ public class DICTDictionaryTest {
         IndexFile indexFile = IndexFile.makeFile(sampleTest.getIndexFile());
         DictionaryFile dictFile = DictionaryFile.makeRandomAccessFile(sampleTest.getDictionaryFile());
 
-        testee = new DICTDictionary.Builder(indexFile, dictFile).enableSplittingIndexFile().build();
+        testee = new DICTDictionary.Builder(indexFile, dictFile).build();
     }
 
     //@Ignore ("expected values belongs to Fora Dictionary") 
@@ -150,7 +150,7 @@ public class DICTDictionaryTest {
 
         IndexFile notExist = IndexFile.makeFile("C:/not/exists/file.index");
         DictionaryFile dictFile = DictionaryFile.makeBufferedFile(sampleTest.getDictionaryFile());
-        new DICTDictionary(notExist, dictFile);
+        new DICTDictionary.Builder(notExist, dictFile).build();
     }
 
     @Test
@@ -160,7 +160,7 @@ public class DICTDictionaryTest {
 
         IndexFile indexFile = IndexFile.makeFile(sampleTest.getIndexFile());
         DictionaryFile notExist = DictionaryFile.makeBufferedFile("C:/not/exists/file.dict");
-        new DICTDictionary(indexFile, notExist);
+        new DICTDictionary.Builder(indexFile, notExist).build();
     }
 
 }

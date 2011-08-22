@@ -16,7 +16,7 @@ public class RandomIndexFileReaderTest {
     public void testGetIndexOf() {
         File hndIndexFile = new File("C:/test/av.index");
 
-        SegmentBuilder builder = new ByteBufferedSegmentIndexer(hndIndexFile);
+        SegmentBuilder builder = SegmentBuilders.newSegmentBuilder(hndIndexFile);
         builder.build();
         List<Segment> segments = builder.builtSegments();
         
@@ -39,7 +39,7 @@ public class RandomIndexFileReaderTest {
     public void testGetSurroundingIndexes() {
         File hndIndexFile = new File("C:/test/av.index");
 
-        SegmentBuilder builder = new ByteBufferedSegmentIndexer(hndIndexFile);
+        SegmentBuilder builder = SegmentBuilders.newSegmentBuilder(hndIndexFile);
         builder.build();
         List<Segment> segments = builder.builtSegments();
         

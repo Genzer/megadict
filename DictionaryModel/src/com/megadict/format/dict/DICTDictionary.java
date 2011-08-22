@@ -1,5 +1,7 @@
 package com.megadict.format.dict;
 
+import static com.megadict.model.Definition.NOT_FOUND;
+
 import java.util.*;
 
 import com.megadict.exception.*;
@@ -10,87 +12,61 @@ import com.megadict.model.*;
 import com.megadict.model.Dictionary;
 
 public class DICTDictionary implements Dictionary {
-    
+
     public static class Builder {
-        IndexFile indexFile;
-        DictionaryFile dictFile;
-        boolean segmentEnabled;
-        
+
+        private final IndexFile indexFile;
+        private final DictionaryFile dictFile;
+
+        private DefinitionFinder defFinder;
+        private IndexStore indexStore;
+
+        private boolean segmentEnabled;
+
         public Builder(IndexFile indexFile, DictionaryFile dictionaryFile) {
             this.indexFile = indexFile;
             this.dictFile = dictionaryFile;
         }
-        
+
         public Builder enableSplittingIndexFile() {
             segmentEnabled = true;
             return this;
         }
-        
+
         public DICTDictionary build() {
+            checkFileExistence();
+            defFinder = new DefinitionFinder(dictFile.getReader());
+            indexStore = newIndexStore();
             return new DICTDictionary(this);
         }
+
+        private void checkFileExistence() {
+            if (!(indexFile.exists())) {
+                throw new ResourceMissingException(indexFile.toString());
+            } else if (!(dictFile.exists())) {
+                throw new ResourceMissingException(dictFile.toString());
+            }
+        }
+
+        private IndexStore newIndexStore() {
+            return segmentEnabled ? new IndexStoreWithSegmentSupport(indexFile) : new BaseIndexStore(indexFile);
+        }
+
     }
-    
+
     private DICTDictionary(Builder builder) {
         this.indexFile = builder.indexFile;
-        this.dictFile  = builder.dictFile;
-        if (builder.segmentEnabled) {
-            initializeWithSegmentMode();
-        } else {
-            initialize();
-        }
-    }
-
-    public DICTDictionary(IndexFile indexFile, DictionaryFile dictFile) {
-        this.indexFile = indexFile;
-        this.dictFile = dictFile;
-        initialize();
-    }
-    
-    private void initialize() {
-        checkFileExistence();
-        prepareIndexStore();
-        prepareDefinitions();
-        loadDictionaryMetadata();
-    }
-    
-    private void initializeWithSegmentMode() {
-        checkFileExistence();
-        prepareIndexStoreWithSegment();
-        prepareDefinitions();
-        loadDictionaryMetadata();
-    }
-
-    private void checkFileExistence() {
-        if (!(indexFile.exists())) {
-            throw new ResourceMissingException(indexFile.toString());
-        }
-
-        if (!(dictFile.exists())) {
-            throw new ResourceMissingException(dictFile.toString());
-        }
-    }
-
-    private void prepareIndexStore() {
-        supportedWords = IndexStores.newDefaultIndexStore(indexFile);
-    }
-    
-    private void prepareIndexStoreWithSegment() {
-        supportedWords = IndexStores.newIndexStoreSupportSegment(indexFile);
-    }
-
-    private void prepareDefinitions() {
-        definitionFinder = new DefinitionFinder(dictFile.getReader());
-    }
-
-    private void loadDictionaryMetadata() {
+        this.dictFile = builder.dictFile;
+        this.definitionFinder = builder.defFinder;
+        this.supportedWords = builder.indexStore;
         loadDictionaryName();
     }
 
     private void loadDictionaryName() {
-        Index nameEntry = supportedWords.getIndexOf(MetaDataEntry.SHORT_NAME.tagName());
-        String name = definitionFinder.getContentAt(nameEntry);
-        this.name = cleanedUpName(name);
+        String nameKeyword = MetaDataEntry.SHORT_NAME.tagName();
+        Definition nameEntry = lookUp(nameKeyword);
+        this.name =
+                (nameEntry == NOT_FOUND) ? "Unknown Dictionary" : cleanedUpName(nameEntry.getContent());
     }
 
     private static String cleanedUpName(String rawName) {
@@ -104,7 +80,7 @@ public class DICTDictionary implements Dictionary {
     public List<String> recommendWord(String word) {
         return supportedWords.getSimilarWord(word, 20);
     }
-    
+
     @Override
     public List<String> recommendWord(String word, int preferredNumOfWord) {
         return supportedWords.getSimilarWord(word, preferredNumOfWord);
@@ -112,45 +88,33 @@ public class DICTDictionary implements Dictionary {
 
     @Override
     public Definition lookUp(String word) {
-        boolean validated = validateWord(word);
-
-        if (validated == false) {
-            return Definition.NOT_FOUND;
-        }
-
-        Definition foundInDefinitionCache = findInDefinitionCache(word);
-        if (foundInDefinitionCache != Definition.NOT_FOUND) {
-            return foundInDefinitionCache;
-        }
-
-        if (supportedWords.containsWord(word)) {
-            return loadAndCacheDefinition(supportedWords.getIndexOf(word));
-        } else {
-            return Definition.NOT_FOUND;
-        }
+        Definition result = validateWord(word) ? find(word) : NOT_FOUND;
+        definitionCache.cache(word, result);
+        return result;
     }
 
     private static boolean validateWord(String word) {
         return StringChecker.check(word);
     }
 
-    private Definition findInDefinitionCache(String word) {
-        if (definitionCache.containsKey(word)) {
-            return definitionCache.get(word);
-        } else {
-            return Definition.NOT_FOUND;
+    private Definition find(String word) {
+
+        Definition result = NOT_FOUND;
+
+        if (definitionCache.contains(word)) {
+            result = definitionCache.get(word);
+
+        } else if (supportedWords.containsWord(word)) {
+            Index index = supportedWords.getIndexOf(word);
+            result = loadDefinitionAt(index);
         }
+
+        return result;
     }
 
-    private Definition loadAndCacheDefinition(Index index) {
+    private Definition loadDefinitionAt(Index index) {
         String definitionContent = definitionFinder.getContentAt(index);
-        Definition def = new Definition(index.getWord(), definitionContent, this.name);
-        cacheDefinition(def);
-        return def;
-    }
-
-    private void cacheDefinition(Definition def) {
-        definitionCache.put(def.getWord(), def);
+        return new Definition(index.getWord(), definitionContent, this.name);
     }
 
     @Override
@@ -165,13 +129,11 @@ public class DICTDictionary implements Dictionary {
 
     private final IndexFile indexFile;
     private final DictionaryFile dictFile;
-    
+
     private String name;
-    
-    private IndexStore supportedWords;
-    private DefinitionFinder definitionFinder;    
-    
-    private Map<String, Definition> definitionCache = new HashMap<String, Definition>();
+    private final IndexStore supportedWords;
+    private final DefinitionFinder definitionFinder;
+    private final DefinitionCache definitionCache = new DefinitionCache();
 
     private static final String NAME_REDUNDANT_STRING = "@00-database-short- FVDP ";
     private static final String TO_STRING_PATTERN = "DICTDictionary[name: %s; indexFile: %s; dictFile: %s]";

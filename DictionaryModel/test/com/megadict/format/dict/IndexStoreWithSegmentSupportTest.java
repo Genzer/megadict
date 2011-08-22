@@ -1,4 +1,4 @@
-package com.megadict.format.dict.index;
+package com.megadict.format.dict;
 
 import static org.junit.Assert.*;
 
@@ -6,13 +6,16 @@ import java.util.List;
 
 import org.junit.Test;
 
+import com.megadict.format.dict.index.Index;
+import com.megadict.format.dict.index.IndexFile;
+
 public class IndexStoreWithSegmentSupportTest {
 
     @Test
     public void testGetIndexOf() {
         IndexFile indexFile = IndexFile.makeFile("C:/test/av.index");
 
-        IndexStore store = IndexStores.newIndexStoreSupportSegment(indexFile);
+        IndexStore store = new IndexStoreWithSegmentSupport(indexFile);
 
         String[] testWords = {
                 "zymurgy", "abort", "zoom", "test", "person", "00-database-info",
@@ -29,7 +32,7 @@ public class IndexStoreWithSegmentSupportTest {
     public void testGetSimilarWord() {
         IndexFile indexFile = IndexFile.makeFile("C:/test/av.index");
 
-        IndexStore store = IndexStores.newIndexStoreSupportSegment(indexFile);
+        IndexStore store = new IndexStoreWithSegmentSupport(indexFile);
         
         String testWord = "hell";
         

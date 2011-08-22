@@ -13,7 +13,7 @@ public class CharBufferedSegmentIndexerTest {
     public void testBuild() {
         File indexFile = new File("C:/test/av.index");
 
-        SegmentBuilder builder = new CharBufferedSegmentIndexer(indexFile);
+        SegmentBuilder builder = new CharBufferedSegmentBuilder(indexFile);
         builder.build();
 
         List<Segment> segments = builder.builtSegments();

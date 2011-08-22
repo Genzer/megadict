@@ -23,7 +23,7 @@ public class SegmentIndexWriterTest {
     }
 
     private Collection<Segment> buildSegments(File indexFile) {
-        SegmentBuilder builder = new CharBufferedSegmentIndexer(indexFile);
+        SegmentBuilder builder = new CharBufferedSegmentBuilder(indexFile);
         builder.build();
         return builder.builtSegments();
     }

@@ -1,9 +1,11 @@
-package com.megadict.format.dict.index;
+package com.megadict.format.dict;
 
 import java.util.List;
 
-public interface IndexStore {
+import com.megadict.format.dict.index.Index;
 
+interface IndexStore {
+    
     public Index getIndexOf(String headword);
 
     public boolean containsWord(String word);

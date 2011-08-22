@@ -1,8 +1,9 @@
-package com.megadict.format.dict.index;
+package com.megadict.format.dict;
 
 import static org.junit.Assert.*;
 import org.junit.*;
 
+import com.megadict.format.dict.IndexStore;
 import com.megadict.format.dict.index.Index;
 import com.megadict.format.dict.index.IndexFile;
 
@@ -18,7 +19,7 @@ public class IndexStoreTest {
     public void testNewImplementation() {
         IndexFile indexFile = IndexFile.makeFile("C:/test/av.index");
         
-        IndexStore store = IndexStores.newIndexStoreSupportSegment(indexFile);
+        IndexStore store = new IndexStoreWithSegmentSupport(indexFile);
         
         Index index = store.getIndexOf("person");
         

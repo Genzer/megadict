@@ -20,7 +20,7 @@ public class ByteBufferedSegmentIndexerTest {
 
         @Override
         public List<Segment> call() throws Exception {
-            SegmentBuilder builder = new ByteBufferedSegmentIndexer(indexFile);
+            SegmentBuilder builder = new ByteBufferedSegmentBuilder(indexFile);
             builder.build();
             return builder.builtSegments();
         }
@@ -51,7 +51,7 @@ public class ByteBufferedSegmentIndexerTest {
     @Ignore @Test
     public void testSerializeSegments() {
         File indexFile = new File("C:/test/fora.index");
-        SegmentBuilder builder = new ByteBufferedSegmentIndexer(indexFile);
+        SegmentBuilder builder = new ByteBufferedSegmentBuilder(indexFile);
         builder.build();
         
         List<Segment> segments = builder.builtSegments();

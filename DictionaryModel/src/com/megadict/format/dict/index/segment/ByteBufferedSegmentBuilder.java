@@ -1,16 +1,17 @@
 package com.megadict.format.dict.index.segment;
 
-import static com.megadict.format.dict.index.segment.CharBufferTool.*;
+import static com.megadict.format.dict.index.segment.ByteBufferTool.*;
+
 import java.io.*;
 import java.util.*;
 
 import com.megadict.exception.*;
 import com.megadict.format.dict.util.FileUtil;
 
-public class CharBufferedSegmentIndexer extends BaseSegmentBuilder implements SegmentBuilder {
-
+class ByteBufferedSegmentBuilder extends BaseSegmentBuilder implements SegmentBuilder {
+    
     private static final int BUFFER_SIZE_IN_BYTES = FileUtil.DEFAULT_BUFFER_SIZE_IN_BYTES;
-    private static final char[] coreBuffer = new char[BUFFER_SIZE_IN_BYTES];
+    private static final byte[] coreBuffer = new byte[BUFFER_SIZE_IN_BYTES];
 
     private Block previousBlock;
     private Block currentBlock;
@@ -18,14 +19,14 @@ public class CharBufferedSegmentIndexer extends BaseSegmentBuilder implements Se
     private int totalCharsRead = 0;
     private int readCharsThisTime = 0;
     
-    public CharBufferedSegmentIndexer(File indexFile) {
+    public ByteBufferedSegmentBuilder(File indexFile) {
         super(indexFile);
     }
 
     @Override
     public void build() {
 
-        Reader reader = null;
+        InputStream reader = null;
         try {
             reader = makeReader();
             synchronized (coreBuffer) {
@@ -40,15 +41,15 @@ public class CharBufferedSegmentIndexer extends BaseSegmentBuilder implements Se
         }
     }
 
-    private Reader makeReader() throws FileNotFoundException {
-        return FileUtil.newFileReader(indexFile());
+    private InputStream makeReader() throws FileNotFoundException {
+        return FileUtil.newRawInputStream(indexFile());
     }
 
-    private void closeReader(Reader reader) {
-        FileUtil.closeReader(reader);
+    private void closeReader(InputStream reader) {
+        FileUtil.closeInputStream(reader);
     }
 
-    private void performIndexingFileIntoSegments(Reader reader) throws IOException {
+    private void performIndexingFileIntoSegments(InputStream reader) throws IOException {
         
         while (stillReceiveDataFrom(reader)) {
             
@@ -67,7 +68,7 @@ public class CharBufferedSegmentIndexer extends BaseSegmentBuilder implements Se
         processFinalBlock();
     }
 
-    private boolean stillReceiveDataFrom(Reader reader) throws IOException {
+    private boolean stillReceiveDataFrom(InputStream reader) throws IOException {
         readCharsThisTime = reader.read(coreBuffer);
         return (readCharsThisTime == -1) ? false : countTotalBytesReadAndContinue();
     }
@@ -91,7 +92,7 @@ public class CharBufferedSegmentIndexer extends BaseSegmentBuilder implements Se
     private String extractHeadWordOfPaddingBlock() {
         int firstNewlineChar = findFirstNewlineChar(coreBuffer);
         int firstTabChar = findForwardFirstCharInRange(coreBuffer, 0, firstNewlineChar, '\t');
-        char[] headword = copyOfRange(coreBuffer, 0, firstTabChar);
+        byte[] headword = copyOfRange(coreBuffer, 0, firstTabChar);
         return new String(headword);
     }
 
@@ -101,7 +102,7 @@ public class CharBufferedSegmentIndexer extends BaseSegmentBuilder implements Se
 
     private void removeRedundantValuesBeforeProcess() {
         int startPositionToWipeOut = determineStartPositionToWipeOutRedundantValues();
-        Arrays.fill(coreBuffer, startPositionToWipeOut, coreBuffer.length, '\0');
+        Arrays.fill(coreBuffer, startPositionToWipeOut, coreBuffer.length, (byte) 0);
     }
     
     private int determineStartPositionToWipeOutRedundantValues() {
@@ -125,7 +126,7 @@ public class CharBufferedSegmentIndexer extends BaseSegmentBuilder implements Se
         int nextTabChar = findForwardFirstCharInRange(coreBuffer, firstNewlineChar,
                 coreBuffer.length, '\t');
 
-        char[] headword = copyOfRange(coreBuffer, firstNewlineChar + 1, nextTabChar);
+        byte[] headword = copyOfRange(coreBuffer, firstNewlineChar + 1, nextTabChar);
 
         return new String(headword);
     }
@@ -164,7 +165,7 @@ public class CharBufferedSegmentIndexer extends BaseSegmentBuilder implements Se
         int lastNewlineChar = findLastNewlineCharOfBlock();
         int nextTabChar = findNextTabChar(lastNewlineChar);
 
-        char[] headword = copyContent(lastNewlineChar + 1, nextTabChar);
+        byte[] headword = copyContent(lastNewlineChar + 1, nextTabChar);
 
         return new String(headword);
     }
@@ -185,7 +186,7 @@ public class CharBufferedSegmentIndexer extends BaseSegmentBuilder implements Se
         return findForwardFirstCharInRange(coreBuffer, start, end, '\t');
     }
 
-    private char[] copyContent(int start, int end) {
+    private byte[] copyContent(int start, int end) {
         return copyOfRange(coreBuffer, start, end);
     }
 }

@@ -12,7 +12,7 @@ import com.megadict.format.dict.index.segment.SegmentStore;
 import com.megadict.format.dict.util.FileUtil;
 import com.megadict.format.dict.util.UnicodeDecoder;
 
-class RandomIndexFileReader extends BaseIndexFileReader implements IndexFileReader {
+public class RandomIndexFileReader extends BaseIndexFileReader implements IndexFileReader {
 
     private static final byte[] byteBuffer = new byte[FileUtil.LARGE_BUFFER_SIZE_IN_BYTES];
     private static final char[] charBuffer = new char[FileUtil.LARGE_BUFFER_SIZE_IN_BYTES / 2];

@@ -56,7 +56,7 @@ public class DICTDictionaryTestWithThreading {
         @Override
         public void run() {
             Dictionary dictionary =
-                    new DICTDictionary(indexFile, dictFile);
+                    new DICTDictionary.Builder(indexFile, dictFile).build();
             System.out.println(dictionary.getName());
         }
 
@@ -75,7 +75,7 @@ public class DICTDictionaryTestWithThreading {
 
         @Override
         public String call() throws Exception {
-            Dictionary dictionary = new DICTDictionary(indexFile, dictFile);
+            Dictionary dictionary = new DICTDictionary.Builder(indexFile, dictFile).build();
             Definition def = dictionary.lookUp(wordToLookUp);
             return def.getContent();
         }
