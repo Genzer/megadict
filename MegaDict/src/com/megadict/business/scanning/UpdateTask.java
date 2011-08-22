@@ -40,7 +40,7 @@ public class UpdateTask extends AbstractUpdateTask {
 				final DictionaryInformation info = DictionaryInformation.newInstance(path);
 				final IndexFile indexFile = IndexFile.makeFile(info.getIndexFile());
 				final DictionaryFile dictionaryFile = DictionaryFile.makeRandomAccessFile(info.getDataFile());
-				dictionary = new DICTDictionary.Builder(indexFile, dictionaryFile).build();
+				dictionary = new DICTDictionary.Builder(indexFile, dictionaryFile).enableSplittingIndexFile().build();
 			} else {
 				dictionary = new WikiDictionary(path);
 			}
