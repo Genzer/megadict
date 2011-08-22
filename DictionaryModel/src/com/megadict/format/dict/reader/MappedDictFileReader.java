@@ -9,22 +9,26 @@ import com.megadict.exception.*;
 
 class MappedDictFileReader implements DictFileReader {
 
+    private final File dictFile;
+    private MappedByteBuffer reader;
+    private boolean isMapped;
+
     public MappedDictFileReader(File dictFile) {
         this.dictFile = dictFile;
     }
-    
+
     @Override
     public void open() {
         makeMappedFile();
     }
-    
+
     private void makeMappedFile() {
         if (isMapped == false) {
             reader = makeMappedBuffer(makeReadOnlyRandomAccessFile());
             isMapped = true;
         }
     }
-    
+
     private RandomAccessFile makeReadOnlyRandomAccessFile() {
         try {
             return new RandomAccessFile(dictFile, "r");
@@ -32,7 +36,7 @@ class MappedDictFileReader implements DictFileReader {
             throw new ResourceMissingException(dictFile, fnf);
         }
     }
-    
+
     private MappedByteBuffer makeMappedBuffer(RandomAccessFile file) {
         FileChannel fc = file.getChannel();
         try {
@@ -48,11 +52,11 @@ class MappedDictFileReader implements DictFileReader {
         byte[] content = read(length);
         return content;
     }
-    
+
     private void jumpTo(int offset) {
         reader.position(offset);
     }
-    
+
     private byte[] read(int length) {
         byte[] content = new byte[length];
         reader.get(content, 0, length);
@@ -63,9 +67,4 @@ class MappedDictFileReader implements DictFileReader {
     public void close() {
         // Currently do nothing
     }
-    
-    
-    private final File dictFile;
-    private MappedByteBuffer reader;
-    private boolean isMapped;
 }

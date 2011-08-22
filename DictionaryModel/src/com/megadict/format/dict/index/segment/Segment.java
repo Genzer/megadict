@@ -1,23 +1,24 @@
 package com.megadict.format.dict.index.segment;
 
-import java.io.File;
-import java.io.Serializable;
 
-public class Segment implements Serializable {
-
-    public Segment(String lowerbound, String upperbound, File segmentFile) {
-        this.lowerbound = lowerbound;
-        this.upperbound = upperbound;
-        this.segmentFile = segmentFile;
-    }
+public class Segment {
+    
+    private static final String TO_STRING = "Segment[lowerbound: %s, upperbound: %s," +
+    " offset: %d, length: %d]";
+    
+    private final String lowerbound;
+    private final String upperbound;
+    private final int offset;
+    private final int length;
+    
 
     public Segment(String lowerbound, String upperbound) {
-        this.upperbound = upperbound;
-        this.lowerbound = lowerbound;
+        this(lowerbound, upperbound, 0, 0);
     }
 
     public Segment(String lowerbound, String upperbound, int offset, int length) {
-        this(lowerbound, upperbound);
+        this.lowerbound = lowerbound;
+        this.upperbound = upperbound;
         this.offset = offset;
         this.length = length;
     }
@@ -29,11 +30,7 @@ public class Segment implements Serializable {
     public String upperbound() {
         return upperbound;
     }
-
-    public File file() {
-        return segmentFile;
-    }
-
+    
     public int offset() {
         return offset;
     }
@@ -60,7 +57,7 @@ public class Segment implements Serializable {
     @Override
     public String toString() {
         return String.format(TO_STRING, lowerbound, upperbound,
-                offset, length, segmentFile);
+                offset, length);
     }
 
     @Override
@@ -93,13 +90,4 @@ public class Segment implements Serializable {
         builder.append(lowerbound).append(upperbound);
         return builder.toString().hashCode();
     }
-
-    private String lowerbound;
-    private String upperbound;
-    private File segmentFile;
-    private int offset;
-    private int length;
-    private static final String TO_STRING = "Segment[lowerbound: %s, upperbound: %s," +
-    		" offset: %d, length: %d, file: %s]";
-    private static final long serialVersionUID = -8851594512525773937L;
 }

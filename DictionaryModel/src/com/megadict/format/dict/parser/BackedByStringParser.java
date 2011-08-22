@@ -6,6 +6,14 @@ import com.megadict.model.parser.Base64TextParser;
 
 class BackedByStringParser implements IndexParser {
 
+    private final int WORD = 0;
+    private final int OFFSET = 1;
+    private final int LENGTH = 2;
+
+    private static final String TAB_DELEMITER = "\\t";
+
+    private String[] splittedValues;
+
     @Override
     public Index parse(String text) {
         extractValues(text);
@@ -22,14 +30,14 @@ class BackedByStringParser implements IndexParser {
     private boolean inputIsValid() {
         return isEnoughElements() && bothIntValuesIsBase64Encoded();
     }
-    
+
     private boolean isEnoughElements() {
         return splittedValues.length == 3;
     }
-    
+
     private boolean bothIntValuesIsBase64Encoded() {
         return Base64TextParser.isBase64Encoded(splittedValues[OFFSET])
-        && Base64TextParser.isBase64Encoded(splittedValues[LENGTH]);
+                && Base64TextParser.isBase64Encoded(splittedValues[LENGTH]);
     }
 
     private Index newIndex() {
@@ -42,21 +50,13 @@ class BackedByStringParser implements IndexParser {
     private int toInt(String intValueInString) {
         return Base64TextParser.parseString(intValueInString);
     }
-    
+
     private void throwException(String invalidString) {
         String formattedMessage = formatMessage(invalidString);
-        throw new ParseIndexException(formattedMessage, invalidString); 
+        throw new ParseIndexException(formattedMessage, invalidString);
     }
-    
+
     private static String formatMessage(String invalidString) {
         return String.format("The input string is in invalid format: \"%s\".", invalidString);
     }
-
-    private final int WORD = 0;
-    private final int OFFSET = 1;
-    private final int LENGTH = 2;
-
-    private static final String TAB_DELEMITER = "\\t";
-
-    private String[] splittedValues;
 }

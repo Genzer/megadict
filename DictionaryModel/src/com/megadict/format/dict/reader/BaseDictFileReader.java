@@ -6,10 +6,12 @@ import com.megadict.exception.ResourceMissingException;
 
 abstract class BaseDictFileReader implements DictFileReader {
 
+    protected final File dictFile;
+
     public BaseDictFileReader(File dictFile) {
         this.dictFile = dictFile;
     }
-    
+
     public void open() {
         try {
             openStream();
@@ -17,7 +19,7 @@ abstract class BaseDictFileReader implements DictFileReader {
             throw new ResourceMissingException(dictFile, fnf);
         }
     }
-    
+
     protected abstract void openStream() throws FileNotFoundException;
 
     public byte[] read(int offset, int length) {
@@ -28,8 +30,9 @@ abstract class BaseDictFileReader implements DictFileReader {
             throw new OperationFailedException("reading file", ioe);
         }
     }
-    
-    protected abstract void jumpTo(int offset) throws IOException;    
+
+    protected abstract void jumpTo(int offset) throws IOException;
+
     protected abstract byte[] readWithAmountOf(int length) throws IOException;
 
     public void close() {
@@ -39,8 +42,6 @@ abstract class BaseDictFileReader implements DictFileReader {
             throw new OperationFailedException("closing reader", ioe);
         }
     }
-    
+
     protected abstract void closeReader() throws IOException;
-    
-    protected final File dictFile;
 }

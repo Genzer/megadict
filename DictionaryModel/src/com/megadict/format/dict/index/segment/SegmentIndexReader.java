@@ -5,6 +5,8 @@ import java.util.*;
 
 public class SegmentIndexReader {
 
+    private File segmentIndexFile;
+
     public SegmentIndexReader(File segmentMapFile) {
         this.segmentIndexFile = segmentMapFile;
     }
@@ -35,7 +37,7 @@ public class SegmentIndexReader {
         int numOfSegments = reader.readInt();
         return readSegmentsAndAddToList(reader, numOfSegments);
     }
-    
+
     private List<Segment> readSegmentsAndAddToList(DataInputStream reader, int numOfSegments) throws IOException {
         List<Segment> segments = new ArrayList<Segment>(numOfSegments);
 
@@ -43,7 +45,7 @@ public class SegmentIndexReader {
             String lowerbound = readLowerbound(reader);
             String upperbound = readUpperbound(reader);
             int offset = readOffset(reader);
-            int length = readLength(reader);    
+            int length = readLength(reader);
 
             Segment segment = new Segment(lowerbound, upperbound, offset, length);
             segments.add(segment);
@@ -51,33 +53,33 @@ public class SegmentIndexReader {
 
         return segments;
     }
-    
+
     private String readLowerbound(DataInputStream reader) throws IOException {
         int lowerboundSize = reader.readInt();
         byte[] lowerboundInByteArray = new byte[lowerboundSize];
         reader.read(lowerboundInByteArray);
         return new String(lowerboundInByteArray);
     }
-    
+
     private String readUpperbound(DataInputStream reader) throws IOException {
         int upperboundSize = reader.readInt();
         byte[] upperboundInByteArray = new byte[upperboundSize];
         reader.read(upperboundInByteArray);
         return new String(upperboundInByteArray);
     }
-    
+
     private int readOffset(DataInputStream reader) throws IOException {
         int offset = reader.readInt();
         return offset;
     }
-    
+
     private int readLength(DataInputStream reader) throws IOException {
         int length = reader.readInt();
         return length;
     }
-    
+
     @SuppressWarnings("unused")
-    //TODO: consider delete this method
+    // TODO: consider delete this method
     private File readFile(DataInputStream reader) throws IOException {
         int filePathSize = reader.readInt();
         byte[] filePathInByteArray = new byte[filePathSize];
@@ -85,7 +87,7 @@ public class SegmentIndexReader {
         String filePath = new String(filePathInByteArray);
         return new File(filePath);
     }
-    
+
     private void closeReader(DataInputStream reader) {
         try {
             if (reader != null) {
@@ -95,6 +97,4 @@ public class SegmentIndexReader {
             throw new RuntimeException(ioe);
         }
     }
-
-    private File segmentIndexFile;
 }

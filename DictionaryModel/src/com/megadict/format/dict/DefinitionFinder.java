@@ -6,11 +6,14 @@ import com.megadict.format.dict.index.Index;
 import com.megadict.format.dict.reader.DictFileReader;
 
 class DefinitionFinder {
-    
+
+    private static final String CHARSET_UNICODE = "UTF-8";
+    private DictFileReader fileReader;
+
     public DefinitionFinder(DictFileReader reader) {
         this.fileReader = reader;
-    }    
-    
+    }
+
     public String getContentAt(Index index) {
         byte[] contentInBytes = readDictionaryFile(index);
         return newUnicodeStringFrom(contentInBytes);
@@ -48,7 +51,4 @@ class DefinitionFinder {
         }
         return unicodeString;
     }
-    
-    private static final String CHARSET_UNICODE = "UTF-8";
-    private DictFileReader fileReader;
 }

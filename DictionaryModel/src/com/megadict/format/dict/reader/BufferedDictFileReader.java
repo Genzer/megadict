@@ -6,6 +6,8 @@ import com.megadict.format.dict.util.FileUtil;
 
 class BufferedDictFileReader extends BaseDictFileReader implements DictFileReader {
 
+    private InputStream fileReader;
+
     public BufferedDictFileReader(File dictFile) {
         super(dictFile);
     }
@@ -17,7 +19,7 @@ class BufferedDictFileReader extends BaseDictFileReader implements DictFileReade
 
     @Override
     protected void jumpTo(int offset) throws IOException {
-        fileReader.skip(offset);        
+        fileReader.skip(offset);
     }
 
     @Override
@@ -36,6 +38,4 @@ class BufferedDictFileReader extends BaseDictFileReader implements DictFileReade
     public String toString() {
         return "BufferedDictReader[file: " + this.dictFile + "]";
     }
-    
-    private InputStream fileReader;
 }

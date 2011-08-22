@@ -6,14 +6,17 @@ import java.util.List;
 
 abstract class BaseSegmentBuilder implements SegmentBuilder {
 
+    private final File indexFile;
+    private List<Segment> createdSegments = new ArrayList<Segment>();
+
     public BaseSegmentBuilder(File indexFile) {
         this.indexFile = indexFile;
     }
-    
+
     protected File indexFile() {
         return indexFile;
     }
-    
+
     @Override
     public List<Segment> builtSegments() {
         return createdSegments;
@@ -22,7 +25,4 @@ abstract class BaseSegmentBuilder implements SegmentBuilder {
     protected void storeCreatedSegment(Segment segment) {
         createdSegments.add(segment);
     }
-    
-    private final File indexFile;
-    private List<Segment> createdSegments = new ArrayList<Segment>();
 }

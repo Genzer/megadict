@@ -14,6 +14,10 @@ public class Definition {
      */
     public static final Definition NOT_FOUND;
 
+    private final String word;
+    private final String content;
+    private final String dictionaryName;
+
     static {
         NOT_FOUND = makeNotFound();
     }
@@ -48,8 +52,4 @@ public class Definition {
     public String getDictionaryName() {
         return this.dictionaryName;
     }
-
-    private String word;
-    private String content;
-    private String dictionaryName;
 }

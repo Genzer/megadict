@@ -7,11 +7,11 @@ package com.megadict.format.dict.index.segment;
 
 class Block {
 
+    final String headword;
+    final int offset;
+    
     Block(String headword, int offset) {
         this.headword = headword;
         this.offset = offset;
     }
-
-    final String headword;
-    int offset;
 }

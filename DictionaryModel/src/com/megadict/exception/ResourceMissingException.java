@@ -3,7 +3,9 @@ package com.megadict.exception;
 import java.io.File;
 
 public class ResourceMissingException extends RuntimeException {
-
+    
+    private static final long serialVersionUID = -6568658901793220837L;
+    
     public ResourceMissingException(String resourceName) {
         super(makeMessage(resourceName));
     }
@@ -18,8 +20,5 @@ public class ResourceMissingException extends RuntimeException {
     
     public ResourceMissingException(File resourceName, Exception rootCause) {
         super(makeMessage(resourceName), rootCause);
-    }
-    
-    private static final long serialVersionUID = -6568658901793220837L;
-    
+    }    
 }

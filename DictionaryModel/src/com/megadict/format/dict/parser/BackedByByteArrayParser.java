@@ -6,6 +6,9 @@ import com.megadict.model.parser.Base64TextParser;
 
 class BackedByByteArrayParser implements IndexParser {
 
+    private byte[] text;
+    private final int[] tabPositions = new int[2];
+
     @Override
     public Index parse(String text) {
         if (text == null) {
@@ -100,11 +103,8 @@ class BackedByByteArrayParser implements IndexParser {
         String formattedMessage = formatMessage(new String(text));
         throw new ParseIndexException(formattedMessage);
     }
-    
+
     private static String formatMessage(String invalidString) {
         return String.format("The input string is in invalid format: \"%s\".", invalidString);
     }
-
-    private byte[] text;
-    private final int[] tabPositions = new int[2];
 }

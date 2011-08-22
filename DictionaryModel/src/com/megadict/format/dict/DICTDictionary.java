@@ -52,7 +52,17 @@ public class DICTDictionary implements Dictionary {
             return segmentEnabled ? new IndexStoreWithSegmentSupport(indexFile) : new BaseIndexStore(indexFile);
         }
 
-    }
+    }    
+    
+    private static final String NAME_REDUNDANT_STRING = "@00-database-short- FVDP ";
+    private static final String TO_STRING_PATTERN = "DICTDictionary[name: %s; indexFile: %s; dictFile: %s]";
+
+    private String name;
+    private final IndexStore supportedWords;
+    private final DefinitionFinder definitionFinder;
+    private final DefinitionCache definitionCache = new DefinitionCache();
+    private final IndexFile indexFile;
+    private final DictionaryFile dictFile;    
 
     private DICTDictionary(Builder builder) {
         this.indexFile = builder.indexFile;
@@ -126,15 +136,4 @@ public class DICTDictionary implements Dictionary {
     public String toString() {
         return String.format(TO_STRING_PATTERN, name, indexFile, dictFile);
     }
-
-    private final IndexFile indexFile;
-    private final DictionaryFile dictFile;
-
-    private String name;
-    private final IndexStore supportedWords;
-    private final DefinitionFinder definitionFinder;
-    private final DefinitionCache definitionCache = new DefinitionCache();
-
-    private static final String NAME_REDUNDANT_STRING = "@00-database-short- FVDP ";
-    private static final String TO_STRING_PATTERN = "DICTDictionary[name: %s; indexFile: %s; dictFile: %s]";
 }

@@ -3,19 +3,21 @@ package com.megadict.format.dict.reader;
 import java.io.*;
 
 class RandomDictFileReader extends BaseDictFileReader implements DictFileReader {
-    
+
+    private RandomAccessFile fileReader;
+
     public RandomDictFileReader(File dictFile) {
         super(dictFile);
     }
 
     @Override
     protected void openStream() throws FileNotFoundException {
-        fileReader = new RandomAccessFile(dictFile, "r");        
+        fileReader = new RandomAccessFile(dictFile, "r");
     }
 
     @Override
     protected void jumpTo(int offset) throws IOException {
-        fileReader.seek(offset);        
+        fileReader.seek(offset);
     }
 
     @Override
@@ -29,6 +31,4 @@ class RandomDictFileReader extends BaseDictFileReader implements DictFileReader 
     protected void closeReader() throws IOException {
         fileReader.close();
     }
-    
-    private RandomAccessFile fileReader;
 }

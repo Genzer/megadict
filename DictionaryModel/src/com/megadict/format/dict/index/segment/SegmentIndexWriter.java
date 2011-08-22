@@ -8,6 +8,10 @@ import com.megadict.format.dict.util.FileUtil;
 
 public class SegmentIndexWriter {
 
+    private Collection<Segment> segments;
+    private SegmentIndexWritingStrategy writingStrategy;
+    private File indexFile;
+
     public SegmentIndexWriter(File segmentIndexFile, Collection<Segment> segments) {
         this.indexFile = segmentIndexFile;
         this.segments = segments;
@@ -48,8 +52,4 @@ public class SegmentIndexWriter {
     private void closeWriter(DataOutputStream writer) {
         FileUtil.closeOutputStream(writer);
     }
-
-    private Collection<Segment> segments;
-    private SegmentIndexWritingStrategy writingStrategy;
-    private File indexFile;
 }

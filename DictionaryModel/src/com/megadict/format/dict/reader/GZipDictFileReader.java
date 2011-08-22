@@ -11,10 +11,13 @@ import com.megadict.exception.ResourceMissingException;
 
 class GZipDictFileReader implements DictFileReader {
 
+    private final File gzipFile;
+    private GZIPInputStream gzipReader;
+
     public GZipDictFileReader(File gzipFile) {
         this.gzipFile = gzipFile;
     }
-    
+
     @Override
     public void open() {
         try {
@@ -40,7 +43,4 @@ class GZipDictFileReader implements DictFileReader {
             throw new OperationFailedException("closing reader", ioe);
         }
     }
-    
-    private final File gzipFile;
-    private GZIPInputStream gzipReader;
 }
