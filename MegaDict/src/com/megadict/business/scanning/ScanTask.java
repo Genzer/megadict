@@ -46,6 +46,7 @@ public class ScanTask extends AbstractScanTask {
 				dictionary = new DICTDictionary.Builder(indexFile, dictionaryFile).enableSplittingIndexFile().build();
 			} else {
 				dictionary = new WikiDictionary(path);
+				//dictionary = new WikiMobileDictionary(path);
 			}
 
 			// Store models.

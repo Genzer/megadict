@@ -35,6 +35,7 @@ public class AddWikiTask extends AbstractAddWikiTask {
 		final String countryCode = params[0];
 		// Create model.
 		final Dictionary model = new WikiDictionary(countryCode);
+		//final Dictionary model = new WikiMobileDictionary(countryCode);
 		// Insert dictionary to database.
 		final int dictID = ChosenModel.insertDictionary(database, model.getName(), countryCode, ChosenModel.WIKI_DICTIONARY, 0);
 

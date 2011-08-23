@@ -1,7 +1,5 @@
 package com.megadict.wiki;
 
-import java.io.File;
-import java.io.PrintWriter;
 import java.util.List;
 
 import org.jsoup.Jsoup;
@@ -14,7 +12,7 @@ import com.megadict.model.Dictionary;
 
 public class WikiDictionary implements Dictionary {
 	private final int ALLOWED_WORD_COUNT = 1000;
-	private final int ALLOWED_PARAGRAPH_COUNT = 2;
+	private final int TIMEOUT = 5000;
 	private final String PREFIX = "Wikipedia ";
 	private String dictionaryName;
 	private final String countryCode;
@@ -32,31 +30,29 @@ public class WikiDictionary implements Dictionary {
 	@Override
 	public Definition lookUp(final String word) {
 		final String searchedWord = word.replace(" ", "_");
-		final String query = "http://" + countryCode + ".wikipedia.org/w/index.php?title=" + searchedWord + "&action=render";
-		System.out.println(query);
+		final String URI_PATTERN = "http://%s.wikipedia.org/w/index.php?title=%s&action=render";
+		final String query = String.format(URI_PATTERN, countryCode, searchedWord);
+
 		Definition definition;
 		try {
-			final StringBuffer builder = new StringBuffer();
-			final Document doc = Jsoup.connect(query).get();
+			final Document doc = Jsoup.connect(query).timeout(TIMEOUT).get();
 			final Elements pTags = doc.select("p");
-			if(pTags.size() < ALLOWED_PARAGRAPH_COUNT) {
+
+			if(pTags.size() < 1) {
 				definition = Definition.NOT_FOUND;
 			} else {
-				for(int i = 0, wordCount = 0; i < pTags.size(); ++i) {
-					final String temp = pTags.get(i).text();
-					wordCount += temp.length();
-
-					if(wordCount > ALLOWED_WORD_COUNT)
-						break;
-
-					builder.append(pTags.get(i));
+				// Append paragraph by word count, if it exceeds allowed word count, stop appending.
+				final StringBuilder paragraphs = new StringBuilder();
+				for(int i = 0; i < pTags.size(); ++i) {
+					if(paragraphs.length() > ALLOWED_WORD_COUNT) break;
+					paragraphs.append(pTags.get(i).toString());
 				}
-
-				builder.append("<a href=\"http://en.wikipedia.org/wiki/" + searchedWord + "\">Full Article..</a>");
-				final String result = builder.toString();
-				final PrintWriter writer = new PrintWriter(new File("/sdcard/Download/megadict/debug.html"));
-				writer.println(builder.toString());
-				definition = new Definition(word, result, "dictionarry name");
+				// If paragraphs still empty, append first p tag to it.
+				if(paragraphs.length() == 0) {
+					paragraphs.append(pTags.get(0).toString());
+				}
+				paragraphs.append("<a href=\"http://en.wikipedia.org/wiki/" + searchedWord + "\">Full Article..</a>");
+				definition = new Definition(word, paragraphs.toString(), dictionaryName);
 			}
 		} catch(final Exception e) {
 			definition = Definition.NOT_FOUND;
