@@ -56,7 +56,9 @@ class BaseIndexStore implements IndexStore {
     }
 
     private void cache(Index index) {
-        cache.cache(index);
+        synchronized (cache) {
+            cache.cache(index);
+        }        
     }
 
     @Override

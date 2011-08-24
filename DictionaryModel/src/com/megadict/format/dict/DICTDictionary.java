@@ -93,14 +93,18 @@ public class DICTDictionary implements Dictionary {
 
     @Override
     public List<String> recommendWord(String word, int preferredNumOfWord) {
-        return supportedWords.getSimilarWord(word, preferredNumOfWord);
+        synchronized (supportedWords) {
+            return supportedWords.getSimilarWord(word, preferredNumOfWord);
+        }       
     }
 
     @Override
     public Definition lookUp(String word) {
-        Definition result = validateWord(word) ? find(word) : NOT_FOUND;
-        definitionCache.cache(word, result);
-        return result;
+        synchronized (supportedWords) {
+            Definition result = validateWord(word) ? find(word) : NOT_FOUND;
+            definitionCache.cache(word, result);
+            return result;
+        }        
     }
 
     private static boolean validateWord(String word) {
