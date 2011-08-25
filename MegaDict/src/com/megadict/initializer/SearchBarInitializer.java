@@ -67,14 +67,17 @@ public class SearchBarInitializer extends AbstractInitializer {
 		searchBar.setOnEditorActionListener(new OnEditorActionListener() {
 			@Override
 			public boolean onEditorAction(final TextView v, final int actionId, final KeyEvent event) {
-				if (actionId == EditorInfo.IME_ACTION_SEARCH
-						|| actionId == EditorInfo.IME_ACTION_DONE
-						|| event.getAction() == KeyEvent.ACTION_DOWN
-						&& event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+				if(actionId == EditorInfo.IME_ACTION_DONE ||
+						actionId == EditorInfo.IME_ACTION_SEARCH ||
+						actionId == EditorInfo.IME_ACTION_NEXT ||
+						(event != null &&
+						event.getAction() == KeyEvent.ACTION_DOWN &&
+						event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
 					preventRecommending();
 					doSearching(searchBar.getText().toString());
+					return true;
 				}
-				return true;
+				return false;
 			}
 		});
 	}

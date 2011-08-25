@@ -12,7 +12,7 @@ import com.megadict.business.HistoryManager;
 import com.megadict.business.ResultTextMaker;
 import com.megadict.model.Dictionary;
 
-public final class WordSearcher implements Observer {
+public final class WordSearcher implements Observer, SearchTaskManager {
 	// Aggregation variables.
 	private final List<Dictionary> dictionaryModels;
 	private final DictionaryComponent dictionaryComponent;
@@ -20,7 +20,7 @@ public final class WordSearcher implements Observer {
 	// Member variables.
 	private String noDefinitionStr = "There is no definition.";
 	private String noDictionaryStr = "There is no dictionary";
-	private final List<SearchTask> taskList = new ArrayList<SearchTask>();
+	private final List<AbstractSearchTask> searchTasks = new ArrayList<AbstractSearchTask>();
 	private final HistoryManager historyManager = new HistoryManager();
 
 	public WordSearcher(final List<Dictionary> dictionaryModels, final DictionaryComponent dictionaryComponent) {
@@ -28,46 +28,43 @@ public final class WordSearcher implements Observer {
 		this.dictionaryComponent = dictionaryComponent;
 	}
 
-	protected boolean didAllTasksFinish() {
-		for(final SearchTask task : taskList) {
-			if(task.isSearching()) {
+	@Override
+	public boolean didAllSearchTasksFinish() {
+		for(final AbstractSearchTask task : searchTasks) {
+			if(task.isWorking()) {
 				return false;
 			}
 		}
 		return true;
 	}
 
-	public boolean lookup(final String word) {
-		if(!taskList.isEmpty()) {
-			// If any of task hasn't finished, searching is not allowed.
-			if(!didAllTasksFinish()) {
-				return false;
-			}
-			// If all tasks finished, clear task list.
-			taskList.clear();
+	@Override
+	public void search(final String word) {
+		if(didAllSearchTasksFinish()) {
+			// Clear old tasks.
+			searchTasks.clear();
+
+			final ResultTextMaker resultTextMaker = dictionaryComponent.getResultTextMaker();
+			// Reset resultTextMaker to make a new search.
+			resultTextMaker.resetMiddleBlock();
+
+			if(dictionaryModels.isEmpty()) {
+				dictionaryComponent.getResultView().loadDataWithBaseURL(ResultTextMaker.ASSET_URL, resultTextMaker.getNoDictionaryHTML(noDictionaryStr), "text/html", "utf-8", null);
+			} else {
+				// Lower and trim it.
+				final String searchedWord = word.toLowerCase(Locale.ENGLISH).trim();
+
+				// Only search if searchedWord is not empty.
+				if(!"".equals(searchedWord)) {
+					createAndStoreSearchTasks();
+					executeSearchTasks(searchedWord);
+				}
+			} // End if.
 		}
-
-		final ResultTextMaker resultTextMaker = dictionaryComponent.getResultTextMaker();
-		// Reset resultTextMaker to make a new search.
-		resultTextMaker.resetMiddleBlock();
-
-		if(dictionaryModels.isEmpty()) {
-			dictionaryComponent.getResultView().loadDataWithBaseURL(ResultTextMaker.ASSET_URL, resultTextMaker.getNoDictionaryHTML(noDictionaryStr), "text/html", "utf-8", null);
-		} else {
-			// Lower and trim it.
-			final String searchedWord = word.toLowerCase(Locale.ENGLISH).trim();
-
-			// Only search if searchedWord is not empty.
-			if(!"".equals(searchedWord)) {
-				createAndStoreSearchTasks();
-				executeSearchTasks(searchedWord);
-			}
-		} // End if.
-		return true;
 	}
 
 	private void executeSearchTasks(final String searchedWord) {
-		for(final SearchTask task : taskList) {
+		for(final AbstractSearchTask task : searchTasks) {
 			task.execute(searchedWord);
 		}
 	}
@@ -77,7 +74,7 @@ public final class WordSearcher implements Observer {
 			final SearchTask task = new SearchTask(this, dictionary, dictionaryComponent);
 			task.setDictionaryName(dictionary.getName());
 			task.setNoDefinitionStr(noDefinitionStr);
-			taskList.add(task);
+			searchTasks.add(task);
 		}
 	}
 

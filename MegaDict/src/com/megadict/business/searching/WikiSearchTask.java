@@ -2,7 +2,7 @@ package com.megadict.business.searching;
 
 
 
-public class WikiSearchTask extends BaseSearchTask {
+public class WikiSearchTask extends AbstractSearchTask {
 
 
 	@Override

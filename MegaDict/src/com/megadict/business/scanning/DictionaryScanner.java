@@ -3,8 +3,6 @@ package com.megadict.business.scanning;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.Logger;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -23,10 +21,6 @@ import com.megadict.model.ModelMap;
 import com.megadict.utility.DatabaseHelper;
 
 public final class DictionaryScanner extends Observable implements TaskManager {
-	// Init logger for debugging.
-	private static final Logger LOGGER = Logger.getLogger("DictionaryScanner");
-	static { LOGGER.addHandler(new ConsoleHandler()); }
-
 	private final ModelMap models = new ModelMap();
 	private final List<AbstractRescanTask> rescanTasks = new ArrayList<AbstractRescanTask>();
 	private final List<AbstractScanTask> scanTasks = new ArrayList<AbstractScanTask>();
@@ -39,10 +33,6 @@ public final class DictionaryScanner extends Observable implements TaskManager {
 
 	public List<Dictionary> getDictionaryModels() {
 		return new ArrayList<Dictionary>(models.values());
-	}
-
-	public void log(final String message) {
-		LOGGER.warning(message);
 	}
 
 	public boolean scanStorage(final DictionaryComponent dictionaryComponent) {

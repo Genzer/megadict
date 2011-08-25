@@ -1,105 +1,77 @@
 package com.megadict.business.recommending;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.ProgressBar;
 
 import com.megadict.bean.DictionaryComponent;
-import com.megadict.exception.RecommendingException;
-import com.megadict.format.dict.DICTDictionary;
 import com.megadict.model.Dictionary;
 
-public class RecommendTask extends BaseRecommendTask {
+public class RecommendTask extends AbstractRecommendTask {
 	private final static int RECOMMENDED_WORD_COUNT = 50;
-	private final static int TIMEOUT_IN_SECONDS = 3;
-	private final List<Dictionary> dictionaryModels;
+	private final WordRecommender recommender;
+	private final Dictionary model;
 	private final DictionaryComponent dictionaryComponent;
+	private static SortedSet<String> recommendWords = new TreeSet<String>();
+	private boolean cancelled = false;
 
-	public RecommendTask(final List<Dictionary> dictionaryModels, final DictionaryComponent dictionaryComponent) {
+	public RecommendTask(final WordRecommender recommender, final Dictionary model, final DictionaryComponent dictionaryComponent) {
 		super();
-		this.dictionaryModels = dictionaryModels;
+		this.recommender = recommender;
+		this.model = model;
 		this.dictionaryComponent = dictionaryComponent;
 	}
 
 	@Override
+	protected void onCancelled() {
+		cancelled = true;
+	}
+
+	@Override
 	protected void onPreExecute() {
+		if(recommender.didAllRecommendTasksFinish()) {
+			recommendWords.clear();
+			dictionaryComponent.getProgressBar().setVisibility(View.VISIBLE);
+		}
 		super.onPreExecute();
-		dictionaryComponent.getProgressBar().setVisibility(View.VISIBLE);
 	}
 
 	@Override
 	protected List<String> doInBackground(final String... params) {
-		// Create callable list.
-		final List<Callable<List<String>>> callables = new ArrayList<Callable<List<String>>>();
-		for(final Dictionary model : dictionaryModels) {
-			// Just create recommend task for DICTDictionary, not Wiki!
-			/// Wiki no support recommend. Remember that!
-			if(model instanceof DICTDictionary) {
-				final RecommendThread thread = new RecommendThread(params[0], model);
-				callables.add(thread);
-			}
+		while(!cancelled) {
+			return model.recommendWord(params[0]);
 		}
-
-		// Invoke callables.
-		final SortedSet<String> tempList = new TreeSet<String>();
-		try {
-			// Create thread pool.
-			final ExecutorService service = Executors.newFixedThreadPool(Math.max(1, dictionaryModels.size()));
-			// Invoke all callables.
-			final List<Future<List<String>>> futures = service.invokeAll(callables);
-			service.awaitTermination(TIMEOUT_IN_SECONDS, TimeUnit.SECONDS);
-			// Add all recommend words of every dictionaries to a sorted set.
-			for(final Future<List<String>> future : futures) {
-				final List<String> words = future.get();
-				tempList.addAll(words);
-			}
-			service.shutdown();
-
-			final int neededWordCount = Math.min(RECOMMENDED_WORD_COUNT, tempList.size());
-			// Get a number of needed recommended words from the set.
-			final List<String> recommendWords = Arrays.asList(tempList.toArray(new String[neededWordCount]));
-			return recommendWords.subList(0, neededWordCount);
-		} catch (final InterruptedException e) {
-			throw new RecommendingException(e);
-		} catch (final ExecutionException e) {
-			throw new RecommendingException(e);
-		}
+		return null;
 	}
 
 	@Override
 	protected void onPostExecute(final List<String> list) {
 		super.onPostExecute(list);
-		final ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-				dictionaryComponent.getContext(),
-				android.R.layout.simple_dropdown_item_1line, list);
-		dictionaryComponent.getSearchBar().setAdapter(adapter);
-		dictionaryComponent.getSearchBar().showDropDown();
-		dictionaryComponent.getProgressBar().setVisibility(View.INVISIBLE);
-	}
+		if(list == null) return;
 
-	private class RecommendThread implements Callable<List<String>> {
-		private final String word;
-		private final Dictionary dictionary;
+		recommendWords.addAll(list);
+		if(recommender.didAllRecommendTasksFinish()) {
+			final List<String> adaptedList = new ArrayList<String>();
+			int i = 0;
+			for(final String s : recommendWords) {
+				if(i == RECOMMENDED_WORD_COUNT) break;
+				++i;
+				adaptedList.add(s);
+			}
 
-		public RecommendThread(final String word, final Dictionary dictionary) {
-			this.word = word;
-			this.dictionary = dictionary;
-		}
-
-		@Override
-		public List<String> call() throws Exception {
-			return dictionary.recommendWord(word, 50);
+			final ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+					dictionaryComponent.getContext(),
+					android.R.layout.simple_dropdown_item_1line, adaptedList);
+			dictionaryComponent.getSearchBar().setAdapter(adapter);
+			// Show dropdown list.
+			dictionaryComponent.getSearchBar().showDropDown();
+			// Hide ProgressBar.
+			dictionaryComponent.getProgressBar().setVisibility(ProgressBar.INVISIBLE);
 		}
 	}
 }

@@ -1,5 +1,7 @@
 package com.megadict.business.scanning;
 
+import android.widget.ProgressBar;
+
 import com.megadict.bean.DictionaryBean;
 import com.megadict.bean.DictionaryComponent;
 import com.megadict.exception.DataFileNotFoundException;
@@ -11,6 +13,7 @@ import com.megadict.model.ChosenModel;
 import com.megadict.model.Dictionary;
 import com.megadict.model.DictionaryInformation;
 import com.megadict.model.ModelMap;
+import com.megadict.utility.MegaLogger;
 import com.megadict.wiki.WikiDictionary;
 
 public class UpdateTask extends AbstractUpdateTask {
@@ -24,6 +27,14 @@ public class UpdateTask extends AbstractUpdateTask {
 		this.scanner = scanner;
 		this.models = models;
 		this.dictionaryComponent = dictionaryComponent;
+	}
+
+	@Override
+	protected void onPreExecute() {
+		if(scanner.didAllUpdateTasksFinish()) {
+			dictionaryComponent.getProgressBar().setVisibility(ProgressBar.VISIBLE);
+		}
+		super.onPreExecute();
 	}
 
 	@Override
@@ -46,9 +57,9 @@ public class UpdateTask extends AbstractUpdateTask {
 			}
 			models.put(id, dictionary);
 		} catch (final IndexFileNotFoundException e) {
-			scanner.log(e.getMessage());
+			MegaLogger.log(e.getMessage());
 		} catch (final DataFileNotFoundException e) {
-			scanner.log(e.getMessage());
+			MegaLogger.log(e.getMessage());
 		}
 		return null;
 	}
@@ -61,6 +72,8 @@ public class UpdateTask extends AbstractUpdateTask {
 			scanner.dictionaryModelsChanged();
 			// Refresh start page.
 			scanner.refreshStartPage(dictionaryComponent);
+			// Hide ProgressBar.
+			dictionaryComponent.getProgressBar().setVisibility(ProgressBar.INVISIBLE);
 		}
 	}
 }

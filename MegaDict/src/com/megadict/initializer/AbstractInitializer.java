@@ -48,13 +48,16 @@ public abstract class AbstractInitializer extends Observable implements Initiali
 		final WordSearcher searcher = businessComponent.getSearcher();
 		final WordRecommender recommender = businessComponent.getRecommender();
 
-		if(recommender.isRecommending()) {
-			Utility.messageBox(context, R.string.recommending);
-		} else {
-			if(!searcher.lookup(word)) {
-				Utility.messageBox(context, R.string.searching);
-			}
+		if(!recommender.didAllRecommendTasksFinish()) {
+			recommender.cancelRecommending();
 		}
+
+		if(searcher.didAllSearchTasksFinish()) {
+			searcher.search(word);
+		} else {
+			Utility.messageBox(context, R.string.searching);
+		}
+
 	}
 
 	@Override

@@ -1,5 +1,7 @@
 package com.megadict.business.scanning;
 
+import com.megadict.business.Workable;
+
 import android.os.AsyncTask;
 
 public abstract class AbstractAddWikiTask extends AsyncTask<String, Void, Void> implements Workable {

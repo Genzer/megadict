@@ -3,18 +3,13 @@ package com.megadict.business;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.Logger;
 
 import com.megadict.exception.DataFileNotFoundException;
 import com.megadict.exception.IndexFileNotFoundException;
 import com.megadict.model.DictionaryInformation;
+import com.megadict.utility.MegaLogger;
 
 public class ExternalReader {
-	// Init logger for debugging.
-	final static Logger LOGGER = Logger.getLogger("ExternalReader");
-	static { LOGGER.addHandler(new ConsoleHandler()); }
-
 	private final List<DictionaryInformation> infos = new ArrayList<DictionaryInformation>();
 	public static final String NO_DICTIONARY = "There is no dictionary.";
 	public static final String INDEX_FILE_NOT_FOUND = "Index file not found.";
@@ -38,9 +33,9 @@ public class ExternalReader {
 					final DictionaryInformation info = createDictionaryInformation(file);
 					infos.add(info);
 				} catch (final IndexFileNotFoundException e) {
-					LOGGER.warning(e.getMessage());
+					MegaLogger.log(e.getMessage());
 				} catch (final DataFileNotFoundException e) {
-					LOGGER.warning(e.getMessage());
+					MegaLogger.log(e.getMessage());
 				}
 			}
 		}

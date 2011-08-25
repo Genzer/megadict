@@ -2,12 +2,14 @@ package com.megadict.business.searching;
 
 import android.os.AsyncTask;
 
-public abstract class BaseSearchTask extends AsyncTask<String, Void, String>{
-	private boolean searching;
+import com.megadict.business.Workable;
+
+public abstract class AbstractSearchTask extends AsyncTask<String, Void, String> implements Workable {
+	private boolean working;
 
 	@Override
 	protected void onPreExecute() {
-		searching = true;
+		working = true;
 	}
 
 	@Override
@@ -15,10 +17,11 @@ public abstract class BaseSearchTask extends AsyncTask<String, Void, String>{
 
 	@Override
 	protected void onPostExecute(final String result) {
-		searching = false;
+		working = false;
 	}
 
-	public boolean isSearching() {
-		return searching;
+	@Override
+	public boolean isWorking() {
+		return working;
 	}
 }

@@ -1,7 +1,7 @@
 package com.megadict.business.recommending;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -15,12 +15,12 @@ import com.megadict.format.dict.DICTDictionary;
 import com.megadict.initializer.AbstractInitializer;
 import com.megadict.model.Dictionary;
 
-public final class WordRecommender implements Observer {
+public final class WordRecommender implements Observer, RecommendTaskManager {
 	private final static int DELAY_TIME = 2000;
 	private final List<Dictionary> dictionaryModels;
 	private final DictionaryComponent dictionaryComponent;
+	private final List<AbstractRecommendTask> recommendTasks = new ArrayList<AbstractRecommendTask>();
 
-	private RecommendTask recommendTask;
 	private Runnable recommendRunnable;
 	private final Handler recommendHandler = new RecommendHandler();
 
@@ -29,38 +29,77 @@ public final class WordRecommender implements Observer {
 		this.dictionaryComponent = dictionaryComponent;
 	}
 
-	private boolean recommend(final String word) {
-		boolean result;
-		if(recommendTask == null || !recommendTask.isRecommending()) {
-			// Lower and trim it.
-			final String recommendedWord = word.toLowerCase(Locale.ENGLISH).trim();
-			if("".equals(recommendedWord)) {
-				/* Do nothing if recommendedWord is empty. */
-			} else {
-				if(doesContainLocalDictionary()) {
-					recommendTask = new RecommendTask(dictionaryModels, dictionaryComponent);
-					recommendTask.execute(recommendedWord);
+	@Override
+	public boolean didAllRecommendTasksFinish() {
+		for(final AbstractRecommendTask task : recommendTasks) {
+			if(task.isWorking()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	@Override
+	public void recommend(final String word) {
+		// Clear old tasks.
+		recommendTasks.clear();
+		// Create and execute tasks.
+		for(final Dictionary model : dictionaryModels) {
+			if(model instanceof DICTDictionary) {
+				final AbstractRecommendTask task = new RecommendTask(this, model, dictionaryComponent);
+				task.execute(word);
+				recommendTasks.add(task);
+			}
+		}
+	}
+
+	@Override
+	public void cancelRecommending() {
+		for(final AbstractRecommendTask task : recommendTasks) {
+			task.cancel(true);
+		}
+		// Cancelling must clear old tasks.
+		recommendTasks.clear();
+	}
+
+	@Override
+	public void update(final Observable o, final Object arg) {
+		if(o instanceof DictionaryScanner) {
+			updateModels(arg);
+		} else if(o instanceof AbstractInitializer) {
+			// Remove old runnable in handler.
+			preventRecommending();
+
+			// Should recommending?
+			if(arg instanceof String) {
+				final String word = arg.toString();
+				// Check if a Runnable should be posted.
+				if(didAllRecommendTasksFinish() && !"".equals(word)) {
+					// postDelayed.
+					recommendRunnable = new RecommendRunnable(word);
+					recommendHandler.postDelayed(recommendRunnable, DELAY_TIME);
+				} else {
+					// Can't postDelayed if a runnable was in runnable queue.
 				}
 			}
-			result = true;
-		} else {
-			result = false;
 		}
-		return result;
 	}
 
-	public boolean isRecommending() {
-		return recommendTask == null ? false : recommendTask.isRecommending();
+	private void preventRecommending() {
+		if(recommendRunnable != null) {
+			recommendHandler.removeCallbacks(recommendRunnable);
+		}
+		// Dismiss if drop down list presented.
+		dictionaryComponent.getSearchBar().dismissDropDown();
 	}
 
-	private boolean doesContainLocalDictionary() {
-		for(final Dictionary dictionary : dictionaryModels) {
-			if(dictionary instanceof DICTDictionary) {
-				return true;
-			}
-		}
-		return false;
+	private void updateModels(final Object arg) {
+		@SuppressWarnings("unchecked")
+		final List<Dictionary> models = (List<Dictionary>)(arg);
+		dictionaryModels.clear();
+		dictionaryModels.addAll(models);
 	}
+
 
 	private class RecommendHandler extends Handler {
 		@Override
@@ -85,42 +124,5 @@ public final class WordRecommender implements Observer {
 			msg.setData(bundle);
 			recommendHandler.sendMessage(msg);
 		}
-	}
-
-	@Override
-	public void update(final Observable o, final Object arg) {
-		if(o instanceof DictionaryScanner) {
-			updateModels(arg);
-		} else if(o instanceof AbstractInitializer) {
-			// Remove old runnable in handler.
-			preventRecommending();
-
-			// Should recommending?
-			if(arg instanceof String) {
-				// Check if a Runnable should be posted.
-				if(recommendTask != null && recommendTask.isRecommending()) {
-					// Can't postDelayed if a runnable was in runnable queue.
-				} else {
-					// postDelayed.
-					recommendRunnable = new RecommendRunnable(arg.toString());
-					recommendHandler.postDelayed(recommendRunnable, DELAY_TIME);
-				}
-			}
-		}
-	}
-
-	private void preventRecommending() {
-		if(recommendRunnable != null) {
-			recommendHandler.removeCallbacks(recommendRunnable);
-		}
-		// Dismiss if drop down list presented.
-		dictionaryComponent.getSearchBar().dismissDropDown();
-	}
-
-	private void updateModels(final Object arg) {
-		@SuppressWarnings("unchecked")
-		final List<Dictionary> models = (List<Dictionary>)(arg);
-		dictionaryModels.clear();
-		dictionaryModels.addAll(models);
 	}
 }

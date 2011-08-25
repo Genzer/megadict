@@ -3,6 +3,7 @@ package com.megadict.business.scanning;
 import android.os.AsyncTask;
 
 import com.megadict.bean.DictionaryBean;
+import com.megadict.business.Workable;
 
 public abstract class AbstractUpdateTask extends AsyncTask<DictionaryBean, Void, Void> implements Workable{
 	private boolean working;

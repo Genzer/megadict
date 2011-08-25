@@ -4,12 +4,14 @@ import java.util.List;
 
 import android.os.AsyncTask;
 
-public abstract class BaseRecommendTask extends AsyncTask<String, Void, List<String>> {
-	private boolean recommending;
+import com.megadict.business.Workable;
+
+public abstract class AbstractRecommendTask extends AsyncTask<String, Void, List<String>> implements Workable {
+	protected boolean working;
 
 	@Override
 	protected void onPreExecute() {
-		recommending = true;
+		working = true;
 	}
 
 	@Override
@@ -17,10 +19,11 @@ public abstract class BaseRecommendTask extends AsyncTask<String, Void, List<Str
 
 	@Override
 	protected void onPostExecute(final List<String> result) {
-		recommending = false;
+		working = false;
 	}
 
-	public boolean isRecommending() {
-		return recommending;
+	@Override
+	public boolean isWorking() {
+		return working;
 	}
 }

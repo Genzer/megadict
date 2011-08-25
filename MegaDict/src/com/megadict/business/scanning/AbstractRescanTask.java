@@ -2,6 +2,7 @@ package com.megadict.business.scanning;
 
 import android.os.AsyncTask;
 
+import com.megadict.business.Workable;
 import com.megadict.model.DictionaryInformation;
 
 public abstract class AbstractRescanTask extends AsyncTask<DictionaryInformation, Void, Void> implements Workable {

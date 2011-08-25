@@ -7,7 +7,7 @@ import com.megadict.business.ResultTextMaker;
 import com.megadict.model.Definition;
 import com.megadict.model.Dictionary;
 
-public class SearchTask extends BaseSearchTask {
+public class SearchTask extends AbstractSearchTask {
 	private final WordSearcher searcher;
 	private final Dictionary dictionary;
 	private final DictionaryComponent dictionaryComponent;
@@ -26,8 +26,10 @@ public class SearchTask extends BaseSearchTask {
 
 	@Override
 	protected void onPreExecute() {
+		if(searcher.didAllSearchTasksFinish()) {
+			dictionaryComponent.getProgressBar().setVisibility(View.VISIBLE);
+		}
 		super.onPreExecute();
-		dictionaryComponent.getProgressBar().setVisibility(View.VISIBLE);
 	}
 
 	@Override
@@ -51,7 +53,7 @@ public class SearchTask extends BaseSearchTask {
 		dictionaryComponent.getResultView().loadDataWithBaseURL(ResultTextMaker.ASSET_URL, dictionaryComponent.getResultTextMaker().getResultHTML(), "text/html", "utf-8", null);
 
 		// Hide progress bar if all tasks finished.
-		if(searcher.didAllTasksFinish()) {
+		if(searcher.didAllSearchTasksFinish()) {
 			dictionaryComponent.getProgressBar().setVisibility(View.INVISIBLE);
 			// Save word to history.
 			searcher.saveWordToHistory(word);
