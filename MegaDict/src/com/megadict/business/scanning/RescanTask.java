@@ -26,7 +26,7 @@ public class RescanTask extends AbstractRescanTask {
 
 	@Override
 	protected void onPreExecute() {
-		if(scanner.didAllAddWikiTasksFinish()) {
+		if(scanner.didAllRescanTasksFinish()) {
 			rescanComponent.getProgressDialog().show();
 		}
 		super.onPreExecute();

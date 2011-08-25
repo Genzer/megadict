@@ -23,8 +23,10 @@ public class AddWikiTask extends AbstractAddWikiTask {
 
 	@Override
 	protected void onPreExecute() {
+		if(scanner.didAllAddWikiTasksFinish()) {
+			rescanComponent.getProgressDialog().show();
+		}
 		super.onPreExecute();
-		rescanComponent.getProgressDialog().show();
 	}
 
 	@Override
