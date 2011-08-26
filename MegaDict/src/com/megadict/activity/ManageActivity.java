@@ -19,7 +19,6 @@ import com.megadict.business.WikiAdder;
 import com.megadict.business.scanning.DictionaryScanner;
 import com.megadict.model.ChosenModel;
 import com.megadict.utility.DatabaseHelper;
-import com.megadict.utility.Utility;
 
 public class ManageActivity extends BaseListActivity {
 	private DictionaryScanner scanner;
@@ -78,8 +77,6 @@ public class ManageActivity extends BaseListActivity {
 
 	// ======================= Private functions =================== //
 	private void doRescanning() {
-		if(!scanner.rescan(rescanComponent)) {
-			Utility.messageBox(this, R.string.scanning);
-		}
+		scanner.rescan(rescanComponent);
 	}
 }

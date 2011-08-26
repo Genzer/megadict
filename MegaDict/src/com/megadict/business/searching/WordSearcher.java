@@ -17,15 +17,17 @@ public final class WordSearcher implements Observer, SearchTaskManager {
 	private final List<Dictionary> dictionaryModels;
 	private final DictionaryComponent dictionaryComponent;
 
-	// Member variables.
-	private String noDefinitionStr = "There is no definition.";
+	// Composition variables.
+	private final SearchTaskInitializer searchTaskInitializer;
 	private String noDictionaryStr = "There is no dictionary";
 	private final List<AbstractSearchTask> searchTasks = new ArrayList<AbstractSearchTask>();
 	private final HistoryManager historyManager = new HistoryManager();
 
+
 	public WordSearcher(final List<Dictionary> dictionaryModels, final DictionaryComponent dictionaryComponent) {
 		this.dictionaryModels = dictionaryModels;
 		this.dictionaryComponent = dictionaryComponent;
+		searchTaskInitializer = new SearchTaskInitializer(this, dictionaryComponent);
 	}
 
 	@Override
@@ -40,27 +42,25 @@ public final class WordSearcher implements Observer, SearchTaskManager {
 
 	@Override
 	public void search(final String word) {
-		if(didAllSearchTasksFinish()) {
-			// Clear old tasks.
-			searchTasks.clear();
+		// Clear old tasks.
+		searchTasks.clear();
 
-			final ResultTextMaker resultTextMaker = dictionaryComponent.getResultTextMaker();
-			// Reset resultTextMaker to make a new search.
-			resultTextMaker.resetMiddleBlock();
+		final ResultTextMaker resultTextMaker = dictionaryComponent.getResultTextMaker();
+		// Reset resultTextMaker to make a new search.
+		resultTextMaker.resetMiddleBlock();
 
-			if(dictionaryModels.isEmpty()) {
-				dictionaryComponent.getResultView().loadDataWithBaseURL(ResultTextMaker.ASSET_URL, resultTextMaker.getNoDictionaryHTML(noDictionaryStr), "text/html", "utf-8", null);
-			} else {
-				// Lower and trim it.
-				final String searchedWord = word.toLowerCase(Locale.ENGLISH).trim();
+		if(dictionaryModels.isEmpty()) {
+			dictionaryComponent.getResultView().loadDataWithBaseURL(ResultTextMaker.ASSET_URL, resultTextMaker.getNoDictionaryHTML(noDictionaryStr), "text/html", "utf-8", null);
+		} else {
+			// Lower and trim it.
+			final String searchedWord = word.toLowerCase(Locale.ENGLISH).trim();
 
-				// Only search if searchedWord is not empty.
-				if(!"".equals(searchedWord)) {
-					createAndStoreSearchTasks();
-					executeSearchTasks(searchedWord);
-				}
-			} // End if.
-		}
+			// Only search if searchedWord is not empty.
+			if(!"".equals(searchedWord)) {
+				createAndStoreSearchTasks();
+				executeSearchTasks(searchedWord);
+			}
+		} // End if.
 	}
 
 	private void executeSearchTasks(final String searchedWord) {
@@ -71,9 +71,9 @@ public final class WordSearcher implements Observer, SearchTaskManager {
 
 	private void createAndStoreSearchTasks() {
 		for(final Dictionary dictionary : dictionaryModels) {
-			final SearchTask task = new SearchTask(this, dictionary, dictionaryComponent);
-			task.setDictionaryName(dictionary.getName());
-			task.setNoDefinitionStr(noDefinitionStr);
+			final AbstractSearchTask task = new SearchTask(dictionary);
+			searchTaskInitializer.setOnPreExecuteListener(task);
+			searchTaskInitializer.setOnPostExecuteListener(task);
 			searchTasks.add(task);
 		}
 	}
@@ -83,7 +83,7 @@ public final class WordSearcher implements Observer, SearchTaskManager {
 	}
 
 	public void setNoDefinitionStr(final String noDefinitionStr) {
-		this.noDefinitionStr = noDefinitionStr;
+		searchTaskInitializer.setNoDefinitionStr(noDefinitionStr);
 	}
 
 	@Override

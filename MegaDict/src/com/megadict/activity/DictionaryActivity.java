@@ -30,6 +30,7 @@ import com.megadict.utility.Utility;
 import com.megadict.widget.ResultView;
 
 public final class DictionaryActivity extends BaseActivity {
+	public static boolean activityRunning;
 	private static final String TAG = "DictionaryActivity";
 
 	// Activity control variables.
@@ -52,6 +53,18 @@ public final class DictionaryActivity extends BaseActivity {
 		initSomething();
 		// Scan chosen databases when MegaDict opens.
 		doScanningStorage();
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		activityRunning = true;
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		activityRunning = false;
 	}
 
 	@Override
@@ -161,8 +174,6 @@ public final class DictionaryActivity extends BaseActivity {
 	}
 
 	private void doScanningStorage() {
-		if(!scanner.scanStorage(dictionaryComponent)) {
-			Utility.messageBox(this, R.string.scanning);
-		}
+		scanner.scanStorage(dictionaryComponent);
 	}
 }

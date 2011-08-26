@@ -17,16 +17,21 @@ import com.megadict.model.Dictionary;
 
 public final class WordRecommender implements Observer, RecommendTaskManager {
 	private final static int DELAY_TIME = 2000;
+
+	// Aggregation variables.
 	private final List<Dictionary> dictionaryModels;
 	private final DictionaryComponent dictionaryComponent;
-	private final List<AbstractRecommendTask> recommendTasks = new ArrayList<AbstractRecommendTask>();
 
-	private Runnable recommendRunnable;
+	// Composition variables.
+	private final RecommendTaskInitializer recommendTaskInitializer;
+	private final List<AbstractRecommendTask> recommendTasks = new ArrayList<AbstractRecommendTask>();
 	private final Handler recommendHandler = new RecommendHandler();
+	private Runnable recommendRunnable;
 
 	public WordRecommender(final List<Dictionary> dictionaryModels, final DictionaryComponent dictionaryComponent) {
 		this.dictionaryModels = dictionaryModels;
 		this.dictionaryComponent = dictionaryComponent;
+		recommendTaskInitializer = new RecommendTaskInitializer(this, dictionaryComponent);
 	}
 
 	@Override
@@ -46,7 +51,9 @@ public final class WordRecommender implements Observer, RecommendTaskManager {
 		// Create and execute tasks.
 		for(final Dictionary model : dictionaryModels) {
 			if(model instanceof DICTDictionary) {
-				final AbstractRecommendTask task = new RecommendTask(this, model, dictionaryComponent);
+				final AbstractRecommendTask task = new RecommendTask(model);
+				recommendTaskInitializer.setOnPreExecuteListener(task);
+				recommendTaskInitializer.setOnPostExecuteListener(task);
 				task.execute(word);
 				recommendTasks.add(task);
 			}
