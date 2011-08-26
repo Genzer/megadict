@@ -28,13 +28,16 @@ public class DICTDictionaryTestWithThreading {
         
         Dictionary dictionary = new DICTDictionary.Builder(packOneIndex, packOneDict).enableSplittingIndexFile().build();
         
+        Dictionary vedict = new DICTDictionary.Builder(packTwoIndex, packTwoDict).enableSplittingIndexFile().build();
+        
+        
         LookUpTask lookUpTask = new LookUpTask(dictionary, "zoom");
-        RecommendTask recTask = new RecommendTask(dictionary, "zoom");
+        RecommendTask recTask = new RecommendTask(vedict, "person");
 
         ExecutorService exe = Executors.newFixedThreadPool(2);
         try {
-            Future<String> resultLookUp = exe.submit(lookUpTask);
             Future<List<String>> resultRecommend = exe.submit(recTask);
+            Future<String> resultLookUp = exe.submit(lookUpTask);            
 
             //exe.awaitTermination(200, TimeUnit.MILLISECONDS);
 

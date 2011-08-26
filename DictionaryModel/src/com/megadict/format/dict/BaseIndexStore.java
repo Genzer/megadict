@@ -30,7 +30,7 @@ class BaseIndexStore implements IndexStore {
     @Override
     public boolean containsWord(String word) {
         if (findInCache(word) == false) {
-            findInFileAndCacheEverythingFound(word);
+            attempToFindInFileAndCache(word);
         }
         return findInCache(word);
     }
@@ -39,9 +39,9 @@ class BaseIndexStore implements IndexStore {
         return cache.contains(word);
     }
 
-    private void findInFileAndCacheEverythingFound(String word) {
-        Set<Index> foundIndexes = findInFile(word);
-        cacheAll(foundIndexes);
+    private void attempToFindInFileAndCache(String word) {
+        Set<Index> foundInFile = findInFile(word);
+        cacheAll(foundInFile);
     }
 
     protected Set<Index> findInFile(String headword) {
@@ -58,15 +58,35 @@ class BaseIndexStore implements IndexStore {
     private void cache(Index index) {
         synchronized (cache) {
             cache.cache(index);
-        }        
+        }
     }
 
     @Override
     public List<String> getSimilarWord(String headword, int preferredNumber) {
-        int currentSimilarWords = cache.countSimilarWords(headword);
-        if (currentSimilarWords < preferredNumber) {
-            findInFileAndCacheEverythingFound(headword);
+
+        if (notEnoughSimilarWords(preferredNumber, headword)
+                || !similarWordsContain(headword)) {
+            attempToFindInFileAndCache(headword);
         }
-        return cache.getSimilarWord(headword, preferredNumber);
+
+        List<String> similarWords = cache.getSimilarWord(headword, preferredNumber);
+        boolean resultContainsWord = similarWords.get(0).contentEquals(headword);
+
+        if (resultContainsWord) {
+            return similarWords;
+        } else {
+            return Collections.emptyList();
+        }
+
+    }
+
+    private boolean notEnoughSimilarWords(int preferredNumber, String headword) {
+        int currentSimilarWords = cache.countSimilarWords(headword);
+        return currentSimilarWords < preferredNumber;
+    }
+
+    private boolean similarWordsContain(String headword) {
+        List<String> matches = cache.getSimilarWord(headword, 1);
+        return matches.get(0).contains(headword);
     }
 }

@@ -40,8 +40,7 @@ class IndexCache {
     private List<String> extractByPreferredNumber(Set<Map.Entry<String, Index>> filtered, int preferredNumber) {
 
         int size = Math.min(filtered.size(), preferredNumber);
-        ;
-
+        
         List<String> result = new ArrayList<String>(size);
 
         Iterator<Map.Entry<String, Index>> iterator = filtered.iterator();
