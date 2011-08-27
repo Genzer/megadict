@@ -130,7 +130,7 @@ public class DICTDictionary implements Dictionary {
 
     private Definition makeNotFound(String word) {
         String content = String.format(NOT_FOUND_CONTENT_PATTERN, word);
-        return makeDefinition(word, content);
+        return new Definition(word, content, this.name, false);
     }
 
     private Definition makeDefinition(String word, String content) {
