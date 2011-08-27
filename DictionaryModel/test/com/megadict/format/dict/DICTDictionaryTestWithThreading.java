@@ -25,35 +25,19 @@ public class DICTDictionaryTestWithThreading {
 
     @Test
     public void testSimultaneouslyLookUpWithTwoDictionaries() {
-        
-        Dictionary dictionary = new DICTDictionary.Builder(packOneIndex, packOneDict).enableSplittingIndexFile().build();
-        
-        Dictionary vedict = new DICTDictionary.Builder(packTwoIndex, packTwoDict).enableSplittingIndexFile().build();
-        
-        
-        LookUpTask lookUpTask = new LookUpTask(dictionary, "zoom");
-        RecommendTask recTask = new RecommendTask(vedict, "person");
 
-        ExecutorService exe = Executors.newFixedThreadPool(2);
-        try {
-            Future<List<String>> resultRecommend = exe.submit(recTask);
-            Future<String> resultLookUp = exe.submit(lookUpTask);            
-
-            //exe.awaitTermination(200, TimeUnit.MILLISECONDS);
-
-            System.out.println(resultLookUp.get());
-            System.out.println(resultRecommend.get());
-        } catch (InterruptedException ie) {
-            throw new RuntimeException(ie);
-        } catch (ExecutionException e) {
-            throw new RuntimeException(e);
-        } finally {
-            exe.shutdown();
-        }
+       LookUpAndPrintNameTask[] tasks = {
+               new LookUpAndPrintNameTask(packOneIndex, packOneDict, "something"),
+               new LookUpAndPrintNameTask(packTwoIndex, packTwoDict, "something"),
+               
+       };
+       
+       TaskExecutor.execute(Arrays.asList(tasks));       
 
     }
 
-    @Ignore @Test
+    @Ignore
+    @Test
     public void testSimultaneouslyGetNameOfTwoDictionaries() {
         List<Runnable> tasks = new ArrayList<Runnable>(2);
         tasks.add(new GetNameTask(packOneIndex, packOneDict));
@@ -82,7 +66,7 @@ public class DICTDictionaryTestWithThreading {
     }
 
     static class LookUpTask implements Callable<String> {
-        
+
         public LookUpTask(Dictionary dictionary, String wordToLookUp) {
             this.dict = dictionary;
             this.wordToLookUp = wordToLookUp;
@@ -99,19 +83,44 @@ public class DICTDictionaryTestWithThreading {
     }
 
     static class RecommendTask implements Callable<List<String>> {
-        
+
         public RecommendTask(Dictionary dictionary, String wordToLookUp) {
             this.dict = dictionary;
             this.wordToLookUp = wordToLookUp;
         }
-        
+
         @Override
         public List<String> call() throws Exception {
             List<String> words = dict.recommendWord(wordToLookUp);
             return words;
         }
-        
+
         private Dictionary dict;
         private final String wordToLookUp;
     }
+
+    static class LookUpAndPrintNameTask implements Runnable {
+
+        private IndexFile indexFile;
+        private DictionaryFile dictFile;
+        private String testWord;
+        
+        public LookUpAndPrintNameTask(IndexFile indexFile, DictionaryFile dictFile, String testWord) {
+            this.indexFile = indexFile;
+            this.dictFile = dictFile;
+            this.testWord = testWord;
+        }
+
+        @Override
+        public void run() {
+            Dictionary dictionary = new DICTDictionary.Builder(indexFile, dictFile)
+                    .enableSplittingIndexFile().build();
+            
+            Definition def = dictionary.lookUp(testWord);
+            System.out.println(def.getWord());
+            System.out.println(dictionary.getName());
+        }
+
+    }
+
 }

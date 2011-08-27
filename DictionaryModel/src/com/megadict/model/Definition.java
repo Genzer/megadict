@@ -7,24 +7,9 @@ package com.megadict.model;
 
 public class Definition {
 
-    /**
-     * It is recommended that every {@code Dictionary} implementation must
-     * return this instance when lookup doesn't succeed rather than returning
-     * {@code null}.
-     */
-    public static final Definition NOT_FOUND;
-
     private final String word;
     private final String content;
     private final String dictionaryName;
-
-    static {
-        NOT_FOUND = makeNotFound();
-    }
-
-    private static Definition makeNotFound() {
-        return new Definition("Not Found", "There is no definition", "");
-    }
 
     public Definition(String word, String definition, String dictionaryName) {
         this.word = word;

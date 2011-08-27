@@ -1,7 +1,5 @@
 package com.megadict.format.dict;
 
-import static com.megadict.model.Definition.NOT_FOUND;
-
 import java.util.*;
 
 import com.megadict.exception.*;
@@ -52,9 +50,10 @@ public class DICTDictionary implements Dictionary {
             return segmentEnabled ? new IndexStoreWithSegmentSupport(indexFile) : new BaseIndexStore(indexFile);
         }
 
-    }    
-    
+    }
+
     private static final String NAME_REDUNDANT_STRING = "@00-database-short- FVDP ";
+    private static final String NOT_FOUND_CONTENT_PATTERN = "There is no definition of \"%s\"";
     private static final String TO_STRING_PATTERN = "DICTDictionary[name: %s; indexFile: %s; dictFile: %s]";
 
     private String name;
@@ -62,7 +61,7 @@ public class DICTDictionary implements Dictionary {
     private final DefinitionFinder definitionFinder;
     private final DefinitionCache definitionCache = new DefinitionCache();
     private final IndexFile indexFile;
-    private final DictionaryFile dictFile;    
+    private final DictionaryFile dictFile;
 
     private DICTDictionary(Builder builder) {
         this.indexFile = builder.indexFile;
@@ -75,8 +74,11 @@ public class DICTDictionary implements Dictionary {
     private void loadDictionaryName() {
         String nameKeyword = MetaDataEntry.SHORT_NAME.tagName();
         Definition nameEntry = lookUp(nameKeyword);
+        
+        boolean nameIsNotFound = nameEntry.getContent().contains("There is no definition");
+        
         this.name =
-                (nameEntry == NOT_FOUND) ? "Unknown Dictionary" : cleanedUpName(nameEntry.getContent());
+                (nameIsNotFound) ? "Unknown Dictionary" : cleanedUpName(nameEntry.getContent());
     }
 
     private static String cleanedUpName(String rawName) {
@@ -95,16 +97,16 @@ public class DICTDictionary implements Dictionary {
     public List<String> recommendWord(String word, int preferredNumOfWord) {
         synchronized (supportedWords) {
             return supportedWords.getSimilarWord(word, preferredNumOfWord);
-        }       
+        }
     }
 
     @Override
     public Definition lookUp(String word) {
         synchronized (supportedWords) {
-            Definition result = validateWord(word) ? find(word) : NOT_FOUND;
+            Definition result = validateWord(word) ? find(word) : makeNotFound(word);
             definitionCache.cache(word, result);
             return result;
-        }        
+        }
     }
 
     private static boolean validateWord(String word) {
@@ -113,7 +115,7 @@ public class DICTDictionary implements Dictionary {
 
     private Definition find(String word) {
 
-        Definition result = NOT_FOUND;
+        Definition result = null;
 
         if (definitionCache.contains(word)) {
             result = definitionCache.get(word);
@@ -123,12 +125,21 @@ public class DICTDictionary implements Dictionary {
             result = loadDefinitionAt(index);
         }
 
-        return result;
+        return (result != null) ? result : makeNotFound(word);
+    }
+
+    private Definition makeNotFound(String word) {
+        String content = String.format(NOT_FOUND_CONTENT_PATTERN, word);
+        return makeDefinition(word, content);
+    }
+
+    private Definition makeDefinition(String word, String content) {
+        return new Definition(word, content, this.name);
     }
 
     private Definition loadDefinitionAt(Index index) {
         String definitionContent = definitionFinder.getContentAt(index);
-        return new Definition(index.getWord(), definitionContent, this.name);
+        return makeDefinition(index.getWord(), definitionContent);
     }
 
     @Override

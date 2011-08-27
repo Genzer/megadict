@@ -113,7 +113,8 @@ public class DICTDictionaryTest {
 
     private static void assertActualDefinitionIsNotFound(Definition actual) {
         assertNotNull(actual);
-        assertSame(Definition.NOT_FOUND, actual);
+        String expectedString = "There is no definition of \"" + actual.getWord() + "\"";
+        assertEquals(expectedString, actual.getContent());
     }
 
     @Test
