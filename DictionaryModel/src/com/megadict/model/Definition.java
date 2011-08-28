@@ -7,20 +7,24 @@ package com.megadict.model;
 
 public class Definition {
 
-    private final boolean found;
+    private final boolean exists;
     private final String word;
     private final String content;
     private final String dictionaryName;
-
-    public Definition(String word, String definition, String dictionaryName) {
-        this(word, definition, dictionaryName, true);
-    }
     
-    public Definition(String word, String definition, String dictionaryName, boolean isFound) {
+    protected Definition(String word, String definition, String dictionaryName, boolean exists) {
         this.word = word;
         this.content = definition;
         this.dictionaryName = dictionaryName;
-        this.found = isFound;
+        this.exists = exists;
+    }
+    
+    public static Definition makeDefinition(String word, String content, String dictionaryName) {
+        return new Definition(word, content, dictionaryName, true);
+    }
+    
+    public static Definition makeNonExists(String word, String placeholderContent, String dictionaryName) {
+        return new Definition(word, placeholderContent, dictionaryName, false);
     }
 
     /**
@@ -40,8 +44,8 @@ public class Definition {
     /**
      * @return - true if this definition is not found in the dictionary, otherwise, return false.
      */
-    public boolean isFound() {
-        return found;
+    public boolean exists() {
+        return exists;
     }
 
     /**

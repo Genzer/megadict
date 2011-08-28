@@ -130,11 +130,11 @@ public class DICTDictionary implements Dictionary {
 
     private Definition makeNotFound(String word) {
         String content = String.format(NOT_FOUND_CONTENT_PATTERN, word);
-        return new Definition(word, content, this.name, false);
+        return Definition.makeNonExists(word, content, this.name);
     }
 
     private Definition makeDefinition(String word, String content) {
-        return new Definition(word, content, this.name);
+        return Definition.makeDefinition(word, content, this.name);
     }
 
     private Definition loadDefinitionAt(Index index) {
