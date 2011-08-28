@@ -69,14 +69,7 @@ class BaseIndexStore implements IndexStore {
             attempToFindInFileAndCache(headword);
         }
 
-        List<String> similarWords = cache.getSimilarWord(headword, preferredNumber);
-        boolean resultContainsWord = similarWords.get(0).contentEquals(headword);
-
-        if (resultContainsWord) {
-            return similarWords;
-        } else {
-            return Collections.emptyList();
-        }
+        return cache.getSimilarWord(headword, preferredNumber);
 
     }
 
@@ -87,6 +80,6 @@ class BaseIndexStore implements IndexStore {
 
     private boolean similarWordsContain(String headword) {
         List<String> matches = cache.getSimilarWord(headword, 1);
-        return matches.get(0).contains(headword);
+        return matches.get(0).equals(headword);
     }
 }
