@@ -23,13 +23,13 @@ public class SearchTaskInitializer {
 		task.setOnPostExecuteListener(new OnPostExecuteListener() {
 			@Override
 			public void onPostExecute(final Definition definition) {
-				dictionaryComponent.getResultTextMaker().appendContent(definition.getWord(),
-						definition == Definition.NOT_FOUND ? noDefinitionStr : definition.getContent(),
-								definition.getDictionaryName());
+				dictionaryComponent.getResultTextMaker().appendContent(definition.getWord(), definition.exists()
+						? definition.getContent() : noDefinitionStr, definition.getDictionaryName());
 				dictionaryComponent.getResultView().loadDataWithBaseURL(ResultTextMaker.ASSET_URL, dictionaryComponent.getResultTextMaker().getResultHTML(), "text/html", "utf-8", null);
 
 				// Hide progress bar if all tasks finished.
-				if(searcher.didAllSearchTasksFinish() && DictionaryActivity.activityRunning) {
+				if (searcher.didAllSearchTasksFinish()
+						&& DictionaryActivity.activityRunning) {
 					dictionaryComponent.getProgressBar().setVisibility(ProgressBar.INVISIBLE);
 					// Save word to history.
 					searcher.saveWordToHistory(definition.getWord());
@@ -42,7 +42,7 @@ public class SearchTaskInitializer {
 		task.setOnPreExecuteListener(new OnPreExecuteListener() {
 			@Override
 			public void onPreExecute() {
-				if(searcher.didAllSearchTasksFinish()) {
+				if (searcher.didAllSearchTasksFinish()) {
 					dictionaryComponent.getProgressBar().setVisibility(ProgressBar.VISIBLE);
 				}
 			}

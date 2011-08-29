@@ -1,7 +1,5 @@
 package com.megadict.activity;
 
-
-
 import android.app.ProgressDialog;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -39,7 +37,8 @@ public class ManageActivity extends BaseListActivity {
 
 		// Create or open database.
 		final SQLiteDatabase database = DatabaseHelper.getDatabase(this);
-		listViewCursor = ChosenModel.selectChosenDictionaryIDsNameAndEnabled(database);
+		listViewCursor =
+				ChosenModel.selectChosenDictionaryIDsNameAndEnabled(database);
 		final ChosenDictionaryCheckBoxAdapter adapter =
 				new ChosenDictionaryCheckBoxAdapter(this, listViewCursor);
 		setListAdapter(adapter);
@@ -47,7 +46,8 @@ public class ManageActivity extends BaseListActivity {
 		final ProgressDialog progressDialog = new ProgressDialog(this);
 		progressDialog.setMessage("Scanning storage... ");
 
-		rescanComponent = new RescanComponent(this, progressDialog, listViewCursor);
+		rescanComponent =
+				new RescanComponent(this, progressDialog, listViewCursor);
 		wikiAdder = new WikiAdder(this, rescanComponent, scanner);
 	}
 
@@ -61,12 +61,11 @@ public class ManageActivity extends BaseListActivity {
 	public boolean onMenuItemSelected(final int featureId, final MenuItem item) {
 		if (item.getItemId() == R.id.rescanMenuItem) {
 			doRescanning();
-		} else if(item.getItemId() == R.id.wikiMenuItem) {
+		} else if (item.getItemId() == R.id.wikiMenuItem) {
 			wikiAdder.showDialog();
 		}
 		return true;
 	}
-
 
 	@Override
 	public boolean onCreateOptionsMenu(final Menu menu) {

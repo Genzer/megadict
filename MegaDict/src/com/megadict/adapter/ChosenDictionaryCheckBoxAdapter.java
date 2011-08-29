@@ -52,7 +52,8 @@ public class ChosenDictionaryCheckBoxAdapter extends ResourceCursorAdapter {
 				value.put(ChosenModel.ENABLED_COLUMN, isChecked ? 1 : 0);
 				final String where = ChosenModel.ID_COLUMN + " = " + dictID;
 
-				final SQLiteDatabase database = DatabaseHelper.getDatabase(context);
+				final SQLiteDatabase database =
+						DatabaseHelper.getDatabase(context);
 				database.update(ChosenModel.TABLE_NAME, value, where, null);
 
 				// NEED REVIEWING THIS USE // THIS IS NOT GOOD //

@@ -5,11 +5,10 @@ import android.content.Context;
 import android.database.Cursor;
 
 /**
- * RescanComponent is a bean help rescan storage.
- * It provides components for showing ProgressDialog, requerying cursor,
- * getting database from context.
+ * RescanComponent is a bean help rescan storage. It provides components for showing ProgressDialog,
+ * requerying cursor, getting database from context.
+ * 
  * @author HIEUGIOI
- *
  */
 public class RescanComponent {
 	private final Context context;

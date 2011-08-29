@@ -26,7 +26,7 @@ public class RescanTask extends AbstractRescanTask {
 
 	@Override
 	protected void onPreExecute() {
-		if(scanner.didAllRescanTasksFinish()) {
+		if (scanner.didAllRescanTasksFinish()) {
 			rescanComponent.getProgressDialog().show();
 		}
 		super.onPreExecute();
@@ -38,13 +38,17 @@ public class RescanTask extends AbstractRescanTask {
 
 		// Create necessary files.
 		final IndexFile indexFile = IndexFile.makeFile(info.getIndexFile());
-		final DictionaryFile dictFile = DictionaryFile.makeRandomAccessFile( info.getDataFile());
+		final DictionaryFile dictFile =
+				DictionaryFile.makeRandomAccessFile(info.getDataFile());
 		// Create model.
-		//final Dictionary model = UsedDictionary.newInstance(indexFile, dictFile);
-		final Dictionary model = new DICTDictionary.Builder(indexFile, dictFile).enableSplittingIndexFile().build();
+		// final Dictionary model = UsedDictionary.newInstance(indexFile, dictFile);
+		final Dictionary model =
+				new DICTDictionary.Builder(indexFile, dictFile).enableSplittingIndexFile().build();
 		// Insert dictionary infos to database.
-		final SQLiteDatabase database = DatabaseHelper.getDatabase(rescanComponent.getContext());
-		final int dictID = ChosenModel.insertDictionary(database, model.getName(), info.getParentFile().getAbsolutePath(), ChosenModel.LOCAL_DICTIONARY, 0);
+		final SQLiteDatabase database =
+				DatabaseHelper.getDatabase(rescanComponent.getContext());
+		final int dictID =
+				ChosenModel.insertDictionary(database, model.getName(), info.getParentFile().getAbsolutePath(), ChosenModel.LOCAL_DICTIONARY, 0);
 
 		// Store model.
 		models.put(dictID, model);
@@ -54,7 +58,7 @@ public class RescanTask extends AbstractRescanTask {
 	@Override
 	protected void onPostExecute(final Void result) {
 		super.onPostExecute(result);
-		if(scanner.didAllRescanTasksFinish()) {
+		if (scanner.didAllRescanTasksFinish()) {
 			scanner.dictionaryModelsChanged();
 			// Requery the cursor to update list view.
 			rescanComponent.getCursor().requery();

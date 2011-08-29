@@ -12,7 +12,7 @@ public abstract class AbstractSearchTask extends AsyncTask<String, Void, Definit
 
 	@Override
 	protected void onPreExecute() {
-		if(onPreExecuteListener != null) {
+		if (onPreExecuteListener != null) {
 			onPreExecuteListener.onPreExecute();
 		}
 		working = true;
@@ -24,7 +24,7 @@ public abstract class AbstractSearchTask extends AsyncTask<String, Void, Definit
 	@Override
 	protected void onPostExecute(final Definition definition) {
 		working = false;
-		if(onPostExecuteListener != null) {
+		if (onPostExecuteListener != null) {
 			onPostExecuteListener.onPostExecute(definition);
 		}
 	}

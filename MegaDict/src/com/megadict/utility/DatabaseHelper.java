@@ -13,7 +13,6 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
 	private static DatabaseHelper helper;
 	private static SQLiteDatabase database;
 
-
 	private DatabaseHelper(final Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
 	}
@@ -37,7 +36,7 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
 	}
 
 	public static DatabaseHelper getInstance(final Context context) {
-		if(helper == null) {
+		if (helper == null) {
 			helper = new DatabaseHelper(context);
 		}
 		return helper;
@@ -45,7 +44,7 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
 
 	public static SQLiteDatabase getDatabase(final Context context) {
 		helper = getInstance(context);
-		if(database == null) {
+		if (database == null) {
 			database = helper.getWritableDatabase();
 		}
 		return database;

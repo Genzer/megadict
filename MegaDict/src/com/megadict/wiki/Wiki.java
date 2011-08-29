@@ -9,10 +9,10 @@ public class Wiki {
 	private static final String DEFAULT_COUNTRY_CODE = "en";
 	private static final List<Language> LANGUAGES = new ArrayList<Language>();
 	static {
-		final String []languageNames = {"English", "German", "French"};
-		final String []countryNames = {"England", "Germany", "France"};
-		final String []countryCodes = {"en", "de", "fr"};
-		for(int i = 0; i < languageNames.length; ++i) {
+		final String[] languageNames = { "English", "German", "French" };
+		final String[] countryNames = { "England", "Germany", "France" };
+		final String[] countryCodes = { "en", "de", "fr" };
+		for (int i = 0; i < languageNames.length; ++i) {
 			LANGUAGES.add(new Language(countryNames[i], countryCodes[i], languageNames[i]));
 		}
 	}
@@ -23,7 +23,7 @@ public class Wiki {
 
 	public static List<String> getLanguageNames() {
 		final List<String> list = new ArrayList<String>();
-		for(final Language lang : LANGUAGES) {
+		for (final Language lang : LANGUAGES) {
 			list.add(lang.getLanguageName());
 		}
 		return list;
@@ -31,15 +31,15 @@ public class Wiki {
 
 	public static List<String> getCountryCodes() {
 		final List<String> list = new ArrayList<String>();
-		for(final Language lang : LANGUAGES) {
+		for (final Language lang : LANGUAGES) {
 			list.add(lang.getCountryCode());
 		}
 		return list;
 	}
 
 	public static String getCountryNameByCountryCode(final String countryCode) {
-		for(final Language l : LANGUAGES) {
-			if(countryCode.equals(l.getCountryCode())) {
+		for (final Language l : LANGUAGES) {
+			if (countryCode.equals(l.getCountryCode())) {
 				return l.getCountryName();
 			}
 		}
@@ -47,8 +47,8 @@ public class Wiki {
 	}
 
 	public static String getLanguageNameByCountryCode(final String countryCode) {
-		for(final Language l : LANGUAGES) {
-			if(countryCode.equals(l.getCountryCode())) {
+		for (final Language l : LANGUAGES) {
+			if (countryCode.equals(l.getCountryCode())) {
 				return l.getLanguageName();
 			}
 		}
@@ -56,8 +56,8 @@ public class Wiki {
 	}
 
 	public static String getCountryCodeByLanguageName(final String languageName) {
-		for(final Language l : LANGUAGES) {
-			if(languageName.equals(l.getLanguageName())) {
+		for (final Language l : LANGUAGES) {
+			if (languageName.equals(l.getLanguageName())) {
 				return l.getCountryCode();
 			}
 		}

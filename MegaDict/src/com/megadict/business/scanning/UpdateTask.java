@@ -21,8 +21,7 @@ public class UpdateTask extends AbstractUpdateTask {
 	private final ModelMap models;
 	private final DictionaryComponent dictionaryComponent;
 
-	public UpdateTask(final DictionaryScanner scanner, final ModelMap models,
-			final DictionaryComponent dictionaryComponent) {
+	public UpdateTask(final DictionaryScanner scanner, final ModelMap models, final DictionaryComponent dictionaryComponent) {
 		super();
 		this.scanner = scanner;
 		this.models = models;
@@ -31,7 +30,7 @@ public class UpdateTask extends AbstractUpdateTask {
 
 	@Override
 	protected void onPreExecute() {
-		if(scanner.didAllUpdateTasksFinish()) {
+		if (scanner.didAllUpdateTasksFinish()) {
 			dictionaryComponent.getProgressBar().setVisibility(ProgressBar.VISIBLE);
 		}
 		super.onPreExecute();
@@ -47,11 +46,15 @@ public class UpdateTask extends AbstractUpdateTask {
 
 		try {
 			Dictionary dictionary;
-			if(type.equals(ChosenModel.LOCAL_DICTIONARY)) {
-				final DictionaryInformation info = DictionaryInformation.newInstance(path);
-				final IndexFile indexFile = IndexFile.makeFile(info.getIndexFile());
-				final DictionaryFile dictionaryFile = DictionaryFile.makeRandomAccessFile(info.getDataFile());
-				dictionary = new DICTDictionary.Builder(indexFile, dictionaryFile).enableSplittingIndexFile().build();
+			if (type.equals(ChosenModel.LOCAL_DICTIONARY)) {
+				final DictionaryInformation info =
+						DictionaryInformation.newInstance(path);
+				final IndexFile indexFile =
+						IndexFile.makeFile(info.getIndexFile());
+				final DictionaryFile dictionaryFile =
+						DictionaryFile.makeRandomAccessFile(info.getDataFile());
+				dictionary =
+						new DICTDictionary.Builder(indexFile, dictionaryFile).enableSplittingIndexFile().build();
 			} else {
 				dictionary = new WikiDictionary(path);
 			}
@@ -67,7 +70,7 @@ public class UpdateTask extends AbstractUpdateTask {
 	@Override
 	protected void onPostExecute(final Void result) {
 		super.onPostExecute(result);
-		if(scanner.didAllUpdateTasksFinish()) {
+		if (scanner.didAllUpdateTasksFinish()) {
 			// Notify for observers.
 			scanner.dictionaryModelsChanged();
 			// Refresh start page.

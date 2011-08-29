@@ -10,10 +10,12 @@ public class ResultTextMaker {
 	public static final String ASSET_URL = "file:///android_asset/";
 	private final AssetManager assetManager;
 
-	private static final String MIDDLE_WELCOME_BLOCK = "<div class=\"welcomeBlock\">";
+	private static final String MIDDLE_WELCOME_BLOCK =
+			"<div class=\"welcomeBlock\">";
 	private static final String RIGHT_WELCOME_BLOKC = "</div></body></html>";
 
-	private static final String MIDDLE_NO_DICT_BLOCK = "<div class=\"noDictionaryBlock\">";
+	private static final String MIDDLE_NO_DICT_BLOCK =
+			"<div class=\"noDictionaryBlock\">";
 	private static final String RIGHT_NO_DICT_BLOCK = "</div></body></html>";
 
 	private static final StringBuilder LEFT_BLOCK = new StringBuilder();
@@ -29,31 +31,34 @@ public class ResultTextMaker {
 		try {
 			LEFT_BLOCK.append("<html>");
 			// Append stylesheets.
-			final String []cssNames = assetManager.list("css");
+			final String[] cssNames = assetManager.list("css");
 			LEFT_BLOCK.append("<head>");
-			for(final String cssName : cssNames) {
-				LEFT_BLOCK.append("<link href=\"css/" + cssName + "\" rel=\"stylesheet\" type=\"text/css\" />");
+			for (final String cssName : cssNames) {
+				LEFT_BLOCK.append("<link href=\"css/" + cssName
+						+ "\" rel=\"stylesheet\" type=\"text/css\" />");
 
 			}
 			// Append JQuery.
-			final String []scriptNames = assetManager.list("scripts");
-			for(final String scriptName : scriptNames) {
-				LEFT_BLOCK.append("<script src=\"scripts/" + scriptName + "\" type=\"text/javascript\"></script>");
+			final String[] scriptNames = assetManager.list("scripts");
+			for (final String scriptName : scriptNames) {
+				LEFT_BLOCK.append("<script src=\"scripts/" + scriptName
+						+ "\" type=\"text/javascript\"></script>");
 			}
 			LEFT_BLOCK.append("</head><body>");
 		} catch (final IOException e) {
 			// Because it's a programming exception, we don't need to catch it.
-			/// Just throw unchecked exception.
+			// / Just throw unchecked exception.
 			throw new ResourceNotFoundException(e.getCause());
 		}
 	}
 
 	public void appendContent(final String searchedWord, final String content, final String dictionaryName) {
 		final String formattedContent = content.trim().replace("\n", "<br/>");
-		MIDDLE_BLOCK.append("<div class=\"dictionaryBlock\">" +
-				"<div class=\"searchedWord\">" + searchedWord + "</div>" +
-				"<div class=\"dictionaryContent\">" + formattedContent + "</div>" +
-				"<div class=\"dictionaryName\">" + dictionaryName + "</div></div>");
+		MIDDLE_BLOCK.append("<div class=\"dictionaryBlock\">"
+				+ "<div class=\"searchedWord\">" + searchedWord + "</div>"
+				+ "<div class=\"dictionaryContent\">" + formattedContent
+				+ "</div>" + "<div class=\"dictionaryName\">" + dictionaryName
+				+ "</div></div>");
 	}
 
 	public String getResultHTML() {
@@ -61,11 +66,13 @@ public class ResultTextMaker {
 	}
 
 	public String getWelcomeHTML(final String welcomeStr) {
-		return LEFT_BLOCK.toString() + MIDDLE_WELCOME_BLOCK + welcomeStr + RIGHT_WELCOME_BLOKC;
+		return LEFT_BLOCK.toString() + MIDDLE_WELCOME_BLOCK + welcomeStr
+				+ RIGHT_WELCOME_BLOKC;
 	}
 
 	public String getNoDictionaryHTML(final String noDictContent) {
-		return LEFT_BLOCK.toString() + MIDDLE_NO_DICT_BLOCK + noDictContent + RIGHT_NO_DICT_BLOCK;
+		return LEFT_BLOCK.toString() + MIDDLE_NO_DICT_BLOCK + noDictContent
+				+ RIGHT_NO_DICT_BLOCK;
 	}
 
 	public void resetMiddleBlock() {

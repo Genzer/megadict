@@ -10,8 +10,8 @@ import com.megadict.exception.NotImplementedException;
 import com.megadict.model.Definition;
 import com.megadict.model.Dictionary;
 
-
 public class WikiMobileDictionary implements Dictionary {
+	public static final String NO_DEFINITION = "There is no definition";
 	private final String PREFIX = "Wikipedia ";
 	private String dictionaryName;
 	private final String countryCode;
@@ -22,22 +22,27 @@ public class WikiMobileDictionary implements Dictionary {
 	}
 
 	private void initDictionaryName() {
-		final String languageName = Wiki.getLanguageNameByCountryCode(countryCode);
+		final String languageName =
+				Wiki.getLanguageNameByCountryCode(countryCode);
 		dictionaryName = PREFIX + "(" + languageName + ")";
 	}
 
 	@Override
 	public Definition lookUp(final String word) {
 		final String searchedWord = word.replace(" ", "_");
-		final String URL_PATTERN = "http://%s.mobile.wikipedia.org/transcode.php?go=%s";
-		final String query = String.format(URL_PATTERN, countryCode, searchedWord);
+		final String URL_PATTERN =
+				"http://%s.mobile.wikipedia.org/transcode.php?go=%s";
+		final String query =
+				String.format(URL_PATTERN, countryCode, searchedWord);
 
 		Definition definition;
 		try {
 			final Document doc = Jsoup.connect(query).get();
-			definition = new Definition(word, doc.toString(), "dictionarry name");
+			definition =
+					Definition.makeDefinition(word, doc.toString(), dictionaryName);
 		} catch (final IOException e) {
-			definition = Definition.NOT_FOUND;
+			definition =
+					Definition.makeNonExists(word, WikiMobileDictionary.NO_DEFINITION, dictionaryName);
 		}
 		return definition;
 	}

@@ -10,6 +10,7 @@ public class ScanStorageComponent {
 	public ResultView resultView;
 	public ResultTextMaker resultTextMaker;
 	public Context context;
+
 	public ScanStorageComponent(final ResultView resultView, final ResultTextMaker resultTextMaker, final Context context) {
 		this.resultView = resultView;
 		this.resultTextMaker = resultTextMaker;

@@ -13,4 +13,4 @@
 //	public static UsedDictionary newInstance(final IndexFile indexFile, final DictionaryFile dictFile) {
 //		return new UsedDictionary(indexFile, dictFile);
 //	}
-//}
+// }

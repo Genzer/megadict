@@ -3,18 +3,41 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:layout_gravity="bottom|center_horizontal" android:id="@+id/mainPanel">
-    <RelativeLayout android:layout_width="fill_parent" android:padding="8dip" android:layout_weight="0" android:background="@drawable/search_background" android:id="@+id/searchPanel" android:layout_height="60dip">
-        <Button android:layout_width="wrap_content" android:layout_alignParentLeft="true" android:background="@drawable/sound" android:layout_centerVertical="true" android:id="@+id/pronounceButton" android:layout_height="wrap_content"></Button>
-        <AutoCompleteTextView android:layout_width="wrap_content" android:lines="1" android:layout_toLeftOf="@+id/searchButton" android:background="@drawable/search_border" android:focusable="true" android:drawableLeft="@drawable/book" android:layout_alignParentTop="false" android:layout_toRightOf="@+id/pronounceButton" android:layout_height="wrap_content" android:id="@+id/searchEditText" android:scrollHorizontally="false" android:singleLine="true" android:hint="@string/searchBarHint">
+    android:layout_gravity="bottom|center_horizontal" android:id="@+id/mainPanel" android:background="@drawable/test1">
+    <RelativeLayout android:layout_width="fill_parent"
+    				android:id="@+id/searchPanel"     							
+    				android:background="@drawable/test2" 
+    				android:layout_height="55dp"> 
+    				   				
+        <Button android:layout_width="wrap_content"
+        		android:layout_height="wrap_content"
+        		android:id="@+id/pronounceButton"        		
+        		android:layout_alignParentLeft="true" 
+        		android:layout_centerVertical="true"
+        		android:drawableLeft="@drawable/ic_lock_silent_mode_off_custom">
+        		</Button>
+        		
+        <AutoCompleteTextView android:layout_width="wrap_content"
+        					  android:layout_height="wrap_content"        					  
+        					  android:id="@+id/searchEditText"   
+        					  android:focusable="true" 
+        					  android:hint="@string/searchBarHint" 
+        					  android:imeOptions="actionGo|actionSearch|actionSend|actionNext|actionDone" 
+        					  android:layout_toLeftOf="@+id/searchButton"
+        					  android:layout_toRightOf="@+id/pronounceButton"
+        					  android:layout_centerVertical="true">
             <requestFocus></requestFocus>
         </AutoCompleteTextView>
-        <Button android:layout_width="wrap_content" android:background="@drawable/search_button" android:layout_centerVertical="true" android:id="@+id/searchButton" android:layout_alignParentRight="true" android:layout_height="wrap_content" android:typeface="sans"></Button>
+        
+        <Button android:layout_width="wrap_content"
+        		android:layout_height="wrap_content"
+        		android:id="@+id/searchButton"
+        		android:drawableLeft="@drawable/ic_btn_search_custom"   
+        		android:layout_centerVertical="true"        		
+        		android:layout_alignParentRight="true"></Button>
     </RelativeLayout>
-    <!-- <ScrollView android:id="@+id/resultScrollView" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_weight="1" android:padding="3dip" android:background="@drawable/result_background">
-    </ScrollView>-->
 	
-    <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_weight="1" android:padding="3dip" android:background="@drawable/result_background" android:id="@+id/resultPanel">
+    <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_weight="1" android:padding="3dip" android:id="@+id/resultPanel" android:background="@drawable/result_background">
     </LinearLayout>  
          
     

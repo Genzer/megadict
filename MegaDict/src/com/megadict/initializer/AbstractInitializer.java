@@ -19,10 +19,7 @@ public abstract class AbstractInitializer extends Observable implements Initiali
 
 	// Composition variables.
 
-
-	public AbstractInitializer(final Context context,
-			final BusinessComponent businessComponent,
-			final DictionaryComponent dictionaryComponent) {
+	public AbstractInitializer(final Context context, final BusinessComponent businessComponent, final DictionaryComponent dictionaryComponent) {
 		super();
 		this.context = context;
 		this.businessComponent = businessComponent;
@@ -39,20 +36,21 @@ public abstract class AbstractInitializer extends Observable implements Initiali
 
 	protected void doSearching(final String word) {
 		// THE OUTER IF MAKES SURE THAT NO CRASH IN MEGADICT.
-		/// I'M NOT SATISFIED WITH THIS BECAUSE THE DICTIONARY MODEL CAN'T BE USED BY MULTIPLE THREADS.
-		/// IT MEANS THAT WHEN RECOMMENDING IS RUNNING,
-		/// WE CAN'T RUN ANOTHER THREAD TO SEARCH WORD ON THE SAME DICTIONARY MODEL.
-		/// NEED TO FIX THE DICTIONARY MODEL.
+		// / I'M NOT SATISFIED WITH THIS BECAUSE THE DICTIONARY MODEL CAN'T BE USED BY MULTIPLE
+		// THREADS.
+		// / IT MEANS THAT WHEN RECOMMENDING IS RUNNING,
+		// / WE CAN'T RUN ANOTHER THREAD TO SEARCH WORD ON THE SAME DICTIONARY MODEL.
+		// / NEED TO FIX THE DICTIONARY MODEL.
 
 		// Get useful components.
 		final WordSearcher searcher = businessComponent.getSearcher();
 		final WordRecommender recommender = businessComponent.getRecommender();
 
-		if(!recommender.didAllRecommendTasksFinish()) {
+		if (!recommender.didAllRecommendTasksFinish()) {
 			recommender.cancelRecommending();
 		}
 
-		if(searcher.didAllSearchTasksFinish()) {
+		if (searcher.didAllSearchTasksFinish()) {
 			searcher.search(word);
 		} else {
 			Utility.messageBox(context, R.string.searching);

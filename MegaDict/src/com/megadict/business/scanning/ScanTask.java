@@ -21,8 +21,7 @@ public class ScanTask extends AbstractScanTask {
 	private final DictionaryComponent dictionaryComponent;
 	private final ModelMap models;
 
-	public ScanTask(final DictionaryScanner scanner, final ModelMap models,
-			final DictionaryComponent dictionaryComponent) {
+	public ScanTask(final DictionaryScanner scanner, final ModelMap models, final DictionaryComponent dictionaryComponent) {
 		super();
 		this.scanner = scanner;
 		this.models = models;
@@ -31,7 +30,7 @@ public class ScanTask extends AbstractScanTask {
 
 	@Override
 	protected void onPreExecute() {
-		if(scanner.didAllScanTasksFinish()) {
+		if (scanner.didAllScanTasksFinish()) {
 			dictionaryComponent.getProgressBar().setVisibility(ProgressBar.VISIBLE);
 		}
 		super.onPreExecute();
@@ -48,16 +47,20 @@ public class ScanTask extends AbstractScanTask {
 		try {
 			// Create callables.
 			Dictionary dictionary;
-			if(type.equals(ChosenModel.LOCAL_DICTIONARY)) {
+			if (type.equals(ChosenModel.LOCAL_DICTIONARY)) {
 				// Create dict info.
-				final DictionaryInformation info = DictionaryInformation.newInstance(path);
+				final DictionaryInformation info =
+						DictionaryInformation.newInstance(path);
 				// Create necessary files.
-				final IndexFile indexFile = IndexFile.makeFile(info.getIndexFile());
-				final DictionaryFile dictionaryFile = DictionaryFile.makeRandomAccessFile( info.getDataFile());
-				dictionary = new DICTDictionary.Builder(indexFile, dictionaryFile).enableSplittingIndexFile().build();
+				final IndexFile indexFile =
+						IndexFile.makeFile(info.getIndexFile());
+				final DictionaryFile dictionaryFile =
+						DictionaryFile.makeRandomAccessFile(info.getDataFile());
+				dictionary =
+						new DICTDictionary.Builder(indexFile, dictionaryFile).enableSplittingIndexFile().build();
 			} else {
 				dictionary = new WikiDictionary(path);
-				//dictionary = new WikiMobileDictionary(path);
+				// dictionary = new WikiMobileDictionary(path);
 			}
 
 			// Store models.
@@ -74,7 +77,7 @@ public class ScanTask extends AbstractScanTask {
 	@Override
 	protected void onPostExecute(final Void result) {
 		super.onPostExecute(result);
-		if(scanner.didAllScanTasksFinish()) {
+		if (scanner.didAllScanTasksFinish()) {
 			// Notify observers.
 			scanner.dictionaryModelsChanged();
 			// Refresh start page.

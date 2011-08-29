@@ -10,14 +10,12 @@ import com.megadict.widget.ResultView;
 
 public class TextSelector {
 	public void selectText(final Context context, final ResultView resultView, final String tag) {
-		try
-		{
-			final KeyEvent shiftPressEvent = new KeyEvent(0, 0, KeyEvent.ACTION_DOWN,
-					KeyEvent.KEYCODE_SHIFT_LEFT, 0, 0);
+		try {
+			final KeyEvent shiftPressEvent =
+					new KeyEvent(0, 0, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_SHIFT_LEFT, 0, 0);
 			shiftPressEvent.dispatch(resultView);
 			Utility.messageBox(context, R.string.selectText);
-		}
-		catch (final Exception e) {
+		} catch (final Exception e) {
 			Log.e(tag, context.getString(R.string.canNotSelectText), e);
 		}
 	}

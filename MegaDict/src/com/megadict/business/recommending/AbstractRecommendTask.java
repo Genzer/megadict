@@ -13,7 +13,7 @@ public abstract class AbstractRecommendTask extends AsyncTask<String, Void, List
 
 	@Override
 	protected void onPreExecute() {
-		if(onPreExecuteListener != null) {
+		if (onPreExecuteListener != null) {
 			onPreExecuteListener.onPreExecute();
 		}
 		working = true;
@@ -25,7 +25,7 @@ public abstract class AbstractRecommendTask extends AsyncTask<String, Void, List
 	@Override
 	protected void onPostExecute(final List<String> list) {
 		working = false;
-		if(onPostExecuteListener != null) {
+		if (onPostExecuteListener != null) {
 			onPostExecuteListener.onPostExecute(list);
 		}
 	}

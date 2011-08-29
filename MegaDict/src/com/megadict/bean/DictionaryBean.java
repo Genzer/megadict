@@ -2,7 +2,6 @@ package com.megadict.bean;
 
 import com.megadict.model.ChosenModel;
 
-
 public class DictionaryBean {
 	private final int id;
 	private final String name;

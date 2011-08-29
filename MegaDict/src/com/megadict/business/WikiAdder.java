@@ -29,23 +29,17 @@ public class WikiAdder {
 	public void showDialog() {
 		final List<String> addedCodes = new ArrayList<String>();
 
-		new AlertDialog.Builder(context)
-		.setIcon(R.drawable.crystal_add)
-		.setTitle(R.string.wikiDialogTitle)
-		.setMultiChoiceItems(languageNames.toArray(new String[languageNames.size()]), null,
-				new DialogInterface.OnMultiChoiceClickListener() {
+		new AlertDialog.Builder(context).setIcon(R.drawable.crystal_add).setTitle(R.string.wikiDialogTitle).setMultiChoiceItems(languageNames.toArray(new String[languageNames.size()]), null, new DialogInterface.OnMultiChoiceClickListener() {
 			@Override
 			public void onClick(final DialogInterface dialog, final int which, final boolean isChecked) {
 				addOrRemoveCountryCode(addedCodes, isChecked, countryCodes.get(which));
 			}
-		})
-		.setPositiveButton(R.string.ok, new OnClickListener() {
+		}).setPositiveButton(R.string.ok, new OnClickListener() {
 			@Override
 			public void onClick(final DialogInterface dialog, final int which) {
 				scanner.addWikiDictionaries(addedCodes, rescanComponent);
 			}
-		})
-		.setNegativeButton(R.string.cancel, new OnClickListener() {
+		}).setNegativeButton(R.string.cancel, new OnClickListener() {
 			@Override
 			public void onClick(final DialogInterface dialog, final int which) {
 				dialog.cancel();
@@ -54,10 +48,10 @@ public class WikiAdder {
 	}
 
 	private void addOrRemoveCountryCode(final List<String> addedCodes, final boolean isChecked, final String code) {
-		if(isChecked) {
+		if (isChecked) {
 			addedCodes.add(code);
 		} else {
-			if(addedCodes.contains(code)) {
+			if (addedCodes.contains(code)) {
 				addedCodes.remove(code);
 			}
 		}

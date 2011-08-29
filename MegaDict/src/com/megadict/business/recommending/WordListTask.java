@@ -43,8 +43,8 @@ public class WordListTask extends AsyncTask<Void, Void, String[]> {
 	@Override
 	protected void onPostExecute(final String[] items) {
 		final List<String> words = new ArrayList<String>();
-		for(final String item : items) {
-			if(!"".equals(item)) {
+		for (final String item : items) {
+			if (!"".equals(item)) {
 				words.add(item);
 			}
 		}
@@ -52,7 +52,7 @@ public class WordListTask extends AsyncTask<Void, Void, String[]> {
 		builder.setItems(words.toArray(new CharSequence[words.size()]), new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(final DialogInterface dialog, final int which) {
-				if(clickWordListener != null) {
+				if (clickWordListener != null) {
 					word = words.get(which);
 					clickWordListener.onClickWord();
 				}

@@ -14,18 +14,18 @@ import com.megadict.widget.ResultView;
 import com.megadict.widget.ResultView.OnSelectTextListener;
 
 public final class ResultViewInitializer extends AbstractInitializer {
-	public ResultViewInitializer(final Context context,
-			final BusinessComponent businessComponent,
-			final DictionaryComponent dictionaryComponent) {
+	public ResultViewInitializer(final Context context, final BusinessComponent businessComponent, final DictionaryComponent dictionaryComponent) {
 		super(context, businessComponent, dictionaryComponent);
 	}
 
 	@Override
 	protected void init() {
 		// Prepare components.
-		final ClipboardManager clipboardManager = (ClipboardManager)context.getSystemService(Context.CLIPBOARD_SERVICE);
+		final ClipboardManager clipboardManager =
+				(ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
 		final ResultView resultView = dictionaryComponent.getResultView();
-		final AutoCompleteTextView searchBar = dictionaryComponent.getSearchBar();
+		final AutoCompleteTextView searchBar =
+				dictionaryComponent.getSearchBar();
 
 		resultView.setLayoutParams(new ViewGroup.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 		resultView.setBackgroundColor(0x00000000);
@@ -42,11 +42,12 @@ public final class ResultViewInitializer extends AbstractInitializer {
 						preventRecommending();
 					}
 				});
-				task.execute((Void [])null);
+				task.execute((Void[]) null);
 			}
 		});
 	}
 
 	@Override
-	public void doNothing() { /* Empty for no reason, ok? */ }
+	public void doNothing() { /* Empty for no reason, ok? */
+	}
 }

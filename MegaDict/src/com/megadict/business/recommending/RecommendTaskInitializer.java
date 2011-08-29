@@ -16,7 +16,8 @@ import com.megadict.business.recommending.AbstractRecommendTask.OnPreExecuteList
 public class RecommendTaskInitializer {
 	// Recommend tasks' variables.
 	private final static int RECOMMENDED_WORD_COUNT = 50;
-	private final SortedSet<String> recommendWords = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+	private final SortedSet<String> recommendWords =
+			new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
 
 	private final WordRecommender recommender;
 	private final DictionaryComponent dictionaryComponent;
@@ -31,7 +32,7 @@ public class RecommendTaskInitializer {
 			@Override
 			public void onPreExecute() {
 				System.out.println("onPreExecute");
-				if(recommender.didAllRecommendTasksFinish()) {
+				if (recommender.didAllRecommendTasksFinish()) {
 					System.out.println("onPreExecute inner");
 					recommendWords.clear();
 					dictionaryComponent.getProgressBar().setVisibility(ProgressBar.VISIBLE);
@@ -46,18 +47,19 @@ public class RecommendTaskInitializer {
 			public void onPostExecute(final List<String> list) {
 				System.out.println("onPostExecute");
 				recommendWords.addAll(list);
-				if(recommender.didAllRecommendTasksFinish() && DictionaryActivity.activityRunning) {
+				if (recommender.didAllRecommendTasksFinish()
+						&& DictionaryActivity.activityRunning) {
 					System.out.println("onPostExecute inner");
 					final List<String> adaptedList = new ArrayList<String>();
 					int i = 0;
-					for(final String s : recommendWords) {
-						if(i == RECOMMENDED_WORD_COUNT) break;
-						++i; adaptedList.add(s);
+					for (final String s : recommendWords) {
+						if (i == RECOMMENDED_WORD_COUNT) break;
+						++i;
+						adaptedList.add(s);
 					}
 
-					final ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-							dictionaryComponent.getContext(),
-							android.R.layout.simple_dropdown_item_1line, adaptedList);
+					final ArrayAdapter<String> adapter =
+							new ArrayAdapter<String>(dictionaryComponent.getContext(), android.R.layout.simple_dropdown_item_1line, adaptedList);
 					dictionaryComponent.getSearchBar().setAdapter(adapter);
 					// Show dropdown list.
 					dictionaryComponent.getSearchBar().showDropDown();

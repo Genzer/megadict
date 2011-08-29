@@ -26,7 +26,7 @@ public class RecommendTask extends AbstractRecommendTask {
 
 	@Override
 	protected List<String> doInBackground(final String... params) {
-		while(!cancelled) {
+		while (!cancelled) {
 			return model.recommendWord(params[0]);
 		}
 		return Collections.emptyList();

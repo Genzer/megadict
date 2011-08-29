@@ -23,31 +23,26 @@ public class HistoryDisplayer extends AbstractInitializer {
 	}
 
 	@Override
-	protected void init() { /* Empty for no reason, ok? */ }
+	protected void init() { /* Empty for no reason, ok? */
+	}
 
 	public void showHistoryDialog(final List<String> list) {
-		new AlertDialog.Builder(context)
-		.setTitle(R.string.historyDialogTitle)
-		.setIcon(R.drawable.crystal_history)
-		.setPositiveButton(R.string.deleteEllipsis, new OnClickListener() {
+		new AlertDialog.Builder(context).setTitle(R.string.historyDialogTitle).setIcon(R.drawable.crystal_history).setPositiveButton(R.string.deleteEllipsis, new OnClickListener() {
 			@Override
 			public void onClick(final DialogInterface dialog, final int which) {
 				showDeleteDialog(list);
 			}
-		})
-		.setNeutralButton(R.string.clear, new OnClickListener() {
+		}).setNeutralButton(R.string.clear, new OnClickListener() {
 			@Override
 			public void onClick(final DialogInterface dialog, final int which) {
 				businessComponent.getSearcher().clearHistory();
 			}
-		})
-		.setNegativeButton(R.string.close, new OnClickListener() {
+		}).setNegativeButton(R.string.close, new OnClickListener() {
 			@Override
 			public void onClick(final DialogInterface dialog, final int which) {
 				dialog.cancel();
 			}
-		})
-		.setItems(list.toArray(new String[list.size()]), new OnClickListener() {
+		}).setItems(list.toArray(new String[list.size()]), new OnClickListener() {
 			@Override
 			public void onClick(final DialogInterface dialog, final int which) {
 				final String chosenWord = list.get(which);
@@ -61,29 +56,24 @@ public class HistoryDisplayer extends AbstractInitializer {
 	private void showDeleteDialog(final List<String> list) {
 		final List<String> removedItems = new ArrayList<String>();
 
-		new AlertDialog.Builder(context)
-		.setTitle(R.string.historyDialogTitle)
-		.setIcon(R.drawable.crystal_history)
-		.setPositiveButton(R.string.ok, new OnClickListener() {
+		new AlertDialog.Builder(context).setTitle(R.string.historyDialogTitle).setIcon(R.drawable.crystal_history).setPositiveButton(R.string.ok, new OnClickListener() {
 			@Override
 			public void onClick(final DialogInterface dialog, final int which) {
 				businessComponent.getSearcher().removeWordFromHistory(removedItems);
 			}
-		})
-		.setNegativeButton(R.string.cancel, new OnClickListener() {
+		}).setNegativeButton(R.string.cancel, new OnClickListener() {
 			@Override
 			public void onClick(final DialogInterface dialog, final int which) {
 				dialog.cancel();
 			}
-		})
-		.setMultiChoiceItems(list.toArray(new String[list.size()]), null, new OnMultiChoiceClickListener() {
+		}).setMultiChoiceItems(list.toArray(new String[list.size()]), null, new OnMultiChoiceClickListener() {
 			@Override
 			public void onClick(final DialogInterface dialog, final int which, final boolean isChecked) {
-				if(isChecked) {
+				if (isChecked) {
 					removedItems.add(list.get(which));
 				} else {
 					final String item = list.get(which);
-					if(removedItems.contains(item)) {
+					if (removedItems.contains(item)) {
 						removedItems.remove(item);
 					}
 				}
@@ -92,5 +82,6 @@ public class HistoryDisplayer extends AbstractInitializer {
 	}
 
 	@Override
-	public void doNothing() { /* Empty for no reason, ok? */ }
+	public void doNothing() { /* Empty for no reason, ok? */
+	}
 }

@@ -11,16 +11,15 @@ import com.megadict.bean.DictionaryComponent;
 
 public class SearchButtonInitializer extends AbstractInitializer {
 
-	public SearchButtonInitializer(final Context context,
-			final BusinessComponent businessComponent,
-			final DictionaryComponent dictionaryComponent) {
+	public SearchButtonInitializer(final Context context, final BusinessComponent businessComponent, final DictionaryComponent dictionaryComponent) {
 		super(context, businessComponent, dictionaryComponent);
 	}
 
 	@Override
 	protected void init() {
 		final Button searchButton = dictionaryComponent.getSearchButton();
-		final AutoCompleteTextView searchBar = dictionaryComponent.getSearchBar();
+		final AutoCompleteTextView searchBar =
+				dictionaryComponent.getSearchBar();
 		setOnClickListener(searchButton, searchBar);
 	}
 
@@ -35,5 +34,6 @@ public class SearchButtonInitializer extends AbstractInitializer {
 	}
 
 	@Override
-	public void doNothing() {/* Empty for no reason, ok? */ }
+	public void doNothing() {/* Empty for no reason, ok? */
+	}
 }

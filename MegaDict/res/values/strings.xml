@@ -37,6 +37,7 @@
     <string name="close">Close</string>
     <string name="searchBarHint">Enter word here</string>
     <string name="adding">Adding... Please wait.</string>
+    <string name="chooseAnItem">Choose an item</string>   
     
     <!-- Dialog title -->
     <string name="wordListDialogTitle">Pick a word</string>
@@ -52,6 +53,8 @@
     <!-- Language -->
     <string name="languagePrefTitle">Language</string>
     <string name="mainPrefTitle">Settings</string>    
-    <string name="languagePrefKey">language</string>        
+    <string name="languagePrefKey">language</string>    
+    <string name="pronounceButtonLabel">Pronounce</string>    
+         
 
 </resources>

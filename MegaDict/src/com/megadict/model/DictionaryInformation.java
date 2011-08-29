@@ -24,10 +24,8 @@ public class DictionaryInformation {
 		/* Create index and data file path. */
 		final String filePath = parentFilePath.getAbsolutePath();
 		final String separator = System.getProperty("file.separator");
-		final String indexFilePath =
-			filePath + separator + "dict.index";
-		final String dataFilePath =
-			filePath + separator + "dict.dict";
+		final String indexFilePath = filePath + separator + "dict.index";
+		final String dataFilePath = filePath + separator + "dict.dict";
 
 		/* Check if index file and data file exist. If not, throw exception. */
 		indexFile = new File(indexFilePath);

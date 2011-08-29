@@ -23,7 +23,7 @@ public class AddWikiTask extends AbstractAddWikiTask {
 
 	@Override
 	protected void onPreExecute() {
-		if(scanner.didAllAddWikiTasksFinish()) {
+		if (scanner.didAllAddWikiTasksFinish()) {
 			rescanComponent.getProgressDialog().show();
 		}
 		super.onPreExecute();
@@ -31,15 +31,17 @@ public class AddWikiTask extends AbstractAddWikiTask {
 
 	@Override
 	protected Void doInBackground(final String... params) {
-		final SQLiteDatabase database = DatabaseHelper.getDatabase(rescanComponent.getContext());
+		final SQLiteDatabase database =
+				DatabaseHelper.getDatabase(rescanComponent.getContext());
 
 		// Get country code
 		final String countryCode = params[0];
 		// Create model.
 		final Dictionary model = new WikiDictionary(countryCode);
-		//final Dictionary model = new WikiMobileDictionary(countryCode);
+		// final Dictionary model = new WikiMobileDictionary(countryCode);
 		// Insert dictionary to database.
-		final int dictID = ChosenModel.insertDictionary(database, model.getName(), countryCode, ChosenModel.WIKI_DICTIONARY, 0);
+		final int dictID =
+				ChosenModel.insertDictionary(database, model.getName(), countryCode, ChosenModel.WIKI_DICTIONARY, 0);
 
 		// Store model.
 		models.put(dictID, model);
@@ -49,7 +51,7 @@ public class AddWikiTask extends AbstractAddWikiTask {
 	@Override
 	protected void onPostExecute(final Void result) {
 		super.onPostExecute(result);
-		if(scanner.didAllAddWikiTasksFinish()) {
+		if (scanner.didAllAddWikiTasksFinish()) {
 			scanner.dictionaryModelsChanged();
 			// Requery the cursor to update list view.
 			rescanComponent.getCursor().requery();

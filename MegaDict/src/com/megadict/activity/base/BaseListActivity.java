@@ -8,6 +8,7 @@ import com.megadict.R;
 
 public abstract class BaseListActivity extends ListActivity {
 	private final int layoutID;
+
 	public BaseListActivity(final int layoutID) {
 		super();
 		this.layoutID = layoutID;

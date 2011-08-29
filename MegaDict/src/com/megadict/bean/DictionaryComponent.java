@@ -25,27 +25,33 @@ public class DictionaryComponent {
 		private Context context;
 
 		public Builder searchButton(final Button searchButton) {
-			this.searchButton = searchButton; return this;
+			this.searchButton = searchButton;
+			return this;
 		}
 
 		public Builder searchBar(final AutoCompleteTextView searchBar) {
-			this.searchBar = searchBar;	return this;
+			this.searchBar = searchBar;
+			return this;
 		}
 
 		public Builder resultView(final ResultView resultView) {
-			this.resultView = resultView; return this;
+			this.resultView = resultView;
+			return this;
 		}
 
 		public Builder resultTextMaker(final ResultTextMaker resultTextMaker) {
-			this.resultTextMaker = resultTextMaker; return this;
+			this.resultTextMaker = resultTextMaker;
+			return this;
 		}
 
 		public Builder progressBar(final ProgressBar progressBar) {
-			this.progressBar = progressBar; return this;
+			this.progressBar = progressBar;
+			return this;
 		}
 
 		public Builder context(final Context context) {
-			this.context = context; return this;
+			this.context = context;
+			return this;
 		}
 
 		public DictionaryComponent build() {

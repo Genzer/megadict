@@ -9,6 +9,7 @@ import com.megadict.utility.Utility;
 
 public abstract class BaseActivity extends Activity {
 	private final int layoutID;
+
 	public BaseActivity(final int layoutID) {
 		super();
 		this.layoutID = layoutID;

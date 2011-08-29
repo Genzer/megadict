@@ -10,7 +10,8 @@ public final class ExternalStorage {
 	private final static String DOWNLOAD_DIRECTORY = "Download";
 	private final static String MEGADICT_DIRECTORY = "megadict";
 
-	private ExternalStorage(){}
+	private ExternalStorage() {
+	}
 
 	public static File getExternalDirectory() {
 		if (!isExternalStorageAvailable() && isExternalStorageReadOnly()) {
@@ -18,21 +19,23 @@ public final class ExternalStorage {
 		}
 
 		/* Only use this in API 2.2 */
-		//final File downloadDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+		// final File downloadDirectory =
+		// Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
 
 		/* Absolute path for every API */
-		//final File downloadDirectory = new File("/sdcard/Download");
+		// final File downloadDirectory = new File("/sdcard/Download");
 
-		final File downloadDirectory = new File(
-				Environment.getExternalStorageDirectory().getAbsolutePath() +
-				File.separator + DOWNLOAD_DIRECTORY);
+		final File downloadDirectory =
+				new File(Environment.getExternalStorageDirectory().getAbsolutePath()
+						+ File.separator + DOWNLOAD_DIRECTORY);
 		// Create "Download" directory if it doesn't exist.
 		if (!downloadDirectory.exists()) {
 			downloadDirectory.mkdir();
 		}
 
-		final File externalDirectory = new File(downloadDirectory.getAbsolutePath() +
-				File.separator	+ MEGADICT_DIRECTORY);
+		final File externalDirectory =
+				new File(downloadDirectory.getAbsolutePath() + File.separator
+						+ MEGADICT_DIRECTORY);
 		// Create megadict directory if it doesn't exits.
 		if (!externalDirectory.exists()) {
 			externalDirectory.mkdir();

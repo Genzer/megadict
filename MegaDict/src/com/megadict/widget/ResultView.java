@@ -4,14 +4,14 @@ import android.content.Context;
 import android.text.ClipboardManager;
 import android.webkit.WebView;
 
-
 public class ResultView extends WebView {
 	private final ClipboardManager manager;
 	protected OnSelectTextListener selectTextListner;
 
 	public ResultView(final Context context) {
 		super(context);
-		manager = (ClipboardManager)context.getSystemService(Context.CLIPBOARD_SERVICE);
+		manager =
+				(ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
 	}
 
 	@Override

@@ -24,5 +24,4 @@ public final class MegaDictApp extends Application {
 		super.onCreate();
 	}
 
-
 }

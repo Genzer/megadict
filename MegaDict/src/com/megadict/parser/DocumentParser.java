@@ -20,7 +20,8 @@ public class DocumentParser {
 	 * @throws DocumentParserException if the document cannot be created.
 	 */
 	public Document parse(final File file) throws DocumentParserException {
-		final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		final DocumentBuilderFactory factory =
+				DocumentBuilderFactory.newInstance();
 		try {
 			final DocumentBuilder builder = factory.newDocumentBuilder();
 			return builder.parse(file);

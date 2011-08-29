@@ -24,20 +24,22 @@ public final class WordRecommender implements Observer, RecommendTaskManager {
 
 	// Composition variables.
 	private final RecommendTaskInitializer recommendTaskInitializer;
-	private final List<AbstractRecommendTask> recommendTasks = new ArrayList<AbstractRecommendTask>();
+	private final List<AbstractRecommendTask> recommendTasks =
+			new ArrayList<AbstractRecommendTask>();
 	private final Handler recommendHandler = new RecommendHandler();
 	private Runnable recommendRunnable;
 
 	public WordRecommender(final List<Dictionary> dictionaryModels, final DictionaryComponent dictionaryComponent) {
 		this.dictionaryModels = dictionaryModels;
 		this.dictionaryComponent = dictionaryComponent;
-		recommendTaskInitializer = new RecommendTaskInitializer(this, dictionaryComponent);
+		recommendTaskInitializer =
+				new RecommendTaskInitializer(this, dictionaryComponent);
 	}
 
 	@Override
 	public boolean didAllRecommendTasksFinish() {
-		for(final AbstractRecommendTask task : recommendTasks) {
-			if(task.isWorking()) {
+		for (final AbstractRecommendTask task : recommendTasks) {
+			if (task.isWorking()) {
 				return false;
 			}
 		}
@@ -49,8 +51,8 @@ public final class WordRecommender implements Observer, RecommendTaskManager {
 		// Clear old tasks.
 		recommendTasks.clear();
 		// Create and execute tasks.
-		for(final Dictionary model : dictionaryModels) {
-			if(model instanceof DICTDictionary) {
+		for (final Dictionary model : dictionaryModels) {
+			if (model instanceof DICTDictionary) {
 				final AbstractRecommendTask task = new RecommendTask(model);
 				recommendTaskInitializer.setOnPreExecuteListener(task);
 				recommendTaskInitializer.setOnPostExecuteListener(task);
@@ -62,7 +64,7 @@ public final class WordRecommender implements Observer, RecommendTaskManager {
 
 	@Override
 	public void cancelRecommending() {
-		for(final AbstractRecommendTask task : recommendTasks) {
+		for (final AbstractRecommendTask task : recommendTasks) {
 			task.cancel(true);
 		}
 		// Cancelling must clear old tasks.
@@ -71,17 +73,17 @@ public final class WordRecommender implements Observer, RecommendTaskManager {
 
 	@Override
 	public void update(final Observable o, final Object arg) {
-		if(o instanceof DictionaryScanner) {
+		if (o instanceof DictionaryScanner) {
 			updateModels(arg);
-		} else if(o instanceof AbstractInitializer) {
+		} else if (o instanceof AbstractInitializer) {
 			// Remove old runnable in handler.
 			preventRecommending();
 
 			// Should recommending?
-			if(arg instanceof String) {
+			if (arg instanceof String) {
 				final String word = arg.toString();
 				// Check if a Runnable should be posted.
-				if(didAllRecommendTasksFinish() && !"".equals(word)) {
+				if (didAllRecommendTasksFinish() && !"".equals(word)) {
 					// postDelayed.
 					recommendRunnable = new RecommendRunnable(word);
 					recommendHandler.postDelayed(recommendRunnable, DELAY_TIME);
@@ -93,7 +95,7 @@ public final class WordRecommender implements Observer, RecommendTaskManager {
 	}
 
 	private void preventRecommending() {
-		if(recommendRunnable != null) {
+		if (recommendRunnable != null) {
 			recommendHandler.removeCallbacks(recommendRunnable);
 		}
 		// Dismiss if drop down list presented.
@@ -102,11 +104,10 @@ public final class WordRecommender implements Observer, RecommendTaskManager {
 
 	private void updateModels(final Object arg) {
 		@SuppressWarnings("unchecked")
-		final List<Dictionary> models = (List<Dictionary>)(arg);
+		final List<Dictionary> models = (List<Dictionary>) (arg);
 		dictionaryModels.clear();
 		dictionaryModels.addAll(models);
 	}
-
 
 	private class RecommendHandler extends Handler {
 		@Override
@@ -116,9 +117,10 @@ public final class WordRecommender implements Observer, RecommendTaskManager {
 		}
 	}
 
-	//============= Inner class ===============//
+	// ============= Inner class ===============//
 	private class RecommendRunnable implements Runnable {
 		private final String word;
+
 		public RecommendRunnable(final String word) {
 			this.word = word;
 		}

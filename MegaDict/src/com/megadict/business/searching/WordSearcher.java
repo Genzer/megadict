@@ -20,20 +20,21 @@ public final class WordSearcher implements Observer, SearchTaskManager {
 	// Composition variables.
 	private final SearchTaskInitializer searchTaskInitializer;
 	private String noDictionaryStr = "There is no dictionary";
-	private final List<AbstractSearchTask> searchTasks = new ArrayList<AbstractSearchTask>();
+	private final List<AbstractSearchTask> searchTasks =
+			new ArrayList<AbstractSearchTask>();
 	private final HistoryManager historyManager = new HistoryManager();
-
 
 	public WordSearcher(final List<Dictionary> dictionaryModels, final DictionaryComponent dictionaryComponent) {
 		this.dictionaryModels = dictionaryModels;
 		this.dictionaryComponent = dictionaryComponent;
-		searchTaskInitializer = new SearchTaskInitializer(this, dictionaryComponent);
+		searchTaskInitializer =
+				new SearchTaskInitializer(this, dictionaryComponent);
 	}
 
 	@Override
 	public boolean didAllSearchTasksFinish() {
-		for(final AbstractSearchTask task : searchTasks) {
-			if(task.isWorking()) {
+		for (final AbstractSearchTask task : searchTasks) {
+			if (task.isWorking()) {
 				return false;
 			}
 		}
@@ -45,18 +46,19 @@ public final class WordSearcher implements Observer, SearchTaskManager {
 		// Clear old tasks.
 		searchTasks.clear();
 
-		final ResultTextMaker resultTextMaker = dictionaryComponent.getResultTextMaker();
+		final ResultTextMaker resultTextMaker =
+				dictionaryComponent.getResultTextMaker();
 		// Reset resultTextMaker to make a new search.
 		resultTextMaker.resetMiddleBlock();
 
-		if(dictionaryModels.isEmpty()) {
+		if (dictionaryModels.isEmpty()) {
 			dictionaryComponent.getResultView().loadDataWithBaseURL(ResultTextMaker.ASSET_URL, resultTextMaker.getNoDictionaryHTML(noDictionaryStr), "text/html", "utf-8", null);
 		} else {
 			// Lower and trim it.
 			final String searchedWord = word.toLowerCase(Locale.ENGLISH).trim();
 
 			// Only search if searchedWord is not empty.
-			if(!"".equals(searchedWord)) {
+			if (!"".equals(searchedWord)) {
 				createAndStoreSearchTasks();
 				executeSearchTasks(searchedWord);
 			}
@@ -64,13 +66,13 @@ public final class WordSearcher implements Observer, SearchTaskManager {
 	}
 
 	private void executeSearchTasks(final String searchedWord) {
-		for(final AbstractSearchTask task : searchTasks) {
+		for (final AbstractSearchTask task : searchTasks) {
 			task.execute(searchedWord);
 		}
 	}
 
 	private void createAndStoreSearchTasks() {
-		for(final Dictionary dictionary : dictionaryModels) {
+		for (final Dictionary dictionary : dictionaryModels) {
 			final AbstractSearchTask task = new SearchTask(dictionary);
 			searchTaskInitializer.setOnPreExecuteListener(task);
 			searchTaskInitializer.setOnPostExecuteListener(task);
@@ -89,14 +91,12 @@ public final class WordSearcher implements Observer, SearchTaskManager {
 	@Override
 	public void update(final Observable o, final Object arg) {
 		@SuppressWarnings("unchecked")
-		final List<Dictionary> models = (List<Dictionary>)(arg);
+		final List<Dictionary> models = (List<Dictionary>) (arg);
 		dictionaryModels.clear();
 		dictionaryModels.addAll(models);
 	}
 
-
-
-	///////// ================ History operations ==================///////
+	// /////// ================ History operations ==================///////
 	protected void saveWordToHistory(final String word) {
 		historyManager.save(word);
 	}

@@ -1,6 +1,5 @@
 package com.megadict.activity;
 
-
 import java.util.List;
 
 import android.os.Bundle;
@@ -70,9 +69,10 @@ public final class DictionaryActivity extends BaseActivity {
 	@Override
 	protected void onStart() {
 		super.onStart();
-		if(Utility.isLocaleChanged()) {
+		if (Utility.isLocaleChanged()) {
 			// Change noDefinition string.
 			searcher.setNoDefinitionStr(getString(R.string.noDefinition));
+			dictionaryComponent.getSearchBar().setHint(R.string.searchBarHint);
 		}
 	}
 
@@ -91,7 +91,7 @@ public final class DictionaryActivity extends BaseActivity {
 
 	@Override
 	public boolean onPrepareOptionsMenu(final Menu menu) {
-		if(Utility.isLocaleChanged()) {
+		if (Utility.isLocaleChanged()) {
 			menu.clear();
 			final MenuInflater inflater = getMenuInflater();
 			inflater.inflate(R.menu.main_menu, menu);
@@ -106,13 +106,13 @@ public final class DictionaryActivity extends BaseActivity {
 			Utility.startActivity(this, "com.megadict.activity.SettingActivity");
 		} else if (item.getItemId() == R.id.manageMenuItem) {
 			Utility.startActivity(this, "com.megadict.activity.ManageActivity");
-		} else if(item.getItemId() == R.id.aboutMenuItem) {
+		} else if (item.getItemId() == R.id.aboutMenuItem) {
 			Utility.startActivity(this, "com.megadict.activity.AboutActivity");
-		} else if(item.getItemId() == R.id.selectTextMenuItem) {
+		} else if (item.getItemId() == R.id.selectTextMenuItem) {
 			textSelector.selectText(this, resultView, TAG);
-		} else if(item.getItemId() == R.id.historyMenuItem) {
+		} else if (item.getItemId() == R.id.historyMenuItem) {
 			final List<String> list = searcher.getHistoryList();
-			if(list.isEmpty()) {
+			if (list.isEmpty()) {
 				Utility.messageBox(this, R.string.emptyHistory);
 			} else {
 				historyDisplayer.showHistoryDialog(list);
@@ -124,49 +124,56 @@ public final class DictionaryActivity extends BaseActivity {
 	// ========================= Private functions ======================= //
 	private void initSomething() {
 		// Create UI components.
-		final ProgressBar progressBar = (ProgressBar)findViewById(R.id.progressBar);
+		final ProgressBar progressBar =
+				(ProgressBar) findViewById(R.id.progressBar);
 		final Button searchButton = (Button) findViewById(R.id.searchButton);
-		final AutoCompleteTextView searchBar = (AutoCompleteTextView)findViewById(R.id.searchEditText);
-		final ResultTextMaker resultTextMaker = new ResultTextMaker(getAssets());
+		final AutoCompleteTextView searchBar =
+				(AutoCompleteTextView) findViewById(R.id.searchEditText);
+		final ResultTextMaker resultTextMaker =
+				new ResultTextMaker(getAssets());
 		resultView = new ResultView(this);
 
 		// Create dictionaryComponent which contain UI components.
-		dictionaryComponent = new DictionaryComponent.Builder().
-				searchButton(searchButton).
-				searchBar(searchBar).resultView(resultView).
-				resultTextMaker(resultTextMaker).
-				progressBar(progressBar).
-				context(this).build();
+		dictionaryComponent =
+				new DictionaryComponent.Builder().searchButton(searchButton).searchBar(searchBar).resultView(resultView).resultTextMaker(resultTextMaker).progressBar(progressBar).context(this).build();
 
 		// Get scanner from application.
 		scanner = ((MegaDictApp) getApplication()).scanner;
 
 		// Create searcher, recommender and businessComponent.
-		final WordRecommender recommender = new WordRecommender(scanner.getDictionaryModels(), dictionaryComponent);
-		searcher = new WordSearcher(scanner.getDictionaryModels(), dictionaryComponent);
-		final BusinessComponent businessComponent = new BusinessComponent(searcher, recommender);
+		final WordRecommender recommender =
+				new WordRecommender(scanner.getDictionaryModels(), dictionaryComponent);
+		searcher =
+				new WordSearcher(scanner.getDictionaryModels(), dictionaryComponent);
+		final BusinessComponent businessComponent =
+				new BusinessComponent(searcher, recommender);
 		// Register observers for scanner.
 		scanner.addObserver(searcher);
 		scanner.addObserver(recommender);
 
 		// Init search button.
-		final SearchButtonInitializer searchButtonInitializer = new SearchButtonInitializer(this, businessComponent, dictionaryComponent);
+		final SearchButtonInitializer searchButtonInitializer =
+				new SearchButtonInitializer(this, businessComponent, dictionaryComponent);
 		searchButtonInitializer.doNothing();
 
 		// Init search bar.
-		final SearchBarInitializer searchBarInitializer = new SearchBarInitializer(this, businessComponent, dictionaryComponent);
+		final SearchBarInitializer searchBarInitializer =
+				new SearchBarInitializer(this, businessComponent, dictionaryComponent);
 		searchBarInitializer.addObserver(recommender);
 
 		// Init Result view.
-		final ResultViewInitializer resultViewInitializer = new ResultViewInitializer(this, businessComponent, dictionaryComponent);
+		final ResultViewInitializer resultViewInitializer =
+				new ResultViewInitializer(this, businessComponent, dictionaryComponent);
 		resultViewInitializer.addObserver(recommender);
 
 		// Init history retriever.
-		historyDisplayer = new HistoryDisplayer(this, businessComponent, dictionaryComponent);
+		historyDisplayer =
+				new HistoryDisplayer(this, businessComponent, dictionaryComponent);
 		historyDisplayer.addObserver(recommender);
 
 		// Init result panel.
-		final LinearLayout resultPanel = (LinearLayout)findViewById(R.id.resultPanel);
+		final LinearLayout resultPanel =
+				(LinearLayout) findViewById(R.id.resultPanel);
 		resultPanel.addView(resultView);
 
 		// Init text selector.

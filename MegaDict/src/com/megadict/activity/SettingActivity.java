@@ -18,7 +18,8 @@ public class SettingActivity extends PreferenceActivity {
 
 		final String locale = initLocale();
 		// These lines are used for selecting language preference, nothing more.
-		final DialogPreference languagePref = (DialogPreference)findPreference(getString(R.string.languagePrefKey));
+		final DialogPreference languagePref =
+				(DialogPreference) findPreference(getString(R.string.languagePrefKey));
 		languagePref.setDefaultValue(locale);
 		languagePref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			@Override
