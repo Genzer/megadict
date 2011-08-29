@@ -1,6 +1,7 @@
 package com.megadict.business.recommending;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -16,8 +17,10 @@ import com.megadict.business.recommending.AbstractRecommendTask.OnPreExecuteList
 public class RecommendTaskInitializer {
 	// Recommend tasks' variables.
 	private final static int RECOMMENDED_WORD_COUNT = 50;
-	private final SortedSet<String> recommendWords =
-			new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+	//	private final SortedSet<String> recommendWords =
+	//			new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+	private static final SortedSet<String> recommendWords =
+			Collections.synchronizedSortedSet(new TreeSet<String>(String.CASE_INSENSITIVE_ORDER));
 
 	private final WordRecommender recommender;
 	private final DictionaryComponent dictionaryComponent;
@@ -46,6 +49,7 @@ public class RecommendTaskInitializer {
 			@Override
 			public void onPostExecute(final List<String> list) {
 				System.out.println("onPostExecute");
+				System.out.println(list.toString());
 				recommendWords.addAll(list);
 				if (recommender.didAllRecommendTasksFinish()
 						&& DictionaryActivity.activityRunning) {
@@ -57,6 +61,8 @@ public class RecommendTaskInitializer {
 						++i;
 						adaptedList.add(s);
 					}
+
+					System.out.println("Size: " + adaptedList.size());
 
 					final ArrayAdapter<String> adapter =
 							new ArrayAdapter<String>(dictionaryComponent.getContext(), android.R.layout.simple_dropdown_item_1line, adaptedList);
