@@ -1,10 +1,12 @@
-package com.megadict.model.parser;
+package com.megadict.format.dict.parser;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+
+import com.megadict.format.dict.parser.Base64TextParser;
 
 public class Base64TextParserTest {
 

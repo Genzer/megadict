@@ -150,7 +150,7 @@ public class DICTDictionaryTest {
         expectedException.expectMessage("C:\\not\\exists\\file.index does not exist.");
 
         IndexFile notExist = IndexFile.makeFile("C:/not/exists/file.index");
-        DictionaryFile dictFile = DictionaryFile.makeBufferedFile(sampleTest.getDictionaryFile());
+        DictionaryFile dictFile = DictionaryFile.makeRandomAccessFile(sampleTest.getDictionaryFile());
         new DICTDictionary.Builder(notExist, dictFile).build();
     }
 
@@ -160,7 +160,7 @@ public class DICTDictionaryTest {
         expectedException.expectMessage("C:\\not\\exists\\file.dict does not exist.");
 
         IndexFile indexFile = IndexFile.makeFile(sampleTest.getIndexFile());
-        DictionaryFile notExist = DictionaryFile.makeBufferedFile("C:/not/exists/file.dict");
+        DictionaryFile notExist = DictionaryFile.makeRandomAccessFile("C:/not/exists/file.dict");
         new DICTDictionary.Builder(indexFile, notExist).build();
     }
 

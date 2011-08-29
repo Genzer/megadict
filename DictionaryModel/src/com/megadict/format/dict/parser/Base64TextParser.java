@@ -1,4 +1,4 @@
-package com.megadict.model.parser;
+package com.megadict.format.dict.parser;
 
 
 /**
@@ -7,7 +7,7 @@ package com.megadict.model.parser;
  * @author Genzer
  * 
  */
-public class Base64TextParser  {
+class Base64TextParser  {
     
     /**
      * This decode table is a map of ASCII table and base64 character table.

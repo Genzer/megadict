@@ -2,7 +2,6 @@ package com.megadict.format.dict.parser;
 
 import com.megadict.exception.ParseIndexException;
 import com.megadict.format.dict.index.Index;
-import com.megadict.model.parser.Base64TextParser;
 
 class BackedByStringParser implements IndexParser {
 

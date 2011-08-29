@@ -17,7 +17,7 @@ public class DefinitionFinderTest {
         
         File dictRawFile = new File("C:/test/av.dict");
         
-        DictionaryFile dictFile = DictionaryFile.makeBufferedFile(dictRawFile);
+        DictionaryFile dictFile = DictionaryFile.makeRandomAccessFile(dictRawFile);
         
         DefinitionFinder finder = new DefinitionFinder(dictFile.getReader());
         

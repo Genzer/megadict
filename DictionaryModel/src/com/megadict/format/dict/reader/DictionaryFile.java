@@ -20,25 +20,7 @@ public class DictionaryFile {
     public static DictionaryFile makeRandomAccessFile(String dictFilePath) {
         return makeRandomAccessFile(new File(dictFilePath));
     }
-
-    public static DictionaryFile makeBufferedFile(File dictFile) {
-        DictFileReader bufferedReader = new MappedDictFileReader(dictFile);
-        return new DictionaryFile(dictFile, bufferedReader);
-    }
-
-    public static DictionaryFile makeBufferedFile(String dictFilePath) {
-        return makeBufferedFile(new File(dictFilePath));
-    }
-
-    public static DictionaryFile makeGZipFile(File gzipFile) {
-        DictFileReader gzipReader = new GZipDictFileReader(gzipFile);
-        return new DictionaryFile(gzipFile, gzipReader);
-    }
-
-    public static DictionaryFile makeGZipFile(String dictFilePath) {
-        return makeGZipFile(new File(dictFilePath));
-    }
-
+    
     public boolean exists() {
         return dictFile.exists();
     }

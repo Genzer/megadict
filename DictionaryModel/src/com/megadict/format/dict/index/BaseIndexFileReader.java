@@ -23,7 +23,6 @@ abstract class BaseIndexFileReader implements IndexFileReader {
     private static final int NUM_OF_CHAR_TO_BE_READ_ON;
     
     protected final StringBuilder builder = new StringBuilder(CHAR_BUFFER_SIZE);
-    //private final IndexParser indexParser = IndexParsers.newParser();
     protected final File indexFile;
     
     static {
