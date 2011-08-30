@@ -2,8 +2,7 @@ package com.megadict.format.dict;
 
 import java.util.List;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
 
 import com.megadict.format.dict.index.IndexFile;
 import com.megadict.format.dict.reader.DictionaryFile;

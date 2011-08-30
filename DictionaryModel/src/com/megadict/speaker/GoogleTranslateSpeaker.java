@@ -3,6 +3,7 @@ package com.megadict.speaker;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -11,20 +12,27 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.util.Arrays;
 import java.util.Locale;
 
 import android.content.Context;
 import android.media.MediaPlayer;
 
+import com.megadict.exception.InternetConnectionFailedException;
 import com.megadict.exception.OperationFailedException;
+import com.megadict.format.dict.util.FileUtil;
 import com.megadict.model.Speaker;
 
 public class GoogleTranslateSpeaker implements Speaker {
-    
+
     private static final String GOOGLE_URL = "http://translate.google.com/translate_tts?tl=%s&q=%s";
+
     private static final String USER_AGENT = "Mozilla/5.0 (Windows; U; Windows NT 5.1;" +
             " en-US; rv:1.9.2.3) Gecko/20100401";
+
     private static final String UNICODE_CHARSET = "UTF-8";
+
+    private static byte[] buffer = new byte[FileUtil.DEFAULT_BUFFER_SIZE_IN_BYTES];
 
     private final Locale locale;
     private final Context context;
@@ -34,68 +42,63 @@ public class GoogleTranslateSpeaker implements Speaker {
         this.context = context;
     }
 
+    /**
+     * @throws InternetConnectionFailedException - when failed to establish an connection to Internet.
+     */
     @Override
     public void speak(String text) {
 
-        URLConnection connection = makeConnection(text);
-
         File soundFile = null;
-        InputStream reader = null;
-        OutputStream writer = null;
 
         try {
-            reader = new BufferedInputStream(connection.getInputStream(), 8 * 1024);
-
-            writer = context.openFileOutput(text, Context.MODE_WORLD_READABLE);
-
-            byte[] buffer = new byte[8 * 1024];
-
-            int readByte = 0;
-
-            while ((readByte = reader.read(buffer)) != -1) {
-                writer.write(buffer, 0, readByte);
-            }
-        } catch (IOException ioe) {
-            throw new RuntimeException(ioe);
+            soundFile = downloadSoundFile(text);
+            FileInputStream soundStream = new FileInputStream(soundFile);
+            play(soundStream);
+        } catch (FileNotFoundException fnf) {
+            throw new OperationFailedException("playing sound file", fnf);
         } finally {
-            try {
-                reader.close();
-                writer.close();
-            } catch (IOException ioe) {
-                throw new RuntimeException(ioe);
+            if (soundFile != null) {
+                soundFile.delete();
             }
-        }
-
-        try {
-
-            String path = context.getFilesDir().getPath() + File.separator + text;
-            soundFile = new File(path);
-
-            MediaPlayer player = new MediaPlayer();
-
-            FileInputStream fis = new FileInputStream(soundFile);
-
-            player.setDataSource(fis.getFD());
-
-            player.prepare();
-            player.start();
-
-            player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.release();
-                }
-            });
-        } catch (Exception ioe) {
-            throw new RuntimeException(ioe);
-        } finally {
-            // soundFile.delete();
         }
 
     }
 
-    private URLConnection makeConnection(String text) {
+    private File downloadSoundFile(String text) {
+        File soundFile = null;
+        InputStream reader = null;
+        OutputStream writer = null;
+
+        URLConnection connection = establishConnection(text);
+
+        try {
+
+            reader = new BufferedInputStream(connection.getInputStream(), FileUtil.DEFAULT_BUFFER_SIZE_IN_BYTES);
+
+            writer = context.openFileOutput(text, Context.MODE_WORLD_READABLE);
+
+            int readByte = 0;
+
+            synchronized (buffer) {
+                while ((readByte = reader.read(buffer)) != -1) {
+                    writer.write(buffer, 0, readByte);
+                }
+                Arrays.fill(buffer, (byte) 0);
+            }
+
+        } catch (IOException ioe) {
+            throw new OperationFailedException("downloading data from connection", ioe);
+        } finally {
+            FileUtil.closeInputStream(reader);
+            FileUtil.closeOutputStream(writer);
+        }
+
+        String path = context.getFilesDir().getPath() + File.separator + text;
+        soundFile = new File(path);
+        return soundFile;
+    }
+
+    private URLConnection establishConnection(String text) {
         try {
             String requestUrl = makeUrlString(text);
 
@@ -103,12 +106,10 @@ public class GoogleTranslateSpeaker implements Speaker {
             connection.setRequestProperty("Accept-Charset", "UTF-8");
             connection.setRequestProperty("User-Agent", USER_AGENT);
             return connection;
-        } catch (UnsupportedEncodingException uee) {
-            throw new RuntimeException(uee);
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (MalformedURLException mue) {
+            throw new OperationFailedException("creating a url", mue);
+        } catch (IOException ioe) {
+            throw new InternetConnectionFailedException("Cannot establish an internet connection", ioe);
         }
     }
 
@@ -124,6 +125,27 @@ public class GoogleTranslateSpeaker implements Speaker {
         }
 
         return String.format(GOOGLE_URL, encodedLanguage, encodedText);
+    }
+
+    private void play(FileInputStream stream) {
+        try {
+            MediaPlayer player = new MediaPlayer();
+
+            player.setDataSource(stream.getFD());
+            player.prepare();
+            player.start();
+
+            player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    mp.release();
+                }
+            });
+
+        } catch (IOException ioe) {
+            throw new OperationFailedException("setting up MediaPlayer", ioe);
+        }
     }
 
     @Override
