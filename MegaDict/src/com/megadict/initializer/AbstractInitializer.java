@@ -2,8 +2,6 @@ package com.megadict.initializer;
 
 import java.util.Observable;
 
-import android.content.Context;
-
 import com.megadict.R;
 import com.megadict.bean.BusinessComponent;
 import com.megadict.bean.DictionaryComponent;
@@ -13,15 +11,12 @@ import com.megadict.utility.Utility;
 
 public abstract class AbstractInitializer extends Observable implements Initializer {
 	// Aggregation variables.
-	protected final Context context;
 	protected final BusinessComponent businessComponent;
 	protected final DictionaryComponent dictionaryComponent;
 
 	// Composition variables.
-
-	public AbstractInitializer(final Context context, final BusinessComponent businessComponent, final DictionaryComponent dictionaryComponent) {
+	public AbstractInitializer(final BusinessComponent businessComponent, final DictionaryComponent dictionaryComponent) {
 		super();
-		this.context = context;
 		this.businessComponent = businessComponent;
 		this.dictionaryComponent = dictionaryComponent;
 		init();
@@ -53,7 +48,7 @@ public abstract class AbstractInitializer extends Observable implements Initiali
 		if (searcher.didAllSearchTasksFinish()) {
 			searcher.search(word);
 		} else {
-			Utility.messageBox(context, R.string.searching);
+			Utility.messageBox(dictionaryComponent.getContext(), R.string.searching);
 		}
 
 	}

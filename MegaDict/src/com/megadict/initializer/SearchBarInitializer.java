@@ -1,6 +1,5 @@
 package com.megadict.initializer;
 
-import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -18,8 +17,8 @@ import com.megadict.utility.Utility;
 
 public class SearchBarInitializer extends AbstractInitializer {
 
-	public SearchBarInitializer(final Context context, final BusinessComponent businessComponent, final DictionaryComponent dictionaryComponent) {
-		super(context, businessComponent, dictionaryComponent);
+	public SearchBarInitializer(final BusinessComponent businessComponent, final DictionaryComponent dictionaryComponent) {
+		super(businessComponent, dictionaryComponent);
 	}
 
 	@Override
@@ -35,7 +34,7 @@ public class SearchBarInitializer extends AbstractInitializer {
 		setOnItemClickListener(searchBar);
 
 		// Disable soft keyboard.
-		Utility.disableSoftKeyboard(context, searchBar);
+		Utility.disableSoftKeyboard(dictionaryComponent.getContext(), searchBar);
 	}
 
 	private void addTextChangedListener(final AutoCompleteTextView searchBar) {
@@ -70,7 +69,7 @@ public class SearchBarInitializer extends AbstractInitializer {
 						|| actionId == EditorInfo.IME_ACTION_SEARCH
 						|| actionId == EditorInfo.IME_ACTION_NEXT
 						|| (event != null
-								&& event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
+						&& event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
 					preventRecommending();
 					doSearching(searchBar.getText().toString());
 					return true;
@@ -82,35 +81,21 @@ public class SearchBarInitializer extends AbstractInitializer {
 
 	private class SearchBarTextWatcher implements TextWatcher {
 		@Override
-		public void beforeTextChanged(final CharSequence s, final int start, final int count, final int after) { /*
-																												 * Empty
-																												 * for
-																												 * no
-																												 * reason
-																												 * ,
-																												 * ok
-																												 * ?
-																												 */
+		public void beforeTextChanged(final CharSequence s, final int start, final int count, final int after) {
+			/* Empty for no reason, ok? */
 		}
 
 		@Override
-		public void onTextChanged(final CharSequence s, final int start, final int before, final int count) { /*
-																											 * Empty
-																											 * for
-																											 * no
-																											 * reason
-																											 * ,
-																											 * ok
-																											 * ?
-																											 */
+		public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
+			/* Empty for no reason, ok? */
 		}
 
 		@Override
-		public void afterTextChanged(final Editable s) { /* Empty for no reason, ok? */
+		public void afterTextChanged(final Editable s) {
+			/* Empty for no reason, ok? */
 		}
 	}
 
 	@Override
-	public void doNothing() { /* Empty for no reason, ok? */
-	}
+	public void doNothing() { /* Empty for no reason, ok? */ }
 }

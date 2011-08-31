@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>    
     <!-- Button labels -->
-    <string name="settingButtonLabel">Setting</string>
-    <string name="dictionaryButtonLabel">Dictionary</string>
-    <string name="manageButtonLabel">Dictionary Management</string>
-    <string name="soundManageButtonLabel">Sound Management</string>
+    <string name="settingButtonLabel">Settings</string>    
+    <string name="manageButtonLabel">Manage</string>
+    <string name="selectButtonLabel">Select</string>    
+    <string name="historyButtonLabel">History</string>
+    <string name="moreButtonLabel">More</string>
     <string name="helpButtonLabel">Help</string>
     <string name="aboutButtonLabel">About</string>
     
@@ -13,7 +14,7 @@
     <string name="settingMenuItemTitle">Settings</string>
     <string name="manageMenuItemTitle">Manage</string>
     <string name="aboutMenuItemTitle">About</string>
-    <string name="selectTextMenuItemTitle">Select text</string>    
+    <string name="selectTextMenuItemTitle">Select</string>    
     <string name="historyMenuItemTitle">History</string>
     <string name="wikiMenuItemTitle">Wikipedia</string>
     
@@ -50,10 +51,12 @@
     <string name="aboutDialogLabel">About</string>
     <string name="storageLabel">Storage</string>
     
-    <!-- Language -->
-    <string name="languagePrefTitle">Language</string>
+    <!-- Language -->    
     <string name="mainPrefTitle">Settings</string>    
-    <string name="languagePrefKey">language</string>    
+    <string name="languagePrefKey">language</string>
+    <string name="languagePrefTitle">Language</string>
+    <string name="speakerLanguagePrefKey">speakerLanguage</string>
+    <string name="speakerLanguagePrefTitle">Speaker language</string>    
     <string name="pronounceButtonLabel">Pronounce</string>    
          
 

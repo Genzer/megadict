@@ -1,5 +1,7 @@
 package com.megadict.bean;
 
+import java.util.List;
+
 import android.content.Context;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -10,22 +12,31 @@ import com.megadict.widget.ResultView;
 
 public class DictionaryComponent {
 	private final Button searchButton;
+	private final Button pronounceButton;
 	private final AutoCompleteTextView searchBar;
 	private final ResultView resultView;
 	private final ResultTextMaker resultTextMaker;
 	private final ProgressBar progressBar;
 	private final Context context;
+	private final List<Button> bottomButtons;
 
 	public static class Builder {
 		private Button searchButton;
+		private Button pronounceButton;
 		private AutoCompleteTextView searchBar;
 		private ResultView resultView;
 		private ResultTextMaker resultTextMaker;
 		private ProgressBar progressBar;
 		private Context context;
+		private List<Button> bottomButtons;
 
 		public Builder searchButton(final Button searchButton) {
 			this.searchButton = searchButton;
+			return this;
+		}
+
+		public Builder pronounceButton(final Button pronounceButton) {
+			this.pronounceButton = pronounceButton;
 			return this;
 		}
 
@@ -54,6 +65,11 @@ public class DictionaryComponent {
 			return this;
 		}
 
+		public Builder bottomButtons(final List<Button> bottomButtons) {
+			this.bottomButtons = bottomButtons;
+			return this;
+		}
+
 		public DictionaryComponent build() {
 			return new DictionaryComponent(this);
 		}
@@ -61,15 +77,21 @@ public class DictionaryComponent {
 
 	public DictionaryComponent(final Builder builder) {
 		this.searchButton = builder.searchButton;
+		this.pronounceButton = builder.pronounceButton;
 		this.searchBar = builder.searchBar;
 		this.resultView = builder.resultView;
 		this.resultTextMaker = builder.resultTextMaker;
 		this.progressBar = builder.progressBar;
 		this.context = builder.context;
+		this.bottomButtons = builder.bottomButtons;
 	}
 
 	public Button getSearchButton() {
 		return searchButton;
+	}
+
+	public Button getPronounceButton() {
+		return pronounceButton;
 	}
 
 	public AutoCompleteTextView getSearchBar() {
@@ -90,6 +112,10 @@ public class DictionaryComponent {
 
 	public Context getContext() {
 		return context;
+	}
+
+	public List<Button> getBottomButtons() {
+		return bottomButtons;
 	}
 
 }

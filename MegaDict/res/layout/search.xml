@@ -3,18 +3,20 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:layout_gravity="bottom|center_horizontal" android:id="@+id/mainPanel" android:background="@drawable/test1">
+    android:layout_gravity="bottom|center_horizontal" android:id="@+id/mainPanel" android:background="@drawable/test2" android:padding="0dip">
     <RelativeLayout android:layout_width="fill_parent"
     				android:id="@+id/searchPanel"     							
     				android:background="@drawable/test2" 
-    				android:layout_height="55dp"> 
+    				android:layout_weight="0"
+    				android:paddingTop="2dip"
+    				android:paddingBottom="0dip" 
+    				android:layout_height="46dip"> 
     				   				
         <Button android:layout_width="wrap_content"
         		android:layout_height="wrap_content"
         		android:id="@+id/pronounceButton"        		
         		android:layout_alignParentLeft="true" 
-        		android:layout_centerVertical="true"
-        		android:drawableLeft="@drawable/ic_lock_silent_mode_off_custom">
+        		android:drawableLeft="@drawable/ic_lock_silent_mode_off_custom" android:layout_alignParentBottom="true">
         		</Button>
         		
         <AutoCompleteTextView android:layout_width="wrap_content"
@@ -24,8 +26,7 @@
         					  android:hint="@string/searchBarHint" 
         					  android:imeOptions="actionGo|actionSearch|actionSend|actionNext|actionDone" 
         					  android:layout_toLeftOf="@+id/searchButton"
-        					  android:layout_toRightOf="@+id/pronounceButton"
-        					  android:layout_centerVertical="true">
+        					  android:layout_toRightOf="@+id/pronounceButton" android:layout_alignParentBottom="true">
             <requestFocus></requestFocus>
         </AutoCompleteTextView>
         
@@ -33,12 +34,41 @@
         		android:layout_height="wrap_content"
         		android:id="@+id/searchButton"
         		android:drawableLeft="@drawable/ic_btn_search_custom"   
-        		android:layout_centerVertical="true"        		
-        		android:layout_alignParentRight="true"></Button>
+        		android:layout_alignParentRight="true" android:layout_alignParentBottom="true"></Button>
     </RelativeLayout>
 	
-    <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_weight="1" android:padding="3dip" android:id="@+id/resultPanel" android:background="@drawable/result_background">
-    </LinearLayout>  
+    <LinearLayout android:layout_width="fill_parent" 
+    			  android:layout_height="wrap_content" 
+    			  android:layout_weight="1" android:padding="3dip" 
+    			  android:id="@+id/resultPanel" 
+    			  android:background="@drawable/result_background">
+    </LinearLayout>
+    
+    <LinearLayout android:layout_weight="0" 
+    			  android:id="@+id/linearLayout1" 
+    			  android:layout_height="wrap_content" 
+    			  android:layout_width="match_parent"
+    			  android:weightSum="4">
+        <Button android:id="@+id/manageButton"
+        		style="@style/MainMenuButton"
+        		android:text="@string/manageButtonLabel" 
+        		android:layout_weight="1">
+        </Button>        
+        <Button android:id="@+id/historyButton" 
+        		style="@style/MainMenuButton" 
+        		android:text="@string/historyButtonLabel" 
+        		android:layout_weight="1"></Button>
+        <Button android:id="@+id/settingButton" 
+        		style="@style/MainMenuButton" 
+        		android:text="@string/settingButtonLabel" 
+        		android:layout_weight="1"></Button>
+        <Button android:id="@+id/moreButton" 
+        		style="@style/MainMenuButton" 
+        		android:text="@string/moreButtonLabel"
+        		android:layout_weight="1"></Button>
+    </LinearLayout>
+
+
          
     
 </LinearLayout>

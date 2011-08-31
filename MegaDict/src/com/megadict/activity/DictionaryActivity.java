@@ -1,5 +1,6 @@
 package com.megadict.activity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.os.Bundle;
@@ -22,6 +23,8 @@ import com.megadict.business.TextSelector;
 import com.megadict.business.recommending.WordRecommender;
 import com.megadict.business.scanning.DictionaryScanner;
 import com.megadict.business.searching.WordSearcher;
+import com.megadict.initializer.BottomButtonsInitializer;
+import com.megadict.initializer.PronounceButtonInitializer;
 import com.megadict.initializer.ResultViewInitializer;
 import com.megadict.initializer.SearchBarInitializer;
 import com.megadict.initializer.SearchButtonInitializer;
@@ -41,6 +44,8 @@ public final class DictionaryActivity extends BaseActivity {
 	private DictionaryScanner scanner;
 	private TextSelector textSelector;
 	private HistoryDisplayer historyDisplayer;
+	private PronounceButtonInitializer pronounceButtonInitializer;
+	final List<Button> bottomButtons = new ArrayList<Button>();;
 
 	public DictionaryActivity() {
 		super(R.layout.search);
@@ -73,6 +78,9 @@ public final class DictionaryActivity extends BaseActivity {
 			// Change noDefinition string.
 			searcher.setNoDefinitionStr(getString(R.string.noDefinition));
 			dictionaryComponent.getSearchBar().setHint(R.string.searchBarHint);
+			for(final Button button : bottomButtons) {
+				button.invalidate();
+			}
 		}
 	}
 
@@ -80,6 +88,12 @@ public final class DictionaryActivity extends BaseActivity {
 	protected void onRestart() {
 		super.onRestart();
 		scanner.updateDictionaryModels(dictionaryComponent);
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		pronounceButtonInitializer.shutDownMegaSpeaker();
 	}
 
 	@Override
@@ -127,15 +141,32 @@ public final class DictionaryActivity extends BaseActivity {
 		final ProgressBar progressBar =
 				(ProgressBar) findViewById(R.id.progressBar);
 		final Button searchButton = (Button) findViewById(R.id.searchButton);
-		final AutoCompleteTextView searchBar =
-				(AutoCompleteTextView) findViewById(R.id.searchEditText);
-		final ResultTextMaker resultTextMaker =
-				new ResultTextMaker(getAssets());
+		final Button pronounceButton = (Button)findViewById(R.id.pronounceButton);
+		final AutoCompleteTextView searchBar = (AutoCompleteTextView) findViewById(R.id.searchEditText);
+		// Bottom buttons.
+		final Button manageButton = (Button)findViewById(R.id.manageButton);
+		final Button historyButton = (Button)findViewById(R.id.historyButton);
+		final Button settingButton = (Button)findViewById(R.id.settingButton);
+		final Button moreButton = (Button)findViewById(R.id.moreButton);
+		bottomButtons.add(manageButton);
+		bottomButtons.add(historyButton);
+		bottomButtons.add(settingButton);
+		bottomButtons.add(moreButton);
+		// Result text maker.
+		final ResultTextMaker resultTextMaker =	new ResultTextMaker(getAssets());
 		resultView = new ResultView(this);
 
 		// Create dictionaryComponent which contain UI components.
 		dictionaryComponent =
-				new DictionaryComponent.Builder().searchButton(searchButton).searchBar(searchBar).resultView(resultView).resultTextMaker(resultTextMaker).progressBar(progressBar).context(this).build();
+				new DictionaryComponent.Builder().
+				searchButton(searchButton).
+				pronounceButton(pronounceButton).
+				searchBar(searchBar).
+				resultView(resultView).
+				resultTextMaker(resultTextMaker).
+				progressBar(progressBar).
+				context(this).
+				bottomButtons(bottomButtons).build();
 
 		// Get scanner from application.
 		scanner = ((MegaDictApp) getApplication()).scanner;
@@ -153,22 +184,24 @@ public final class DictionaryActivity extends BaseActivity {
 
 		// Init search button.
 		final SearchButtonInitializer searchButtonInitializer =
-				new SearchButtonInitializer(this, businessComponent, dictionaryComponent);
+				new SearchButtonInitializer(businessComponent, dictionaryComponent);
 		searchButtonInitializer.doNothing();
+
+		// Init pronounce button.
+		pronounceButtonInitializer = new PronounceButtonInitializer(dictionaryComponent);
 
 		// Init search bar.
 		final SearchBarInitializer searchBarInitializer =
-				new SearchBarInitializer(this, businessComponent, dictionaryComponent);
+				new SearchBarInitializer(businessComponent, dictionaryComponent);
 		searchBarInitializer.addObserver(recommender);
 
 		// Init Result view.
 		final ResultViewInitializer resultViewInitializer =
-				new ResultViewInitializer(this, businessComponent, dictionaryComponent);
+				new ResultViewInitializer(businessComponent, dictionaryComponent);
 		resultViewInitializer.addObserver(recommender);
 
 		// Init history retriever.
-		historyDisplayer =
-				new HistoryDisplayer(this, businessComponent, dictionaryComponent);
+		historyDisplayer = new HistoryDisplayer(businessComponent, dictionaryComponent);
 		historyDisplayer.addObserver(recommender);
 
 		// Init result panel.
@@ -178,6 +211,9 @@ public final class DictionaryActivity extends BaseActivity {
 
 		// Init text selector.
 		textSelector = new TextSelector();
+
+		// Init bottom buttons.
+		final BottomButtonsInitializer bottomInitializer = new BottomButtonsInitializer(businessComponent, dictionaryComponent);
 	}
 
 	private void doScanningStorage() {

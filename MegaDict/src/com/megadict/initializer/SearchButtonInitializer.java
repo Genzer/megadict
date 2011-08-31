@@ -1,6 +1,5 @@
 package com.megadict.initializer;
 
-import android.content.Context;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AutoCompleteTextView;
@@ -11,8 +10,8 @@ import com.megadict.bean.DictionaryComponent;
 
 public class SearchButtonInitializer extends AbstractInitializer {
 
-	public SearchButtonInitializer(final Context context, final BusinessComponent businessComponent, final DictionaryComponent dictionaryComponent) {
-		super(context, businessComponent, dictionaryComponent);
+	public SearchButtonInitializer(final BusinessComponent businessComponent, final DictionaryComponent dictionaryComponent) {
+		super(businessComponent, dictionaryComponent);
 	}
 
 	@Override

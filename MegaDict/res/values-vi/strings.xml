@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>    
     <!-- Button labels -->
-    <string name="settingButtonLabel">Cấu hình</string>
-    <string name="dictionaryButtonLabel">Từ điển</string>
-    <string name="manageButtonLabel">Quản lý từ điển</string>
-    <string name="soundManageButtonLabel">Quản lý âm thanh</string>
+    <string name="settingButtonLabel">Cấu hình</string>    
+    <string name="manageButtonLabel">Quản lý</string>
+    <string name="selectButtonLable">Chọn từ</string>
+    <string name="historyButtonLabel">Lịch sử</string> 
+    <string name="moreButtonLabel">Khác</string>
     <string name="helpButtonLabel">Giúp đỡ</string>
     <string name="aboutButtonLabel">Thông tin</string>
     
     <!-- Menu items titles -->
     <string name="rescanMenuItemTitle">Tìm từ điển trong kho lưu trữ</string>
     <string name="settingMenuItemTitle">Cấu hình</string>
-    <string name="manageMenuItemTitle">Quản lý từ điển</string>
+    <string name="manageMenuItemTitle">Quản lý</string>
     <string name="aboutMenuItemTitle">Thông tin</string>
     <string name="selectTextMenuItemTitle">Chọn từ</string>
-    <string name="historyMenuItemTitle">Danh sách từ đã tra</string>
+    <string name="historyMenuItemTitle">Lịch sử</string>
     <string name="wikiMenuItemTitle">Wikipedia</string>
     
     <!-- Common Strings -->

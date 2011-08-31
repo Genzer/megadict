@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="MegaDictTheme" parent="android:Theme">
+       	<!-- Must change window title size! If you don't, 
+			the bottom of your custom layout just be covered up by your Activity. 
+			Refer "http://stackoverflow.com/questions/2086989/custom-title-with-image -->
+        <item name="android:windowTitleSize">32dip</item>
+        <!-- Must change window title background style to set color.
+        	Refer "http://stackoverflow.com/questions/2251714/set-title-background-color" -->
+        <item name="android:windowTitleBackgroundStyle">@style/WindowTitleBackground</item>        
+    </style>
+    
+</resources>

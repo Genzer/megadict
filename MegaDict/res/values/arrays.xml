@@ -7,5 +7,10 @@
     <string-array name="languageValues">
         <item>en</item>
         <item>vi</item>
+    </string-array>
+    
+    <string-array name="languagesForSpeaker">
+
     </string-array>    
 </resources>
+

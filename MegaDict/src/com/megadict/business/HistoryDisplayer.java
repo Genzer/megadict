@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.DialogInterface.OnMultiChoiceClickListener;
@@ -15,11 +14,9 @@ import com.megadict.bean.DictionaryComponent;
 import com.megadict.initializer.AbstractInitializer;
 
 public class HistoryDisplayer extends AbstractInitializer {
-	// Aggregation variables.
-
 	// Composition variables.
-	public HistoryDisplayer(final Context context, final BusinessComponent businessComponent, final DictionaryComponent dictionaryComponent) {
-		super(context, businessComponent, dictionaryComponent);
+	public HistoryDisplayer(final BusinessComponent businessComponent, final DictionaryComponent dictionaryComponent) {
+		super(businessComponent, dictionaryComponent);
 	}
 
 	@Override
@@ -27,7 +24,7 @@ public class HistoryDisplayer extends AbstractInitializer {
 	}
 
 	public void showHistoryDialog(final List<String> list) {
-		new AlertDialog.Builder(context).setTitle(R.string.historyDialogTitle).setIcon(R.drawable.crystal_history).setPositiveButton(R.string.deleteEllipsis, new OnClickListener() {
+		new AlertDialog.Builder(dictionaryComponent.getContext()).setTitle(R.string.historyDialogTitle).setIcon(R.drawable.crystal_history).setPositiveButton(R.string.deleteEllipsis, new OnClickListener() {
 			@Override
 			public void onClick(final DialogInterface dialog, final int which) {
 				showDeleteDialog(list);
@@ -56,7 +53,7 @@ public class HistoryDisplayer extends AbstractInitializer {
 	private void showDeleteDialog(final List<String> list) {
 		final List<String> removedItems = new ArrayList<String>();
 
-		new AlertDialog.Builder(context).setTitle(R.string.historyDialogTitle).setIcon(R.drawable.crystal_history).setPositiveButton(R.string.ok, new OnClickListener() {
+		new AlertDialog.Builder(dictionaryComponent.getContext()).setTitle(R.string.historyDialogTitle).setIcon(R.drawable.crystal_history).setPositiveButton(R.string.ok, new OnClickListener() {
 			@Override
 			public void onClick(final DialogInterface dialog, final int which) {
 				businessComponent.getSearcher().removeWordFromHistory(removedItems);

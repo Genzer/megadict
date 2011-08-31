@@ -10,39 +10,43 @@
     			 android:icon="@drawable/megadict_icon" 
     			 android:label="@string/appName">
     			 
+    	<!-- Every activities must use MegaDictTheme to set custom window title. 
+    	 Refer "http://stackoverflow.com/questions/2086989/custom-title-with-image" -->
         <activity android:name=".activity.DictionaryActivity"
                   android:label="@string/appName" 
                   android:windowSoftInputMode="stateAlwaysHidden" 
                   android:icon="@drawable/megadict_icon"
-                  android:theme="@style/MegaDictTheme" android:configChanges="locale">
+                  android:theme="@style/MegaDictTheme" 
+                  android:configChanges="locale">
         	<intent-filter>
             	<action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
         
         <activity android:name=".activity.SettingActivity" 
         		  android:icon="@drawable/megadict_icon"
-        		  android:theme="@style/MegaDictTheme" android:configChanges="locale">
-
+        		  android:theme="@style/MegaDictTheme" 
+        		  android:configChanges="locale">
         </activity>
         
         <activity android:name=".activity.ManageActivity" 
         		  android:icon="@drawable/megadict_icon"
-        		  android:theme="@style/MegaDictTheme" android:configChanges="locale">
+        		  android:theme="@style/MegaDictTheme" 
+        		  android:configChanges="locale">
 		</activity>
 		
         <activity android:name=".activity.AboutActivity" 
         		  android:theme="@android:style/Theme.Dialog" 
         		  android:label="@string/aboutDialogLabel" 
-        		  android:icon="@drawable/megadict_icon" android:configChanges="locale">
+        		  android:icon="@drawable/megadict_icon" 
+        		  android:configChanges="locale">
 		</activity>
 		
 		<activity android:name=".activity.TestActivity" 
         		  android:icon="@drawable/megadict_icon"
-        		  android:theme="@style/MegaDictTheme" android:configChanges="locale">
-
+        		  android:theme="@style/MegaDictTheme" 
+        		  android:configChanges="locale">
 		</activity>
 		
 		

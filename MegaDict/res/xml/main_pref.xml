@@ -6,5 +6,6 @@
     				android:dialogTitle="@string/languagePrefTitle" 
     				android:dialogIcon="@drawable/crystal_language" 
     				android:title="@string/languagePrefTitle" android:key="@string/languagePrefKey" android:defaultValue="en">
-    </ListPreference>    
+    </ListPreference>
+    <ListPreference android:title="@string/speakerLanguagePrefTitle" android:key="@string/speakerLanguagePrefKey"></ListPreference>    
 </PreferenceScreen>

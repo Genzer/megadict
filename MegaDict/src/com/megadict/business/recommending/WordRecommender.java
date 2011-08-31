@@ -84,7 +84,9 @@ public final class WordRecommender implements Observer, RecommendTaskManager {
 				final String word = arg.toString();
 				// Check if a Runnable should be posted.
 				if (didAllRecommendTasksFinish() && !"".equals(word)) {
+					//				if (!"".equals(word)) {
 					// postDelayed.
+					System.out.println("Post delayed");
 					recommendRunnable = new RecommendRunnable(word);
 					recommendHandler.postDelayed(recommendRunnable, DELAY_TIME);
 				} else {
