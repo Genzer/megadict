@@ -19,10 +19,10 @@ public abstract class AbstractInitializer extends Observable implements Initiali
 		super();
 		this.businessComponent = businessComponent;
 		this.dictionaryComponent = dictionaryComponent;
-		init();
 	}
 
-	protected abstract void init();
+	@Override
+	public abstract void init();
 
 	protected void preventRecommending() {
 		setChanged();
@@ -30,13 +30,6 @@ public abstract class AbstractInitializer extends Observable implements Initiali
 	}
 
 	protected void doSearching(final String word) {
-		// THE OUTER IF MAKES SURE THAT NO CRASH IN MEGADICT.
-		// / I'M NOT SATISFIED WITH THIS BECAUSE THE DICTIONARY MODEL CAN'T BE USED BY MULTIPLE
-		// THREADS.
-		// / IT MEANS THAT WHEN RECOMMENDING IS RUNNING,
-		// / WE CAN'T RUN ANOTHER THREAD TO SEARCH WORD ON THE SAME DICTIONARY MODEL.
-		// / NEED TO FIX THE DICTIONARY MODEL.
-
 		// Get useful components.
 		final WordSearcher searcher = businessComponent.getSearcher();
 		final WordRecommender recommender = businessComponent.getRecommender();
@@ -50,7 +43,6 @@ public abstract class AbstractInitializer extends Observable implements Initiali
 		} else {
 			Utility.messageBox(dictionaryComponent.getContext(), R.string.searching);
 		}
-
 	}
 
 	@Override

@@ -1,7 +1,9 @@
 package com.megadict.activity;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import android.os.Bundle;
 import android.view.Menu;
@@ -45,7 +47,7 @@ public final class DictionaryActivity extends BaseActivity {
 	private TextSelector textSelector;
 	private HistoryDisplayer historyDisplayer;
 	private PronounceButtonInitializer pronounceButtonInitializer;
-	final List<Button> bottomButtons = new ArrayList<Button>();;
+	private final Map<Button, Integer> bottomButtonMap = new HashMap<Button, Integer>();
 
 	public DictionaryActivity() {
 		super(R.layout.search);
@@ -77,9 +79,12 @@ public final class DictionaryActivity extends BaseActivity {
 		if (Utility.isLocaleChanged()) {
 			// Change noDefinition string.
 			searcher.setNoDefinitionStr(getString(R.string.noDefinition));
+			// Redraw search bar hint
 			dictionaryComponent.getSearchBar().setHint(R.string.searchBarHint);
-			for(final Button button : bottomButtons) {
-				button.invalidate();
+			// Redraw bottom buttons.
+			final Set<Button> buttons = bottomButtonMap.keySet();
+			for(final Button button : buttons) {
+				button.setText(bottomButtonMap.get(button));
 			}
 		}
 	}
@@ -106,6 +111,7 @@ public final class DictionaryActivity extends BaseActivity {
 	@Override
 	public boolean onPrepareOptionsMenu(final Menu menu) {
 		if (Utility.isLocaleChanged()) {
+			// Redraw main menu.
 			menu.clear();
 			final MenuInflater inflater = getMenuInflater();
 			inflater.inflate(R.menu.main_menu, menu);
@@ -123,14 +129,9 @@ public final class DictionaryActivity extends BaseActivity {
 		} else if (item.getItemId() == R.id.aboutMenuItem) {
 			Utility.startActivity(this, "com.megadict.activity.AboutActivity");
 		} else if (item.getItemId() == R.id.selectTextMenuItem) {
-			textSelector.selectText(this, resultView, TAG);
+			textSelector.selectText(this, resultView);
 		} else if (item.getItemId() == R.id.historyMenuItem) {
-			final List<String> list = searcher.getHistoryList();
-			if (list.isEmpty()) {
-				Utility.messageBox(this, R.string.emptyHistory);
-			} else {
-				historyDisplayer.showHistoryDialog(list);
-			}
+			historyDisplayer.showHistoryDialog(searcher.getHistoryList());
 		}
 		return true;
 	}
@@ -146,12 +147,13 @@ public final class DictionaryActivity extends BaseActivity {
 		// Bottom buttons.
 		final Button manageButton = (Button)findViewById(R.id.manageButton);
 		final Button historyButton = (Button)findViewById(R.id.historyButton);
-		final Button settingButton = (Button)findViewById(R.id.settingButton);
+		final Button settingButton = (Button)findViewById(R.id.selectButton);
 		final Button moreButton = (Button)findViewById(R.id.moreButton);
-		bottomButtons.add(manageButton);
-		bottomButtons.add(historyButton);
-		bottomButtons.add(settingButton);
-		bottomButtons.add(moreButton);
+		bottomButtonMap.put(manageButton, R.string.manageButtonLabel);
+		bottomButtonMap.put(historyButton, R.string.historyButtonLabel);
+		bottomButtonMap.put(settingButton, R.string.selectButtonLabel);
+		bottomButtonMap.put(moreButton, R.string.moreButtonLabel);
+
 		// Result text maker.
 		final ResultTextMaker resultTextMaker =	new ResultTextMaker(getAssets());
 		resultView = new ResultView(this);
@@ -166,7 +168,7 @@ public final class DictionaryActivity extends BaseActivity {
 				resultTextMaker(resultTextMaker).
 				progressBar(progressBar).
 				context(this).
-				bottomButtons(bottomButtons).build();
+				bottomButtons(new ArrayList<Button>(bottomButtonMap.keySet())).build();
 
 		// Get scanner from application.
 		scanner = ((MegaDictApp) getApplication()).scanner;
@@ -185,7 +187,7 @@ public final class DictionaryActivity extends BaseActivity {
 		// Init search button.
 		final SearchButtonInitializer searchButtonInitializer =
 				new SearchButtonInitializer(businessComponent, dictionaryComponent);
-		searchButtonInitializer.doNothing();
+		searchButtonInitializer.init();
 
 		// Init pronounce button.
 		pronounceButtonInitializer = new PronounceButtonInitializer(dictionaryComponent);
@@ -193,15 +195,18 @@ public final class DictionaryActivity extends BaseActivity {
 		// Init search bar.
 		final SearchBarInitializer searchBarInitializer =
 				new SearchBarInitializer(businessComponent, dictionaryComponent);
+		searchBarInitializer.init();
 		searchBarInitializer.addObserver(recommender);
 
 		// Init Result view.
 		final ResultViewInitializer resultViewInitializer =
 				new ResultViewInitializer(businessComponent, dictionaryComponent);
+		resultViewInitializer.init();
 		resultViewInitializer.addObserver(recommender);
 
 		// Init history retriever.
 		historyDisplayer = new HistoryDisplayer(businessComponent, dictionaryComponent);
+		historyDisplayer.init();
 		historyDisplayer.addObserver(recommender);
 
 		// Init result panel.
@@ -213,7 +218,8 @@ public final class DictionaryActivity extends BaseActivity {
 		textSelector = new TextSelector();
 
 		// Init bottom buttons.
-		final BottomButtonsInitializer bottomInitializer = new BottomButtonsInitializer(businessComponent, dictionaryComponent);
+		final BottomButtonsInitializer bottomInitializer = new BottomButtonsInitializer(historyDisplayer, textSelector, businessComponent, dictionaryComponent);
+		bottomInitializer.init();
 	}
 
 	private void doScanningStorage() {

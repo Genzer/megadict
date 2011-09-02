@@ -8,6 +8,7 @@
     <string name="moreButtonLabel">More</string>
     <string name="helpButtonLabel">Help</string>
     <string name="aboutButtonLabel">About</string>
+    <string name="pronounceButtonLabel">Pronounce</string>
     
     <!-- Menu items titles -->
     <string name="rescanMenuItemTitle">Rescan storage</string>
@@ -57,7 +58,7 @@
     <string name="languagePrefTitle">Language</string>
     <string name="speakerLanguagePrefKey">speakerLanguage</string>
     <string name="speakerLanguagePrefTitle">Speaker language</string>    
-    <string name="pronounceButtonLabel">Pronounce</string>    
+        
          
 
 </resources>

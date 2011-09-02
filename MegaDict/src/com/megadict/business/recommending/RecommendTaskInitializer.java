@@ -1,7 +1,6 @@
 package com.megadict.business.recommending;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -16,11 +15,8 @@ import com.megadict.business.recommending.AbstractRecommendTask.OnPreExecuteList
 
 public class RecommendTaskInitializer {
 	// Recommend tasks' variables.
-	private final static int RECOMMENDED_WORD_COUNT = 50;
-	//	private final SortedSet<String> recommendWords =
-	//			new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
-	private static final SortedSet<String> recommendWords =
-			Collections.synchronizedSortedSet(new TreeSet<String>(String.CASE_INSENSITIVE_ORDER));
+	private final static int RECOMMENDED_WORD_COUNT = 100;
+	private final SortedSet<String> recommendWords = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
 
 	private final WordRecommender recommender;
 	private final DictionaryComponent dictionaryComponent;
@@ -34,9 +30,7 @@ public class RecommendTaskInitializer {
 		task.setOnPreExecuteListener(new OnPreExecuteListener() {
 			@Override
 			public void onPreExecute() {
-				System.out.println("onPreExecute");
 				if (recommender.didAllRecommendTasksFinish()) {
-					System.out.println("onPreExecute inner");
 					recommendWords.clear();
 					dictionaryComponent.getProgressBar().setVisibility(ProgressBar.VISIBLE);
 				}
@@ -48,12 +42,9 @@ public class RecommendTaskInitializer {
 		task.setOnPostExecuteListener(new OnPostExecuteListener() {
 			@Override
 			public void onPostExecute(final List<String> list) {
-				System.out.println("onPostExecute");
-				System.out.println(list.toString());
 				recommendWords.addAll(list);
 				if (recommender.didAllRecommendTasksFinish()
 						&& DictionaryActivity.activityRunning) {
-					System.out.println("onPostExecute inner");
 					final List<String> adaptedList = new ArrayList<String>();
 					int i = 0;
 					for (final String s : recommendWords) {
@@ -61,8 +52,6 @@ public class RecommendTaskInitializer {
 						++i;
 						adaptedList.add(s);
 					}
-
-					System.out.println("Size: " + adaptedList.size());
 
 					final ArrayAdapter<String> adapter =
 							new ArrayAdapter<String>(dictionaryComponent.getContext(), android.R.layout.simple_dropdown_item_1line, adaptedList);

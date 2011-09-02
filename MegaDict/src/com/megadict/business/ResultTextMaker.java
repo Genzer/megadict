@@ -6,6 +6,7 @@ import android.content.res.AssetManager;
 
 import com.megadict.exception.ResourceNotFoundException;
 
+/* This class is not threadsafe. */
 public class ResultTextMaker {
 	public static final String ASSET_URL = "file:///android_asset/";
 	private final AssetManager assetManager;
@@ -19,7 +20,7 @@ public class ResultTextMaker {
 	private static final String RIGHT_NO_DICT_BLOCK = "</div></body></html>";
 
 	private static final StringBuilder LEFT_BLOCK = new StringBuilder();
-	private static final StringBuffer MIDDLE_BLOCK = new StringBuffer();
+	private static final StringBuilder MIDDLE_BLOCK = new StringBuilder();
 	private static final String RIGHT_BLOCK = "</body></html>";
 
 	public ResultTextMaker(final AssetManager assetManager) {
@@ -36,7 +37,6 @@ public class ResultTextMaker {
 			for (final String cssName : cssNames) {
 				LEFT_BLOCK.append("<link href=\"css/" + cssName
 						+ "\" rel=\"stylesheet\" type=\"text/css\" />");
-
 			}
 			// Append JQuery.
 			final String[] scriptNames = assetManager.list("scripts");

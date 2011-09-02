@@ -22,7 +22,7 @@ public class SearchBarInitializer extends AbstractInitializer {
 	}
 
 	@Override
-	protected void init() {
+	public void init() {
 		// Prepare components.
 		final AutoCompleteTextView searchBar =
 				dictionaryComponent.getSearchBar();

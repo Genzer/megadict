@@ -19,7 +19,7 @@ public final class ResultViewInitializer extends AbstractInitializer {
 	}
 
 	@Override
-	protected void init() {
+	public void init() {
 		// Prepare components.
 		final ClipboardManager clipboardManager =
 				(ClipboardManager) dictionaryComponent.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
@@ -27,7 +27,10 @@ public final class ResultViewInitializer extends AbstractInitializer {
 		final AutoCompleteTextView searchBar =
 				dictionaryComponent.getSearchBar();
 
+		//ViewGroup.LayoutParams param = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
+
 		resultView.setLayoutParams(new ViewGroup.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+
 		resultView.setBackgroundColor(0x00000000);
 		resultView.setOnSelectTextListener(new OnSelectTextListener() {
 			@Override

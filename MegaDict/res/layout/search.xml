@@ -40,28 +40,22 @@
     <LinearLayout android:layout_width="fill_parent" 
     			  android:layout_height="wrap_content" 
     			  android:layout_weight="1" android:padding="3dip" 
-    			  android:id="@+id/resultPanel" 
-    			  android:background="@drawable/result_background">
+    			  android:id="@+id/resultPanel" android:background="@drawable/result_background">
     </LinearLayout>
     
     <LinearLayout android:layout_weight="0" 
-    			  android:id="@+id/linearLayout1" 
     			  android:layout_height="wrap_content" 
     			  android:layout_width="match_parent"
-    			  android:weightSum="4">
+    			  android:weightSum="4" android:id="@+id/bottomButtonPanel">
         <Button android:id="@+id/manageButton"
         		style="@style/MainMenuButton"
         		android:text="@string/manageButtonLabel" 
         		android:layout_weight="1">
-        </Button>        
-        <Button android:id="@+id/historyButton" 
-        		style="@style/MainMenuButton" 
-        		android:text="@string/historyButtonLabel" 
-        		android:layout_weight="1"></Button>
-        <Button android:id="@+id/settingButton" 
-        		style="@style/MainMenuButton" 
-        		android:text="@string/settingButtonLabel" 
-        		android:layout_weight="1"></Button>
+        </Button>
+        <Button style="@style/MainMenuButton" 
+        		android:layout_weight="1" android:id="@+id/historyButton" android:text="@string/historyButtonLabel"></Button>
+        <Button style="@style/MainMenuButton" 
+        		android:layout_weight="1" android:id="@+id/selectButton" android:text="@string/selectButtonLabel"></Button>
         <Button android:id="@+id/moreButton" 
         		style="@style/MainMenuButton" 
         		android:text="@string/moreButtonLabel"

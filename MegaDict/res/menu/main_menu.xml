@@ -3,6 +3,11 @@
     <item android:title="@string/manageMenuItemTitle" 
     	  android:id="@+id/manageMenuItem" 
     	  android:icon="@drawable/manage">
+   	</item>
+   	
+	<item android:id="@+id/historyMenuItem" 
+		  android:title="@string/historyMenuItemTitle" 
+		  android:icon="@drawable/crystal_history">
     </item>
     
     <item android:id="@+id/selectTextMenuItem" 
@@ -13,15 +18,12 @@
     <item android:title="@string/settingMenuItemTitle" 
     	  android:id="@+id/settingMenuItem" 
     	  android:icon="@drawable/crystal_configure">
-    </item>
+   	</item>
     
     <item android:id="@+id/aboutMenuItem" 
 		  android:title="@string/aboutMenuItemTitle" 
           android:icon="@drawable/crystal_info">
     </item>
     
-    <item android:id="@+id/historyMenuItem" 
-    	  android:title="@string/historyMenuItemTitle" 
-    	  android:icon="@drawable/crystal_history">
-    </item>
+    
 </menu>

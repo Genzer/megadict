@@ -3,11 +3,12 @@
     <!-- Button labels -->
     <string name="settingButtonLabel">Cấu hình</string>    
     <string name="manageButtonLabel">Quản lý</string>
-    <string name="selectButtonLable">Chọn từ</string>
+    <string name="selectButtonLabel">Chọn từ</string>
     <string name="historyButtonLabel">Lịch sử</string> 
     <string name="moreButtonLabel">Khác</string>
     <string name="helpButtonLabel">Giúp đỡ</string>
     <string name="aboutButtonLabel">Thông tin</string>
+    <string name="pronounceButtonLabel">Phát âm</string>
     
     <!-- Menu items titles -->
     <string name="rescanMenuItemTitle">Tìm từ điển trong kho lưu trữ</string>

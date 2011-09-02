@@ -1,0 +1,62 @@
+
+@font-face { 
+    font-family: 'DejaVuSans';
+    src: url('file:///android_asset/fonts/DejaVuSans.ttf');
+}
+
+* {
+	margin: 0;
+	padding: 0;	
+}
+
+body {
+	font-family: 'DejaVuSans';
+}
+
+.dictionaryBlock {
+	padding: 0.3em;
+	margin: 0.3em 0.3em 0.4em 0.3em;
+	
+	background-color: #fff;
+	border: 0.2em solid #59922B;
+	border-radius: 0.8em;
+	
+	word-wrap: break-word;
+}
+
+.searchedWord {
+	padding: 0.3em 0.6em 0.9em 0.6em;	
+	font-size: 1em;
+	
+	color: #fff;
+	background: url(file:///android_asset/images/wordbg.png) bottom left repeat-x;
+	background-color: #59922B;
+	border-radius: 0.7em;
+}
+
+.dictionaryContent {
+	padding: 0.4em;
+	font-size: 0.9em;
+}
+
+.dictionaryName {
+	padding-top: 0.3em;
+	font-size: 0.9em;
+	
+	border-top: 0.2em solid #59922B;	
+	text-align: right;
+	font-weight: bold;
+	color: #59922B;
+}
+
+.welcomeBlock {
+	margin: 0.4em;
+	fonrt-size: 1em;
+	color: green;
+}
+
+.noDictionaryBlock {
+	margin: 0.4em;
+	font-size: 1em;
+	color: red;
+}

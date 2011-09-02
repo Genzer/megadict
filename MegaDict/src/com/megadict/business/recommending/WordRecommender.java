@@ -16,7 +16,7 @@ import com.megadict.initializer.AbstractInitializer;
 import com.megadict.model.Dictionary;
 
 public final class WordRecommender implements Observer, RecommendTaskManager {
-	private final static int DELAY_TIME = 2000;
+	private final static int DELAY_TIME = 1000;
 
 	// Aggregation variables.
 	private final List<Dictionary> dictionaryModels;
@@ -76,30 +76,28 @@ public final class WordRecommender implements Observer, RecommendTaskManager {
 		if (o instanceof DictionaryScanner) {
 			updateModels(arg);
 		} else if (o instanceof AbstractInitializer) {
-			// Remove old runnable in handler.
-			preventRecommending();
+			// Should prevent recommending?
+			if(arg instanceof Boolean) {
+				preventRecommending();
+			}
 
 			// Should recommending?
 			if (arg instanceof String) {
+				// Remove older runnable (if there is any)
+				recommendHandler.removeCallbacks(recommendRunnable);
 				final String word = arg.toString();
 				// Check if a Runnable should be posted.
-				if (didAllRecommendTasksFinish() && !"".equals(word)) {
-					//				if (!"".equals(word)) {
-					// postDelayed.
-					System.out.println("Post delayed");
+				if (!"".equals(word)) {
 					recommendRunnable = new RecommendRunnable(word);
 					recommendHandler.postDelayed(recommendRunnable, DELAY_TIME);
-				} else {
-					// Can't postDelayed if a runnable was in runnable queue.
 				}
 			}
 		}
 	}
 
 	private void preventRecommending() {
-		if (recommendRunnable != null) {
-			recommendHandler.removeCallbacks(recommendRunnable);
-		}
+		// Remove old runnable in handler.
+		recommendHandler.removeCallbacks(recommendRunnable);
 		// Dismiss if drop down list presented.
 		dictionaryComponent.getSearchBar().dismissDropDown();
 	}

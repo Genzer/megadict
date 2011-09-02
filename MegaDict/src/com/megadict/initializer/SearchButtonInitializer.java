@@ -15,7 +15,7 @@ public class SearchButtonInitializer extends AbstractInitializer {
 	}
 
 	@Override
-	protected void init() {
+	public void init() {
 		final Button searchButton = dictionaryComponent.getSearchButton();
 		final AutoCompleteTextView searchBar =
 				dictionaryComponent.getSearchBar();

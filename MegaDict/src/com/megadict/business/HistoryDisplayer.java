@@ -12,6 +12,7 @@ import com.megadict.R;
 import com.megadict.bean.BusinessComponent;
 import com.megadict.bean.DictionaryComponent;
 import com.megadict.initializer.AbstractInitializer;
+import com.megadict.utility.Utility;
 
 public class HistoryDisplayer extends AbstractInitializer {
 	// Composition variables.
@@ -19,12 +20,14 @@ public class HistoryDisplayer extends AbstractInitializer {
 		super(businessComponent, dictionaryComponent);
 	}
 
-	@Override
-	protected void init() { /* Empty for no reason, ok? */
-	}
-
 	public void showHistoryDialog(final List<String> list) {
-		new AlertDialog.Builder(dictionaryComponent.getContext()).setTitle(R.string.historyDialogTitle).setIcon(R.drawable.crystal_history).setPositiveButton(R.string.deleteEllipsis, new OnClickListener() {
+		if(list.isEmpty()) {
+			Utility.messageBox(dictionaryComponent.getContext(), R.string.emptyHistory);
+			return;
+		}
+		new AlertDialog.Builder(dictionaryComponent.getContext()).
+		setTitle(R.string.historyDialogTitle).setIcon(R.drawable.crystal_history).
+		setPositiveButton(R.string.deleteEllipsis, new OnClickListener() {
 			@Override
 			public void onClick(final DialogInterface dialog, final int which) {
 				showDeleteDialog(list);
@@ -44,8 +47,8 @@ public class HistoryDisplayer extends AbstractInitializer {
 			public void onClick(final DialogInterface dialog, final int which) {
 				final String chosenWord = list.get(which);
 				dictionaryComponent.getSearchBar().setText(chosenWord);
-				doSearching(chosenWord);
 				preventRecommending();
+				doSearching(chosenWord);
 			}
 		}).create().show();
 	}
@@ -77,6 +80,9 @@ public class HistoryDisplayer extends AbstractInitializer {
 			}
 		}).create().show();
 	}
+
+	@Override
+	public void init() { /* Empty for no reason, ok? */ }
 
 	@Override
 	public void doNothing() { /* Empty for no reason, ok? */
