@@ -1,8 +1,7 @@
 package com.megadict.initializer;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -21,46 +20,44 @@ import com.megadict.utility.Utility;
 public class BottomButtonsInitializer extends AbstractInitializer {
 	private final HistoryDisplayer historyDisplayer;
 	private final TextSelector textSelector;
-	private final String []mainButtonLabels;
-	private final Map<String, ButtonExecutor> executors = new HashMap<String, BottomButtonsInitializer.ButtonExecutor>();
+	private final Context context;
+	private final List<ButtonExecutor> executors = new ArrayList<BottomButtonsInitializer.ButtonExecutor>();
 
 	public BottomButtonsInitializer(final HistoryDisplayer historyDisplayer, final TextSelector textSelector, final BusinessComponent businessComponent, final DictionaryComponent dictionaryComponent) {
 		super(businessComponent, dictionaryComponent);
 		this.historyDisplayer = historyDisplayer;
 		this.textSelector = textSelector;
-		// Init label array to set items for AlertDialog
-		mainButtonLabels = dictionaryComponent.getContext().getResources().getStringArray(R.array.mainButtons);
+		this.context = dictionaryComponent.getContext();
 		// Init executors to execute items in AlertDialog.
 		initExecutors();
 	}
 
 	private void initExecutors() {
-		final Context context = dictionaryComponent.getContext();
-		executors.put(context.getString(R.string.manageButtonLabel) ,new ButtonExecutor() {
+		executors.add(new ButtonExecutor() {
 			@Override
 			public void execute() {
 				Utility.startActivity(context, "com.megadict.activity.ManageActivity");
 			}
 		});
-		executors.put(context.getString(R.string.historyButtonLabel), new ButtonExecutor() {
+		executors.add(new ButtonExecutor() {
 			@Override
 			public void execute() {
 				historyDisplayer.showHistoryDialog(businessComponent.getSearcher().getHistoryList());
 			}
 		});
-		executors.put(context.getString(R.string.selectButtonLabel), new ButtonExecutor() {
+		executors.add(new ButtonExecutor() {
 			@Override
 			public void execute() {
 				textSelector.selectText(context, dictionaryComponent.getResultView());
 			}
 		});
-		executors.put(context.getString(R.string.settingButtonLabel), new ButtonExecutor() {
+		executors.add(new ButtonExecutor() {
 			@Override
 			public void execute() {
 				Utility.startActivity(context, "com.megadict.activity.SettingActivity");
 			}
 		});
-		executors.put(context.getString(R.string.aboutButtonLabel), new ButtonExecutor() {
+		executors.add(new ButtonExecutor() {
 			@Override
 			public void execute() {
 				Utility.startActivity(context, "com.megadict.activity.AboutActivity");
@@ -92,15 +89,13 @@ public class BottomButtonsInitializer extends AbstractInitializer {
 	}
 
 	private void showMoreList() {
-		new AlertDialog.Builder(dictionaryComponent.getContext()).
+		// Init label array to set items for AlertDialog
+		final String []mainButtonLabels = context.getResources().getStringArray(R.array.mainButtons);
+
+		new AlertDialog.Builder(context).
 		setTitle(R.string.historyDialogTitle).
 		setIcon(R.drawable.crystal_history).
-		setPositiveButton(R.string.deleteEllipsis, new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(final DialogInterface dialog, final int which) {
-
-			}
-		}).setNegativeButton(R.string.close, new DialogInterface.OnClickListener() {
+		setNegativeButton(R.string.close, new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(final DialogInterface dialog, final int which) {
 				dialog.cancel();
@@ -108,20 +103,16 @@ public class BottomButtonsInitializer extends AbstractInitializer {
 		}).setItems(mainButtonLabels, new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(final DialogInterface dialog, final int which) {
-				initDialogItems(which);
+				executors.get(which).execute();
 			}
 		}).create().show();
-	}
-
-	private void initDialogItems(final int which) {
-		executors.get(mainButtonLabels[which]).execute();
 	}
 
 	private void initBottomButtons(final Button button, final String activityClassName) {
 		button.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(final View v) {
-				Utility.startActivity(dictionaryComponent.getContext(), activityClassName);
+				Utility.startActivity(context, activityClassName);
 			}
 		});
 	}
@@ -148,7 +139,7 @@ public class BottomButtonsInitializer extends AbstractInitializer {
 		button.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(final View v) {
-				textSelector.selectText(dictionaryComponent.getContext(), dictionaryComponent.getResultView());
+				textSelector.selectText(context, dictionaryComponent.getResultView());
 			}
 		});
 	}

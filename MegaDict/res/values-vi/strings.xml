@@ -55,5 +55,6 @@
     <!-- Language -->
     <string name="languagePrefTitle">Ngôn ngữ</string>
     <string name="mainPrefTitle">Cấu hình</string>
-    <string name="languagePrefKey">language</string>
+    <string name="speakerLanguagePrefTitle">Ngôn ngữ phát âm</string>
+    
 </resources>

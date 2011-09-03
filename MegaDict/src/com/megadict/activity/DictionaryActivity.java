@@ -30,12 +30,16 @@ import com.megadict.initializer.PronounceButtonInitializer;
 import com.megadict.initializer.ResultViewInitializer;
 import com.megadict.initializer.SearchBarInitializer;
 import com.megadict.initializer.SearchButtonInitializer;
+import com.megadict.preferences.LanguagePreference;
 import com.megadict.utility.Utility;
 import com.megadict.widget.ResultView;
 
 public final class DictionaryActivity extends BaseActivity {
+	/*
+	 *  I am not satisfied with using this non-final static variable
+	 *  because it is a bad practice, but I can't find any better solution.
+	 */
 	public static boolean activityRunning;
-	private static final String TAG = "DictionaryActivity";
 
 	// Activity control variables.
 	private ResultView resultView;
@@ -48,6 +52,7 @@ public final class DictionaryActivity extends BaseActivity {
 	private HistoryDisplayer historyDisplayer;
 	private PronounceButtonInitializer pronounceButtonInitializer;
 	private final Map<Button, Integer> bottomButtonMap = new HashMap<Button, Integer>();
+	private LanguagePreference languagePreference;
 
 	public DictionaryActivity() {
 		super(R.layout.search);
@@ -59,6 +64,8 @@ public final class DictionaryActivity extends BaseActivity {
 		initSomething();
 		// Scan chosen databases when MegaDict opens.
 		doScanningStorage();
+		// Init preferences.
+		languagePreference = LanguagePreference.newInstance(this);
 	}
 
 	@Override
@@ -76,7 +83,8 @@ public final class DictionaryActivity extends BaseActivity {
 	@Override
 	protected void onStart() {
 		super.onStart();
-		if (Utility.isLocaleChanged()) {
+		// Reset texts.
+		if (languagePreference.isLanguageChanged()) {
 			// Change noDefinition string.
 			searcher.setNoDefinitionStr(getString(R.string.noDefinition));
 			// Redraw search bar hint
@@ -86,12 +94,12 @@ public final class DictionaryActivity extends BaseActivity {
 			for(final Button button : buttons) {
 				button.setText(bottomButtonMap.get(button));
 			}
-		}
-	}
 
-	@Override
-	protected void onRestart() {
-		super.onRestart();
+			// Reset language changed.
+			languagePreference.resetLanguageChanged();
+		}
+
+		// Update dictionary models.
 		scanner.updateDictionaryModels(dictionaryComponent);
 	}
 
@@ -110,12 +118,11 @@ public final class DictionaryActivity extends BaseActivity {
 
 	@Override
 	public boolean onPrepareOptionsMenu(final Menu menu) {
-		if (Utility.isLocaleChanged()) {
+		if (languagePreference.isLanguageChanged()) {
 			// Redraw main menu.
 			menu.clear();
 			final MenuInflater inflater = getMenuInflater();
 			inflater.inflate(R.menu.main_menu, menu);
-			Utility.setLocaleChanged(false);
 		}
 		return super.onPrepareOptionsMenu(menu);
 	}

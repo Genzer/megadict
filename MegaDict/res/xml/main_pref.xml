@@ -5,7 +5,7 @@
     				android:entryValues="@array/languageValues" 
     				android:dialogTitle="@string/languagePrefTitle" 
     				android:dialogIcon="@drawable/crystal_language" 
-    				android:title="@string/languagePrefTitle" android:key="@string/languagePrefKey" android:defaultValue="en">
+    				android:title="@string/languagePrefTitle" android:defaultValue="en" android:key="megadict.language">
     </ListPreference>
-    <ListPreference android:title="@string/speakerLanguagePrefTitle" android:key="@string/speakerLanguagePrefKey"></ListPreference>    
+    <ListPreference android:title="@string/speakerLanguagePrefTitle" android:key="com.speakerLanguage"></ListPreference>    
 </PreferenceScreen>

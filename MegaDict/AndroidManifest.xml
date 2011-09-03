@@ -5,7 +5,13 @@
     <uses-sdk android:minSdkVersion="4" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
     <uses-permission android:name="android.permission.INTERNET"></uses-permission>
-
+    <supports-screens
+		android:smallScreens="true"
+		android:normalScreens="true"
+		android:largeScreens="true"
+		android:anyDensity="true"
+	/>
+    
     <application android:name=".application.MegaDictApp" 
     			 android:icon="@drawable/megadict_icon" 
     			 android:label="@string/appName">
@@ -51,4 +57,6 @@
 		
 		
     </application>
+    
+    
 </manifest>

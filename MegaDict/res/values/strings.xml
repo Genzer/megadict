@@ -52,12 +52,10 @@
     <string name="aboutDialogLabel">About</string>
     <string name="storageLabel">Storage</string>
     
-    <!-- Language -->    
-    <string name="mainPrefTitle">Settings</string>    
-    <string name="languagePrefKey">language</string>
-    <string name="languagePrefTitle">Language</string>
-    <string name="speakerLanguagePrefKey">speakerLanguage</string>
-    <string name="speakerLanguagePrefTitle">Speaker language</string>    
+    <!-- Language -->
+    <string name="languagePrefTitle">Language</string>    
+    <string name="mainPrefTitle">Settings</string>        
+    <string name="speakerLanguagePrefTitle">Speaker language</string>
         
          
 
