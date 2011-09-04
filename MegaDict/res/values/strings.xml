@@ -43,8 +43,9 @@
     
     <!-- Dialog title -->
     <string name="wordListDialogTitle">Pick a word</string>
-    <string name="historyDialogTitle">History</string>
+    <string name="historyDialogTitle">History</string>    
     <string name="wikiDialogTitle">New Wikipedia</string>
+    <string name="operationDialogTitle">Operations</string>
     
     <!-- Others -->
     <string name="appName">MegaDict</string>    
@@ -53,10 +54,16 @@
     <string name="storageLabel">Storage</string>
     
     <!-- Language -->
-    <string name="languagePrefTitle">Language</string>    
-    <string name="mainPrefTitle">Settings</string>        
-    <string name="speakerLanguagePrefTitle">Speaker language</string>
+    <string name="english">English</string>
+    <string name="vietnamese">Vietnamese</string>
         
-         
+    <!-- Preference titles and summaries -->
+    <string name="mainPrefTitle">Settings</string>    
+    <string name="languageCategoryTitle">Display language</string>
+    <string name="languagePrefTitle">Language</string>
+    <string name="languagePrefSummary">English</string>    
+    <string name="speakerLanguageCategoryTitle">Pronunciation</string>    
+    <string name="speakerLanguagePrefTitle">Language</string>    
+    <string name="speakerLanguageSummary">Sets the language-specific voice for the spoken text</string>       
 
 </resources>

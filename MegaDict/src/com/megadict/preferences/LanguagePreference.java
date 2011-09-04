@@ -28,8 +28,7 @@ public final class LanguagePreference {
 	}
 
 	public String getLanguage() {
-		final String value = sharedPref.getString(Preferences.KEY_LANGUAGE, Preferences.DEFAULT_LANGUAGE);
-		return value;
+		return sharedPref.getString(Preferences.KEY_LANGUAGE, Preferences.DEFAULT_LANGUAGE);
 	}
 
 	public void setLanguage(final String language) {
@@ -39,6 +38,11 @@ public final class LanguagePreference {
 			languageChanged = true;
 			oldLanguage = language;
 		}
+	}
+
+	public void loadLanguageFromPreference() {
+		final String value = getLanguage();
+		updateLocale(value);
 	}
 
 	private void updateLocale(final String language) {

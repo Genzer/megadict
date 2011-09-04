@@ -61,11 +61,15 @@ public final class DictionaryActivity extends BaseActivity {
 	@Override
 	public void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		// Init preferences.
+		languagePreference = LanguagePreference.newInstance(this);
+		// Load language from preference.
+		languagePreference.loadLanguageFromPreference();
+
 		initSomething();
 		// Scan chosen databases when MegaDict opens.
 		doScanningStorage();
-		// Init preferences.
-		languagePreference = LanguagePreference.newInstance(this);
 	}
 
 	@Override
@@ -83,8 +87,9 @@ public final class DictionaryActivity extends BaseActivity {
 	@Override
 	protected void onStart() {
 		super.onStart();
-		// Reset texts.
-		if (languagePreference.isLanguageChanged()) {
+
+		if(languagePreference.isLanguageChanged()) {
+			//========= Reset texts ======//
 			// Change noDefinition string.
 			searcher.setNoDefinitionStr(getString(R.string.noDefinition));
 			// Redraw search bar hint
@@ -94,13 +99,16 @@ public final class DictionaryActivity extends BaseActivity {
 			for(final Button button : buttons) {
 				button.setText(bottomButtonMap.get(button));
 			}
-
-			// Reset language changed.
-			languagePreference.resetLanguageChanged();
 		}
 
 		// Update dictionary models.
 		scanner.updateDictionaryModels(dictionaryComponent);
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		languagePreference.resetLanguageChanged();
 	}
 
 	@Override
@@ -111,20 +119,18 @@ public final class DictionaryActivity extends BaseActivity {
 
 	@Override
 	public boolean onCreateOptionsMenu(final Menu menu) {
-		final MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.main_menu, menu);
+		inflateMenu(menu);
 		return true;
 	}
 
 	@Override
 	public boolean onPrepareOptionsMenu(final Menu menu) {
-		if (languagePreference.isLanguageChanged()) {
-			// Redraw main menu.
+		// Redraw main menu.
+		if(languagePreference.isLanguageChanged()) {
 			menu.clear();
-			final MenuInflater inflater = getMenuInflater();
-			inflater.inflate(R.menu.main_menu, menu);
+			inflateMenu(menu);
 		}
-		return super.onPrepareOptionsMenu(menu);
+		return true;
 	}
 
 	@Override
@@ -231,5 +237,10 @@ public final class DictionaryActivity extends BaseActivity {
 
 	private void doScanningStorage() {
 		scanner.scanStorage(dictionaryComponent);
+	}
+
+	private void inflateMenu(final Menu menu) {
+		final MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.main_menu, menu);
 	}
 }

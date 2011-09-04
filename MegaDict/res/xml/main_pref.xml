@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen
   xmlns:android="http://schemas.android.com/apk/res/android" android:title="@string/mainPrefTitle">
-    <ListPreference android:entries="@array/languageStrings" 
-    				android:entryValues="@array/languageValues" 
-    				android:dialogTitle="@string/languagePrefTitle" 
-    				android:dialogIcon="@drawable/crystal_language" 
-    				android:title="@string/languagePrefTitle" android:defaultValue="en" android:key="megadict.language">
-    </ListPreference>
-    <ListPreference android:title="@string/speakerLanguagePrefTitle" android:key="com.speakerLanguage"></ListPreference>    
+        
+    <PreferenceCategory android:title="@string/languageCategoryTitle">
+	    <ListPreference android:entries="@array/languageStrings" 
+	    				android:entryValues="@array/languageValues" 
+	    				android:dialogTitle="@string/languagePrefTitle" 
+	    				android:dialogIcon="@drawable/crystal_language" 
+	    				android:title="@string/languagePrefTitle" android:key="megadict.language" android:summary="@string/languagePrefSummary">
+	    </ListPreference>    
+    </PreferenceCategory>    
+    
+    <PreferenceCategory android:title="@string/speakerLanguageCategoryTitle">
+		<ListPreference android:title="@string/speakerLanguagePrefTitle" 
+						android:key="megadict.speakerLanguage" android:summary="@string/speakerLanguageSummary" android:dialogTitle="@string/speakerLanguagePrefTitle" android:dialogIcon="@drawable/crystal_multimedia">
+		</ListPreference>
+    </PreferenceCategory>    
 </PreferenceScreen>

@@ -45,6 +45,7 @@
     <string name="wordListDialogTitle">Chọn một từ</string>
     <string name="historyDialogTitle">Danh sách từ đã tra</string>
     <string name="wikiDialogTitle">Thêm Wikipedia</string>
+    <string name="operationDialogTitle">Thao tác</string>
     
     <!-- Others -->
     <string name="appName">MegaDict</string>    
@@ -53,8 +54,16 @@
     <string name="storageLabel">Kho chứa</string>
     
     <!-- Language -->
+    <string name="english">Tiếng Anh</string>
+    <string name="vietnamese">Tiếng Việt</string>
+    
+    <!-- Preference titles and summaries -->    
+    <string name="mainPrefTitle">Cấu hình</string>    
+    <string name="languageCategoryTitle">Ngôn ngữ hiển thị</string>
     <string name="languagePrefTitle">Ngôn ngữ</string>
-    <string name="mainPrefTitle">Cấu hình</string>
-    <string name="speakerLanguagePrefTitle">Ngôn ngữ phát âm</string>
+    <string name="languagePrefSummary">Tiếng Việt</string>                        
+    <string name="speakerLanguageCategoryTitle">Phát âm</string>
+    <string name="speakerLanguagePrefTitle">Ngôn ngữ</string>    
+    <string name="speakerLanguageSummary">Cài đặt giọng phát âm theo ngôn ngữ được chọn</string>
     
 </resources>

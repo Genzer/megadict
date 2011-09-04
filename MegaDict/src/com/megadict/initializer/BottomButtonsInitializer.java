@@ -93,8 +93,8 @@ public class BottomButtonsInitializer extends AbstractInitializer {
 		final String []mainButtonLabels = context.getResources().getStringArray(R.array.mainButtons);
 
 		new AlertDialog.Builder(context).
-		setTitle(R.string.historyDialogTitle).
-		setIcon(R.drawable.crystal_history).
+		setTitle(R.string.operationDialogTitle).
+		setIcon(R.drawable.crystal_keyboard).
 		setNegativeButton(R.string.close, new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(final DialogInterface dialog, final int which) {
