@@ -6,10 +6,10 @@ import android.view.Window;
 
 import com.megadict.R;
 
-public abstract class BaseListActivity extends ListActivity {
+public abstract class AbstractListActivity extends ListActivity {
 	private final int layoutID;
 
-	public BaseListActivity(final int layoutID) {
+	public AbstractListActivity(final int layoutID) {
 		super();
 		this.layoutID = layoutID;
 	}

@@ -3,6 +3,8 @@ package com.megadict.activity;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.preference.DialogPreference;
 import android.preference.ListPreference;
@@ -14,10 +16,14 @@ import android.preference.PreferenceGroup;
 import com.megadict.R;
 import com.megadict.preferences.LanguagePreference;
 import com.megadict.preferences.Preferences;
+import com.megadict.preferences.SpeakerPreference;
+import com.megadict.utility.Utility;
 
 public class SettingActivity extends PreferenceActivity {
 	private LanguagePreference languagePreference;
+	private SpeakerPreference speakerPreference;
 	private final List<Preference> preferences = new ArrayList<Preference>();
+	private final Intent returnedIntent = new Intent();
 
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
@@ -32,23 +38,56 @@ public class SettingActivity extends PreferenceActivity {
 
 		// Init language preference.
 		languagePreference = LanguagePreference.newInstance(this);
+		// Init speaker preference.
+		speakerPreference = SpeakerPreference.newInstance(this);
 
-		final ListPreference langListPref = (ListPreference)findPreference(Preferences.KEY_LANGUAGE);
+		// Display language preference.
+		final ListPreference langListPref = (ListPreference)findPreference(LanguagePreference.KEY_LANGUAGE);
 		langListPref.setValue(languagePreference.getLanguage());
 		langListPref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			@Override
 			public boolean onPreferenceChange(final Preference preference, final Object newValue) {
-				languagePreference.setLanguage(newValue.toString());
-				// Update preference text.
-				updatePreferenceTexts();
+				if(!languagePreference.getLanguage().equals(newValue)) {
+					languagePreference.setLanguage(newValue.toString());
+					Utility.updateLocale(SettingActivity.this, newValue.toString());
+					// Update preference text.
+					updatePreferenceTexts();
+					returnedIntent.putExtra(LanguagePreference.LANGUAGE_CHANGED, true);
+				}
 				return true;
 			}
 		});
 
-		//		final ListPreference speakerLanguagePref = (ListPreference)findPreference(getString(R.string.speakerLanguagePrefKey));
-		//		speakerLanguagePref.setEntries(R.array.displayLanguages);
-		//		speakerLanguagePref.setEntryValues(R.array.languages);
-		//		speakerLanguagePref.setDefaultValue(DEFAULT_LANGUAGE);
+		// Speaker type preference.
+		final ListPreference speakerTypePref = (ListPreference)findPreference(SpeakerPreference.KEY_SPEAKER_TYPE);
+		speakerTypePref.setValue(speakerPreference.getSpeakerType());
+		speakerTypePref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			@Override
+			public boolean onPreferenceChange(final Preference preference, final Object newValue) {
+				if(!speakerPreference.getSpeakerType().equals(newValue)) {
+					speakerPreference.setSpeakerType(newValue.toString());
+					returnedIntent.putExtra(SpeakerPreference.SPEAKER_TYPE_CHANGED, true);
+				}
+				return true;
+			}
+		});
+
+		// Speaker language preference.
+		final ListPreference speakerLanguagePref = (ListPreference)findPreference(SpeakerPreference.KEY_SPEAKER_LANGUAGE);
+		speakerLanguagePref.setValue(speakerPreference.getSpeakerLanguage());
+		speakerLanguagePref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			@Override
+			public boolean onPreferenceChange(final Preference preference, final Object newValue) {
+				if(!speakerPreference.getSpeakerLanguage().equals(newValue)) {
+					speakerPreference.setSpeakerLanguage(newValue.toString());
+					returnedIntent.putExtra(SpeakerPreference.SPEAKER_LANGUAGE_CHANGED, true);
+				}
+				return true;
+			}
+		});
+
+		// Set this to return intent to its owner.
+		setResult(Activity.RESULT_OK, returnedIntent);
 	}
 
 	private void updatePreferenceTexts() {
@@ -63,6 +102,12 @@ public class SettingActivity extends PreferenceActivity {
 			}
 			++index;
 		}
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		finish();
 	}
 
 	private void storePreferences() {

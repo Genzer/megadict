@@ -8,14 +8,6 @@ public class HistoryManager {
 	private final Set<String> historySet = new LinkedHashSet<String>();
 
 	public HistoryManager() {
-		// historySet.add("person");
-		// historySet.add("pers");
-		// historySet.add("person");
-		// historySet.add("personal");
-		// historySet.add("pers");
-		// historySet.add("something");
-		// historySet.add("test");
-		// historySet.add("something");
 	}
 
 	public void save(final String word) {

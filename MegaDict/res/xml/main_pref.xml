@@ -11,9 +11,10 @@
 	    </ListPreference>    
     </PreferenceCategory>    
     
-    <PreferenceCategory android:title="@string/speakerLanguageCategoryTitle">
-		<ListPreference android:title="@string/speakerLanguagePrefTitle" 
-						android:key="megadict.speakerLanguage" android:summary="@string/speakerLanguageSummary" android:dialogTitle="@string/speakerLanguagePrefTitle" android:dialogIcon="@drawable/crystal_multimedia">
+    <PreferenceCategory android:title="@string/speakerCategoryTitle">
+		<ListPreference android:dialogIcon="@drawable/crystal_multimedia" android:key="megadict.speakerType" android:summary="@string/speakerTypePrefSummary" android:entries="@array/speakerTypes" android:entryValues="@array/speakerTypeValues" android:title="@string/speakerTypePrefTitle" android:dialogTitle="@string/speakerTypePrefTitle"></ListPreference><ListPreference android:title="@string/speakerLanguagePrefTitle" 
+						android:key="megadict.speakerLanguage" android:dialogTitle="@string/speakerLanguagePrefTitle" android:dialogIcon="@drawable/crystal_multimedia" android:summary="@string/speakerLanguagePrefSummary" android:entries="@array/displayLanguages" android:entryValues="@array/languages">
 		</ListPreference>
+		
     </PreferenceCategory>    
 </PreferenceScreen>

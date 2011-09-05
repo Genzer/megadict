@@ -20,20 +20,10 @@ public class RecommendTask extends AbstractRecommendTask {
 	}
 
 	@Override
-	protected void onPreExecute() {
-		super.onPreExecute();
-	}
-
-	@Override
 	protected List<String> doInBackground(final String... params) {
 		while (!cancelled) {
 			return model.recommendWord(params[0]);
 		}
 		return Collections.emptyList();
-	}
-
-	@Override
-	protected void onPostExecute(final List<String> list) {
-		super.onPostExecute(list);
 	}
 }

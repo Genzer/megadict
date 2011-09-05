@@ -83,8 +83,4 @@ public class HistoryDisplayer extends AbstractInitializer {
 
 	@Override
 	public void init() { /* Empty for no reason, ok? */ }
-
-	@Override
-	public void doNothing() { /* Empty for no reason, ok? */
-	}
 }

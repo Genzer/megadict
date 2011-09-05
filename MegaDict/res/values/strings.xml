@@ -49,8 +49,8 @@
     
     <!-- Others -->
     <string name="appName">MegaDict</string>    
-    <string name="aboutContent"><b>This is the best dictionary in the world. The autors are Hieu and Hau.</b></string>
-    <string name="aboutDialogLabel">About</string>
+    <string name="aboutContent"><b>This is the best dictionary in the world. The authors are Hieu and Hau.</b><br></br>Contact: 0909327140.<br></br>Hotline: 0949401441.</string>
+    <string name="aboutDialogLabel">All about MegaDict</string>
     <string name="storageLabel">Storage</string>
     
     <!-- Language -->
@@ -62,8 +62,10 @@
     <string name="languageCategoryTitle">Display language</string>
     <string name="languagePrefTitle">Language</string>
     <string name="languagePrefSummary">English</string>    
-    <string name="speakerLanguageCategoryTitle">Pronunciation</string>    
-    <string name="speakerLanguagePrefTitle">Language</string>    
-    <string name="speakerLanguageSummary">Sets the language-specific voice for the spoken text</string>       
+    <string name="speakerCategoryTitle">Pronunciation</string>
+    <string name="speakerTypePrefTitle">Speaker type</string>
+    <string name="speakerTypePrefSummary">Sets the speaker type. MegaDict supports two types: Text-to-speech and Google translate.</string>     
+    <string name="speakerLanguagePrefTitle">Speaker language</string>
+    <string name="speakerLanguagePrefSummary">Sets the language-specific voice for the spoken text.</string>        
 
 </resources>

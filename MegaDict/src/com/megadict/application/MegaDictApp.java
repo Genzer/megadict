@@ -18,10 +18,4 @@ import com.megadict.business.scanning.DictionaryScanner;
 public final class MegaDictApp extends Application {
 	public final File externalStorage = ExternalStorage.getExternalDirectory();
 	public final DictionaryScanner scanner = new DictionaryScanner();
-
-	@Override
-	public void onCreate() {
-		super.onCreate();
-	}
-
 }

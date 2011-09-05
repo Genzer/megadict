@@ -1,23 +1,20 @@
 package com.megadict.preferences;
 
-import java.util.Locale;
-
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
 
 public final class LanguagePreference {
-	private static LanguagePreference pref;
-	private static boolean languageChanged;
+	// Language preferences.
+	public static final String KEY_LANGUAGE = "megadict.language";
+	public static final String DEFAULT_LANGUAGE = "en";
+	public static final String LANGUAGE_CHANGED = "languageChanged";
 
-	private String oldLanguage;
+	// Useful variables.
+	private static LanguagePreference pref;
 	private final SharedPreferences sharedPref;
-	private final Context context;
 
 	private LanguagePreference(final Context context) {
-		this.context = context;
 		sharedPref = context.getSharedPreferences(Preferences.NAME, Context.MODE_PRIVATE);
-		oldLanguage = getLanguage();
 	}
 
 	public static LanguagePreference newInstance(final Context context) {
@@ -28,36 +25,10 @@ public final class LanguagePreference {
 	}
 
 	public String getLanguage() {
-		return sharedPref.getString(Preferences.KEY_LANGUAGE, Preferences.DEFAULT_LANGUAGE);
+		return sharedPref.getString(KEY_LANGUAGE, DEFAULT_LANGUAGE);
 	}
 
 	public void setLanguage(final String language) {
-		if(!oldLanguage.equals(language)) {
-			sharedPref.edit().putString(Preferences.KEY_LANGUAGE, language).commit();
-			updateLocale(language);
-			languageChanged = true;
-			oldLanguage = language;
-		}
-	}
-
-	public void loadLanguageFromPreference() {
-		final String value = getLanguage();
-		updateLocale(value);
-	}
-
-	private void updateLocale(final String language) {
-		final Locale locale = new Locale(language);
-		Locale.setDefault(locale);
-		final Configuration config = new Configuration();
-		config.locale = locale;
-		context.getResources().updateConfiguration(config, context.getResources().getDisplayMetrics());
-	}
-
-	public boolean isLanguageChanged() {
-		return languageChanged;
-	}
-
-	public void resetLanguageChanged() {
-		languageChanged = false;
+		sharedPref.edit().putString(KEY_LANGUAGE, language).commit();
 	}
 }

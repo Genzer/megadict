@@ -4,6 +4,7 @@
         <item>@string/english</item>
         <item>@string/vietnamese</item>
     </string-array>
+    
     <string-array name="languageValues">
         <item>en</item>
         <item>vi</item>
@@ -21,16 +22,29 @@
     	<item>@string/mainPrefTitle</item>    	
     	<item>@string/languageCategoryTitle</item>
     	<item>@string/languagePrefTitle</item>    	
-    	<item>@string/speakerLanguageCategoryTitle</item>
+    	<item>@string/speakerCategoryTitle</item>
+    	<item>@string/speakerTypePrefTitle</item>  
     	<item>@string/speakerLanguagePrefTitle</item>    	
     </string-array>
     
     <string-array name="preferenceSummaries">
     	<item></item>    	    	
     	<item></item>
-    	<item>@string/languagePrefSummary</item>    	
+    	<item>@string/languagePrefSummary</item>
     	<item></item>
-    	<item>@string/speakerLanguageSummary</item>    	
+    	<item>@string/speakerTypePrefSummary</item>
+    	<item>@string/speakerLanguagePrefSummary</item>    	
+    </string-array>
+    
+    <string-array name="speakerTypes">
+    	<item>Google translate</item>
+    	<item>Text-to-speech</item>    	
+    </string-array>
+    
+    <string-array name="speakerTypeValues">
+    	<item>googleTranslate</item>
+	    <item>textToSpeech</item>	    
     </string-array>
 </resources>
+
 

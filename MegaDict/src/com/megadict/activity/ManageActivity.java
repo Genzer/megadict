@@ -9,7 +9,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.megadict.R;
-import com.megadict.activity.base.BaseListActivity;
+import com.megadict.activity.base.AbstractListActivity;
 import com.megadict.adapter.ChosenDictionaryCheckBoxAdapter;
 import com.megadict.application.MegaDictApp;
 import com.megadict.bean.RescanComponent;
@@ -18,7 +18,7 @@ import com.megadict.business.scanning.DictionaryScanner;
 import com.megadict.model.ChosenModel;
 import com.megadict.utility.DatabaseHelper;
 
-public class ManageActivity extends BaseListActivity {
+public class ManageActivity extends AbstractListActivity {
 	private DictionaryScanner scanner;
 	private RescanComponent rescanComponent;
 	private WikiAdder wikiAdder;

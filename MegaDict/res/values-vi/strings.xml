@@ -49,8 +49,8 @@
     
     <!-- Others -->
     <string name="appName">MegaDict</string>    
-    <string name="aboutContent"><b>Đây là từ điển tốt nhất thế giới. Tác giả là Hiếu và Hậu.</b></string>
-    <string name="aboutDialogLabel">Thông tin</string>
+    <string name="aboutContent"><b>Đây là từ điển tốt nhất thế giới. Tác giả là Hiếu và Hậu.</b><br></br>Điện thoại liên lạc: 0909327140.<br></br>Đường dây nóng: 0949401441.</string>
+    <string name="aboutDialogLabel">Thông tin về MegaDict</string>
     <string name="storageLabel">Kho chứa</string>
     
     <!-- Language -->
@@ -61,9 +61,11 @@
     <string name="mainPrefTitle">Cấu hình</string>    
     <string name="languageCategoryTitle">Ngôn ngữ hiển thị</string>
     <string name="languagePrefTitle">Ngôn ngữ</string>
-    <string name="languagePrefSummary">Tiếng Việt</string>                        
-    <string name="speakerLanguageCategoryTitle">Phát âm</string>
+    <string name="languagePrefSummary">Tiếng Việt</string>                           
+    <string name="speakerCategoryTitle">Phát âm</string>
+    <string name="speakerTypePrefTitle">Bộ phát âm</string>
+    <string name="speakerTypePrefSummary">Cài đặt bộ phát âm. MegaDict hỗ trợ hai loại: Text-to-speech và Google translate.</string>
     <string name="speakerLanguagePrefTitle">Ngôn ngữ</string>    
-    <string name="speakerLanguageSummary">Cài đặt giọng phát âm theo ngôn ngữ được chọn</string>
+    <string name="speakerLanguagePrefSummary">Cài đặt giọng phát âm theo ngôn ngữ được chọn.</string>
     
 </resources>

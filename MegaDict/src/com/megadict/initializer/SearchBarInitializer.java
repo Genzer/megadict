@@ -95,7 +95,4 @@ public class SearchBarInitializer extends AbstractInitializer {
 			/* Empty for no reason, ok? */
 		}
 	}
-
-	@Override
-	public void doNothing() { /* Empty for no reason, ok? */ }
 }

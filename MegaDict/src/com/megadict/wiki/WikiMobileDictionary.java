@@ -12,9 +12,10 @@ import com.megadict.model.Dictionary;
 
 public class WikiMobileDictionary implements Dictionary {
 	public static final String NO_DEFINITION = "There is no definition";
-	private final String PREFIX = "Wikipedia ";
+	private static final String PREFIX = "Wikipedia ";
 	private String dictionaryName;
 	private final String countryCode;
+	private final String URL_PATTERN = "http://%s.mobile.wikipedia.org/transcode.php?go=%s";
 
 	public WikiMobileDictionary(final String countryCode) {
 		this.countryCode = countryCode;
@@ -30,8 +31,6 @@ public class WikiMobileDictionary implements Dictionary {
 	@Override
 	public Definition lookUp(final String word) {
 		final String searchedWord = word.replace(" ", "_");
-		final String URL_PATTERN =
-				"http://%s.mobile.wikipedia.org/transcode.php?go=%s";
 		final String query =
 				String.format(URL_PATTERN, countryCode, searchedWord);
 

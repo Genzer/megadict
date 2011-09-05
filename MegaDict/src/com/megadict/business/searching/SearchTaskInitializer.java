@@ -2,7 +2,6 @@ package com.megadict.business.searching;
 
 import android.widget.ProgressBar;
 
-import com.megadict.activity.DictionaryActivity;
 import com.megadict.bean.DictionaryComponent;
 import com.megadict.business.ResultTextMaker;
 import com.megadict.business.searching.AbstractSearchTask.OnPostExecuteListener;
@@ -28,8 +27,7 @@ public class SearchTaskInitializer {
 				dictionaryComponent.getResultView().loadDataWithBaseURL(ResultTextMaker.ASSET_URL, dictionaryComponent.getResultTextMaker().getResultHTML(), "text/html", "utf-8", null);
 
 				// Hide progress bar if all tasks finished.
-				if (searcher.didAllSearchTasksFinish()
-						&& DictionaryActivity.activityRunning) {
+				if (searcher.didAllSearchTasksFinish()) {
 					dictionaryComponent.getProgressBar().setVisibility(ProgressBar.INVISIBLE);
 					// Save word to history.
 					searcher.saveWordToHistory(definition.getWord());

@@ -3,6 +3,7 @@ package com.megadict.initializer;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -14,19 +15,17 @@ import com.megadict.R;
 import com.megadict.bean.BusinessComponent;
 import com.megadict.bean.DictionaryComponent;
 import com.megadict.business.HistoryDisplayer;
-import com.megadict.business.TextSelector;
+import com.megadict.utility.ActivityHelper;
 import com.megadict.utility.Utility;
 
 public class BottomButtonsInitializer extends AbstractInitializer {
 	private final HistoryDisplayer historyDisplayer;
-	private final TextSelector textSelector;
 	private final Context context;
 	private final List<ButtonExecutor> executors = new ArrayList<BottomButtonsInitializer.ButtonExecutor>();
 
-	public BottomButtonsInitializer(final HistoryDisplayer historyDisplayer, final TextSelector textSelector, final BusinessComponent businessComponent, final DictionaryComponent dictionaryComponent) {
+	public BottomButtonsInitializer(final HistoryDisplayer historyDisplayer, final BusinessComponent businessComponent, final DictionaryComponent dictionaryComponent) {
 		super(businessComponent, dictionaryComponent);
 		this.historyDisplayer = historyDisplayer;
-		this.textSelector = textSelector;
 		this.context = dictionaryComponent.getContext();
 		// Init executors to execute items in AlertDialog.
 		initExecutors();
@@ -36,7 +35,7 @@ public class BottomButtonsInitializer extends AbstractInitializer {
 		executors.add(new ButtonExecutor() {
 			@Override
 			public void execute() {
-				Utility.startActivity(context, "com.megadict.activity.ManageActivity");
+				Utility.startActivity(context, ActivityHelper.MANAGE_ACTIVITY);
 			}
 		});
 		executors.add(new ButtonExecutor() {
@@ -48,19 +47,21 @@ public class BottomButtonsInitializer extends AbstractInitializer {
 		executors.add(new ButtonExecutor() {
 			@Override
 			public void execute() {
-				textSelector.selectText(context, dictionaryComponent.getResultView());
+				Utility.selectText(context, dictionaryComponent.getResultView());
 			}
 		});
 		executors.add(new ButtonExecutor() {
 			@Override
 			public void execute() {
-				Utility.startActivity(context, "com.megadict.activity.SettingActivity");
+				// Downcasting Context to Activity because I ensure this context is an activity,
+				/// but this seems to be a bad practice AFAIK.
+				Utility.startActivityForResult((Activity)dictionaryComponent.getContext(), ActivityHelper.SETTING_ACTIVITY, ActivityHelper.SETTING_REQUEST);
 			}
 		});
 		executors.add(new ButtonExecutor() {
 			@Override
 			public void execute() {
-				Utility.startActivity(context, "com.megadict.activity.AboutActivity");
+				Utility.startActivity(context, ActivityHelper.ABOUT_ACTIVITY);
 			}
 		});
 	}
@@ -71,7 +72,7 @@ public class BottomButtonsInitializer extends AbstractInitializer {
 		for(final Button button : bottomButtons) {
 			switch (button.getId()) {
 			case R.id.manageButton:
-				initBottomButtons(button, "com.megadict.activity.ManageActivity");
+				initBottomButtons(button, ActivityHelper.MANAGE_ACTIVITY);
 				break;
 			case R.id.historyButton:
 				initHistoryButton(button);
@@ -139,13 +140,10 @@ public class BottomButtonsInitializer extends AbstractInitializer {
 		button.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(final View v) {
-				textSelector.selectText(context, dictionaryComponent.getResultView());
+				Utility.selectText(context, dictionaryComponent.getResultView());
 			}
 		});
 	}
-
-	@Override
-	public void doNothing() { /* Do nothing for no reason. */}
 
 	private interface ButtonExecutor {
 		void execute();

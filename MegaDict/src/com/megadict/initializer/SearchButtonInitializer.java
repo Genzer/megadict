@@ -31,8 +31,4 @@ public class SearchButtonInitializer extends AbstractInitializer {
 			}
 		});
 	}
-
-	@Override
-	public void doNothing() {/* Empty for no reason, ok? */
-	}
 }

@@ -8,7 +8,6 @@ import java.util.TreeSet;
 import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
 
-import com.megadict.activity.DictionaryActivity;
 import com.megadict.bean.DictionaryComponent;
 import com.megadict.business.recommending.AbstractRecommendTask.OnPostExecuteListener;
 import com.megadict.business.recommending.AbstractRecommendTask.OnPreExecuteListener;
@@ -43,8 +42,7 @@ public class RecommendTaskInitializer {
 			@Override
 			public void onPostExecute(final List<String> list) {
 				recommendWords.addAll(list);
-				if (recommender.didAllRecommendTasksFinish()
-						&& DictionaryActivity.activityRunning) {
+				if (recommender.didAllRecommendTasksFinish()) {
 					final List<String> adaptedList = new ArrayList<String>();
 					int i = 0;
 					for (final String s : recommendWords) {

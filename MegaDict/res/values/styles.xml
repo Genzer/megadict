@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<!-- Main button style -->
+	<style name="MainMenuButton" parent="@android:style/Widget.Button">  
+	  <item name="android:layout_height">38dip</item>
+	  <item name="android:layout_width">0dip</item>    
+	  <item name="android:textSize">14dp</item>    
+	</style>
+
+	<!-- Must have this title background style to set color for custom title bar.
+	       Refer "http://stackoverflow.com/questions/2251714/set-title-background-color" -->
+	<style name="WindowTitleBackground">     
+       <item name="android:background">@color/titleBar</item>                   
+	</style>
+</resources>

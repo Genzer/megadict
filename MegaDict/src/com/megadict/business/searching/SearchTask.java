@@ -12,17 +12,7 @@ public class SearchTask extends AbstractSearchTask {
 	}
 
 	@Override
-	protected void onPreExecute() {
-		super.onPreExecute();
-	}
-
-	@Override
 	protected Definition doInBackground(final String... words) {
 		return dictionary.lookUp(words[0]);
-	}
-
-	@Override
-	protected void onPostExecute(final Definition definition) {
-		super.onPostExecute(definition);
 	}
 }

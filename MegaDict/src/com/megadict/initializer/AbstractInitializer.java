@@ -44,7 +44,4 @@ public abstract class AbstractInitializer extends Observable implements Initiali
 			Utility.messageBox(dictionaryComponent.getContext(), R.string.searching);
 		}
 	}
-
-	@Override
-	public abstract void doNothing();
 }

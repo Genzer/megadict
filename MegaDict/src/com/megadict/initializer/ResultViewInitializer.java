@@ -49,7 +49,4 @@ public final class ResultViewInitializer extends AbstractInitializer {
 			}
 		});
 	}
-
-	@Override
-	public void doNothing() { /* Empty for no reason, ok? */ }
 }

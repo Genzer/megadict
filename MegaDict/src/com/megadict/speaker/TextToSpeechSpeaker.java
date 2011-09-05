@@ -1,4 +1,4 @@
-package com.megadict.tts;
+package com.megadict.speaker;
 
 import java.util.Locale;
 
@@ -9,15 +9,12 @@ import android.util.Log;
 
 import com.megadict.model.Speaker;
 
-public class MegaSpeaker implements Speaker {
-	private final String TAG = "MegaSpeaker";
-	private static final Locale DEFAULT_LOCALE = new Locale("en", "US");
-	private Locale locale = DEFAULT_LOCALE;
+public class TextToSpeechSpeaker implements Speaker {
+	private final String TAG = "TextToSpeechSpeaker";
 	private final TextToSpeech tts;
-	private final OnInitListener onInitListener;
 
-	public MegaSpeaker(final Context context) {
-		onInitListener = new OnInitListener() {
+	public TextToSpeechSpeaker(final Context context, final Locale locale) {
+		final OnInitListener onInitListener = new OnInitListener() {
 			@Override
 			public void onInit(final int status) {
 				if (status == TextToSpeech.SUCCESS) {
@@ -38,7 +35,7 @@ public class MegaSpeaker implements Speaker {
 
 	@Override
 	public void speak(final String text) {
-		tts.speak(text, TextToSpeech.QUEUE_ADD, null);
+		tts.speak(text, TextToSpeech.QUEUE_FLUSH, null);
 	}
 
 	public void shutDown() {
@@ -47,11 +44,11 @@ public class MegaSpeaker implements Speaker {
 	}
 
 	public void setLanguage(final Locale locale) {
-		this.locale = locale;
+		tts.setLanguage(locale);
 	}
 
 	@Override
 	public Locale getSupportedLanguage() {
-		return null;
+		return tts.getLanguage();
 	}
 }

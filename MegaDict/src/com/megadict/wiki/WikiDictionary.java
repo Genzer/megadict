@@ -12,9 +12,13 @@ import com.megadict.model.Dictionary;
 
 public class WikiDictionary implements Dictionary {
 	public static final String NO_DEFINITION = "There is no definition";
-	private final int ALLOWED_WORD_COUNT = 1000;
-	private final int TIMEOUT = 5000;
-	private final String PREFIX = "Wikipedia ";
+	private static final int ALLOWED_WORD_COUNT = 1000;
+	private static final int TIMEOUT = 5000;
+	private static final String PREFIX = "Wikipedia ";
+	private static final String URI_PATTERN =
+			"http://%s.wikipedia.org/w/index.php?title=%s&action=render";
+	private static final String FULL_ARTICLE_PATTERN =
+			"<a href=\"http://en.wikipedia.org/wiki/%s\">Full Article..</a>";
 	private String dictionaryName;
 	private final String countryCode;
 
@@ -32,8 +36,6 @@ public class WikiDictionary implements Dictionary {
 	@Override
 	public Definition lookUp(final String word) {
 		final String searchedWord = word.replace(" ", "_");
-		final String URI_PATTERN =
-				"http://%s.wikipedia.org/w/index.php?title=%s&action=render";
 		final String query =
 				String.format(URI_PATTERN, countryCode, searchedWord);
 
@@ -56,8 +58,6 @@ public class WikiDictionary implements Dictionary {
 				if (paragraphs.length() == 0) {
 					paragraphs.append(pTags.get(0).toString());
 				}
-				final String FULL_ARTICLE_PATTERN =
-						"<a href=\"http://en.wikipedia.org/wiki/%s\">Full Article..</a>";
 				paragraphs.append(String.format(FULL_ARTICLE_PATTERN, searchedWord));
 				definition =
 						Definition.makeDefinition(word, paragraphs.toString(), dictionaryName);

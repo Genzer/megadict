@@ -1,12 +1,25 @@
 package com.megadict.utility;
 
+import java.util.Locale;
+
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.WebView;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class Utility {
+import com.megadict.R;
+
+public final class Utility {
+	public static final String TAG = "Utility";
+
+	private Utility() {}
+
 	public static void messageBox(final Context context, final String message) {
 		Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
 	}
@@ -25,9 +38,38 @@ public class Utility {
 		}
 	}
 
+	public static void startActivityForResult(final Activity activity, final String className, final int requestCode) {
+		try {
+			final Class<?> classObj = Class.forName(className);
+			final Intent intent = new Intent(activity, classObj);
+			activity.startActivityForResult(intent, requestCode);
+		} catch (final ClassNotFoundException e) {
+			messageBox(activity, className + " class not found.");
+		}
+	}
+
 	public static void disableSoftKeyboard(final Context context, final EditText editText) {
 		final InputMethodManager imm =
 				(InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
 		imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+	}
+
+	public static void updateLocale(final Context context, final String language) {
+		final Locale locale = new Locale(language);
+		Locale.setDefault(locale);
+		final Configuration config = new Configuration();
+		config.locale = locale;
+		context.getResources().updateConfiguration(config, context.getResources().getDisplayMetrics());
+	}
+
+	public static void selectText(final Context context, final WebView resultView) {
+		try {
+			final KeyEvent shiftPressEvent =
+					new KeyEvent(0, 0, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_SHIFT_LEFT, 0, 0);
+			shiftPressEvent.dispatch(resultView);
+			Utility.messageBox(context, R.string.selectText);
+		} catch (final Exception e) {
+			Log.e(TAG, context.getString(R.string.canNotSelectText), e);
+		}
 	}
 }
