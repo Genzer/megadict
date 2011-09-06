@@ -3,14 +3,13 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:layout_gravity="bottom|center_horizontal" android:id="@+id/mainPanel" android:background="@drawable/test2" android:padding="0dip">
+    android:layout_gravity="bottom|center_horizontal" android:id="@+id/mainPanel" android:padding="0dip">
     <RelativeLayout android:layout_width="fill_parent"
     				android:id="@+id/searchPanel"     							
-    				android:background="@drawable/test2" 
     				android:layout_weight="0"
     				android:paddingTop="2dip"
     				android:paddingBottom="0dip" 
-    				android:layout_height="46dip"> 
+    				android:layout_height="46dip" android:background="@color/snow2"> 
     				   				
         <Button android:layout_width="wrap_content"
         		android:layout_height="wrap_content"
@@ -46,7 +45,7 @@
     <LinearLayout android:layout_weight="0" 
     			  android:layout_height="wrap_content" 
     			  android:layout_width="match_parent"
-    			  android:weightSum="4" android:id="@+id/bottomButtonPanel">
+    			  android:weightSum="4" android:id="@+id/bottomButtonPanel" android:background="@color/snow3">
         <Button android:id="@+id/manageButton"
         		style="@style/MainMenuButton"
         		android:text="@string/manageButtonLabel" 
