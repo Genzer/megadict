@@ -69,15 +69,15 @@ class BaseIndexStore implements IndexStore {
             attempToFindInFileAndCache(headword);
         }
 
-        List<String> candidateResult = cache.getSimilarWord(headword, preferredNumber);        
-        String firstMatch = candidateResult.get(0);
-        
-        if (firstMatch.contains(headword)) {
-            return candidateResult;
-        } else {
-            return Collections.emptyList();
+        List<String> candidateResult = cache.getSimilarWord(headword, preferredNumber); 
+        if (!candidateResult.isEmpty()) {
+            String firstMatch = candidateResult.get(0);
+            if (!firstMatch.contains(headword)) {
+                candidateResult = Collections.emptyList();
+            }
         }
-
+        
+        return candidateResult;
     }
 
     private boolean notEnoughSimilarWords(int preferredNumber, String headword) {

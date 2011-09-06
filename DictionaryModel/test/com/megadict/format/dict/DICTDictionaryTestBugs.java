@@ -6,6 +6,7 @@ import org.junit.*;
 
 import com.megadict.format.dict.index.IndexFile;
 import com.megadict.format.dict.reader.DictionaryFile;
+import com.megadict.model.Definition;
 import com.megadict.model.Dictionary;
 
 public class DICTDictionaryTestBugs {
@@ -13,18 +14,19 @@ public class DICTDictionaryTestBugs {
     @Test
     public void testWrongResultRecommendingWithVEDict() {
 
-        IndexFile indexFile = IndexFile.makeFile("C:/test/av.index");
+        IndexFile indexFile = IndexFile.makeFile("C:/test/ve.index");
 
-        DictionaryFile dictFile = DictionaryFile.makeRandomAccessFile("C:/test/av.dict");
+        DictionaryFile dictFile = DictionaryFile.makeRandomAccessFile("C:/test/ve.dict");
 
         Dictionary dict = new DICTDictionary.Builder(indexFile, dictFile).enableSplittingIndexFile().build();
 
-        List<String> result = dict.recommendWord("zoom");
-
-        System.out.println(result);
+//        Definition def = dict.lookUp("học tập");
+//
+//        System.out.println(def.getContent());
+        List<String> similarWords = dict.recommendWord("person thing");
     }
 
-    @Test
+    @Ignore @Test
     public void testWrongResultRecommending() {
         
         IndexFile indexFile = IndexFile.makeFile("C:/test/av.index");
