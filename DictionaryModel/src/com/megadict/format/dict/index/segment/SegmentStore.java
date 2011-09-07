@@ -1,12 +1,14 @@
 package com.megadict.format.dict.index.segment;
 
+import java.text.Collator;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
 public class SegmentStore {
-
+    
     private TreeMap<String, Segment> map;
 
     public SegmentStore(Collection<Segment> segments) {
@@ -22,7 +24,9 @@ public class SegmentStore {
     }
 
     private void createKeyCaseInsensitiveMap() {
-        map = new TreeMap<String, Segment>(String.CASE_INSENSITIVE_ORDER);
+        Collator collator = Collator.getInstance(new Locale("vi", "VN"));
+        collator.setStrength(Collator.SECONDARY);
+        map = new TreeMap<String, Segment>(collator);
     }
 
     private void putAllToMap(Collection<Segment> segments) {

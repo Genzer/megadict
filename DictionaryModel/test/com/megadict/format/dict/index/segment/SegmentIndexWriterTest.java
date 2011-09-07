@@ -1,6 +1,7 @@
 package com.megadict.format.dict.index.segment;
 
 import java.io.File;
+import java.text.Collator;
 import java.util.*;
 
 import org.junit.*;
@@ -34,12 +35,15 @@ public class SegmentIndexWriterTest {
     }
     
     private Collection<Segment> sortSegments(Collection<Segment> unsorted) {
-        TreeMap<String, Segment> sortedMap = new TreeMap<String, Segment>(String.CASE_INSENSITIVE_ORDER);
+        Collator collator = Collator.getInstance(new Locale("vi", "VI"));
+        collator.setStrength(Collator.SECONDARY);
+        
+        TreeMap<String, Segment> sortedMap = new TreeMap<String, Segment>(collator);
         
         for (Segment segment : unsorted) {
             sortedMap.put(segment.upperbound(), segment);
         }
-        
+        System.out.println(sortedMap);
         return sortedMap.values();
     }
 }
