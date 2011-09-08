@@ -6,6 +6,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.inputmethod.InputMethodManager;
@@ -26,6 +28,10 @@ public final class Utility {
 
 	public static void messageBox(final Context context, final int resID) {
 		Toast.makeText(context, context.getString(resID), Toast.LENGTH_SHORT).show();
+	}
+
+	public static void messageBox2(final Context context, final int resID) {
+		Toast.makeText(context, context.getString(resID), Toast.LENGTH_LONG).show();
 	}
 
 	public static void startActivity(final Context context, final String className) {
@@ -72,4 +78,11 @@ public final class Utility {
 			Log.e(TAG, context.getString(R.string.canNotSelectText), e);
 		}
 	}
+
+	public static boolean isOnline(final Context context) {
+		final ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		final NetworkInfo info = cm.getActiveNetworkInfo();
+		return info != null ? info.isConnectedOrConnecting() : false;
+	}
+
 }

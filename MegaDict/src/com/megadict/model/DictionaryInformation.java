@@ -2,24 +2,23 @@ package com.megadict.model;
 
 import java.io.File;
 
-import com.megadict.exception.DataFileNotFoundException;
-import com.megadict.exception.IndexFileNotFoundException;
+import com.megadict.exception.FileNotFoundException;
 
 public class DictionaryInformation {
 	private final File parentFile;
 	private File indexFile;
 	private File dataFile;
 
-	public DictionaryInformation(final File parentFilePath) throws IndexFileNotFoundException, DataFileNotFoundException {
+	public DictionaryInformation(final File parentFilePath) {
 		this.parentFile = parentFilePath;
 		createNecessaryFiles(parentFile);
 	}
 
-	public DictionaryInformation(final String parentFilePath) throws IndexFileNotFoundException, DataFileNotFoundException {
+	public DictionaryInformation(final String parentFilePath) {
 		this(new File(parentFilePath));
 	}
 
-	private void createNecessaryFiles(final File parentFilePath) throws IndexFileNotFoundException, DataFileNotFoundException {
+	private void createNecessaryFiles(final File parentFilePath) {
 
 		/* Create index and data file path. */
 		final String filePath = parentFilePath.getAbsolutePath();
@@ -32,18 +31,30 @@ public class DictionaryInformation {
 		dataFile = new File(dataFilePath);
 
 		if (!indexFile.exists()) {
-			throw new IndexFileNotFoundException(filePath);
+			throw new FileNotFoundException("Index", filePath);
 		}
 		if (!dataFile.exists()) {
-			throw new DataFileNotFoundException(filePath);
+			throw new FileNotFoundException("Data", filePath);
 		}
 	}
 
-	public static DictionaryInformation newInstance(final File parentFilePath) throws IndexFileNotFoundException, DataFileNotFoundException {
+	/**
+	 * Create new DictionaryInformation.
+	 * @param parentFilePath File
+	 * @throws FileNotFoundException if index file or data file not found.
+	 * @return DictionaryInformation
+	 */
+	public static DictionaryInformation newInstance(final File parentFilePath) {
 		return new DictionaryInformation(parentFilePath);
 	}
 
-	public static DictionaryInformation newInstance(final String parentFilePath) throws IndexFileNotFoundException, DataFileNotFoundException {
+	/**
+	 * Create new DictionaryInformation.
+	 * @param parentFilePath String
+	 * @throws FileNotFoundException if index file or data file not found.
+	 * @return DictionaryInformation
+	 */
+	public static DictionaryInformation newInstance(final String parentFilePath) {
 		return new DictionaryInformation(parentFilePath);
 	}
 

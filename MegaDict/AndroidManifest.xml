@@ -11,6 +11,7 @@
 		android:largeScreens="true"
 		android:anyDensity="true"
 	/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
     
     <application android:name=".application.MegaDictApp" 
     			 android:icon="@drawable/megadict_icon" 

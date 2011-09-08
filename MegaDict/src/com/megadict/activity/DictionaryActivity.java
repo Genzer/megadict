@@ -73,6 +73,11 @@ public final class DictionaryActivity extends AbstractActivity {
 
 		// Scan chosen databases when MegaDict opens.
 		doScanningStorage();
+
+		// Check Internet connection.
+		if(!Utility.isOnline(this)) {
+			Utility.messageBox2(this, R.string.internetNotConnectedWarning);
+		}
 	}
 
 	@Override

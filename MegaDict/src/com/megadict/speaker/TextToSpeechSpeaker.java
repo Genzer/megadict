@@ -7,13 +7,16 @@ import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
 import android.util.Log;
 
-import com.megadict.model.Speaker;
+import com.megadict.exception.SpeakingFailedExeption;
+import com.megadict.exception.UnsupportedLanguageException;
 
-public class TextToSpeechSpeaker implements Speaker {
-	private final String TAG = "TextToSpeechSpeaker";
+public class TextToSpeechSpeaker {
+	private static final String TAG = "TextToSpeechSpeaker";
 	private final TextToSpeech tts;
+	private Locale locale;
 
 	public TextToSpeechSpeaker(final Context context, final Locale locale) {
+		this.locale = locale;
 		final OnInitListener onInitListener = new OnInitListener() {
 			@Override
 			public void onInit(final int status) {
@@ -33,9 +36,19 @@ public class TextToSpeechSpeaker implements Speaker {
 		tts = new TextToSpeech(context, onInitListener);
 	}
 
-	@Override
+	/**
+	 * @throws UnsupportedLanguageException if the spoken language is not supported.
+	 * @throws SpeakingFailedExeption if the speaking failed.
+	 */
 	public void speak(final String text) {
-		tts.speak(text, TextToSpeech.QUEUE_FLUSH, null);
+		final int r = tts.setLanguage(locale);
+		if(r == TextToSpeech.LANG_MISSING_DATA || r == TextToSpeech.LANG_NOT_SUPPORTED) {
+			throw new UnsupportedLanguageException();
+		} else {
+			if(tts.speak(text, TextToSpeech.QUEUE_FLUSH, null) == TextToSpeech.ERROR) {
+				throw new SpeakingFailedExeption();
+			}
+		}
 	}
 
 	public void shutDown() {
@@ -44,11 +57,10 @@ public class TextToSpeechSpeaker implements Speaker {
 	}
 
 	public void setLanguage(final Locale locale) {
-		tts.setLanguage(locale);
+		this.locale = locale;
 	}
 
-	@Override
-	public Locale getSupportedLanguage() {
-		return tts.getLanguage();
+	public Locale getLanguage() {
+		return locale;
 	}
 }

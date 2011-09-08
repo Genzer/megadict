@@ -39,7 +39,12 @@
     <string name="close">Đóng</string>
     <string name="searchBarHint">Nhập từ cần tra</string>
     <string name="adding">Đang thêm từ điển... Làm ơn chờ.</string>
-    <string name="chooseAnItem">Chọn một từ</string>   
+    <string name="chooseAnItem">Chọn một từ</string>
+    <string name="couldNotSpeakGoogle">Không thể phát âm. Làm ơn kiểm tra kết nối Internet</string>
+    <string name="couldNotSpeakTTS">Không thể phát âm. Có cái gì đó không đúng.</string>
+    <string name="languageNotSupported">Ngôn ngữ phát âm không được hỗ trợ.</string>
+    <string name="internetNotConnectedWarning">Không có Internet. Một số tính năng sẽ không hoạt động.</string>
+    <string name="internetNotConnected">Không có Internet.</string>
     
     <!-- Dialog title -->
     <string name="wordListDialogTitle">Chọn một từ</string>
@@ -49,7 +54,7 @@
     
     <!-- Others -->
     <string name="appName">MegaDict</string>    
-    <string name="aboutContent"><b>Đây là từ điển tốt nhất thế giới. Tác giả là Hiếu và Hậu.</b><br></br>Điện thoại liên lạc: 0909327140.<br></br>Đường dây nóng: 0949401441.</string>
+    <string name="aboutContent"><b>Đây là từ điển tốt nhất thế giới. Tác giả là Hiếu và Hậu.</b>\nĐiện thoại liên lạc: 0909327140.\nĐường dây nóng: 0949401441.</string>
     <string name="aboutDialogLabel">Thông tin về MegaDict</string>
     <string name="storageLabel">Kho chứa</string>
     

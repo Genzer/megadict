@@ -3,9 +3,10 @@ package com.megadict.business.recommending;
 import java.util.Collections;
 import java.util.List;
 
+import com.megadict.business.AbstractWorkerTask;
 import com.megadict.model.Dictionary;
 
-public class RecommendTask extends AbstractRecommendTask {
+public class RecommendTask extends AbstractWorkerTask<String, Void, List<String>> {
 	private final Dictionary model;
 	private boolean cancelled = false;
 

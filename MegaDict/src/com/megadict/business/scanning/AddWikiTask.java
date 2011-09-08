@@ -3,13 +3,14 @@ package com.megadict.business.scanning;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.megadict.bean.RescanComponent;
+import com.megadict.business.AbstractWorkerTask;
 import com.megadict.model.ChosenModel;
 import com.megadict.model.Dictionary;
 import com.megadict.model.ModelMap;
 import com.megadict.utility.DatabaseHelper;
 import com.megadict.wiki.WikiDictionary;
 
-public class AddWikiTask extends AbstractAddWikiTask {
+public class AddWikiTask extends AbstractWorkerTask<String, Void, Void> {
 	private final DictionaryScanner scanner;
 	private final RescanComponent rescanComponent;
 	private final ModelMap models;

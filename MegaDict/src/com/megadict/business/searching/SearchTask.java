@@ -1,9 +1,10 @@
 package com.megadict.business.searching;
 
+import com.megadict.business.AbstractWorkerTask;
 import com.megadict.model.Definition;
 import com.megadict.model.Dictionary;
 
-public class SearchTask extends AbstractSearchTask {
+public class SearchTask extends AbstractWorkerTask<String, Void, Definition> {
 	private final Dictionary dictionary;
 
 	public SearchTask(final Dictionary dictionary) {

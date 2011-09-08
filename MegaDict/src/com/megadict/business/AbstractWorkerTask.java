@@ -1,15 +1,14 @@
-package com.megadict.business.recommending;
-
-import java.util.List;
+package com.megadict.business;
 
 import android.os.AsyncTask;
 
-import com.megadict.business.Workable;
 
-public abstract class AbstractRecommendTask extends AsyncTask<String, Void, List<String>> implements Workable {
+public abstract class AbstractWorkerTask<Params, Progress, Result>
+extends AsyncTask<Params, Progress, Result>
+implements Workable {
 	protected OnPreExecuteListener onPreExecuteListener;
-	protected OnPostExecuteListener onPostExecuteListener;
-	protected boolean working;
+	protected OnPostExecuteListener<Result> onPostExecuteListener;
+	private boolean working;
 
 	@Override
 	protected void onPreExecute() {
@@ -20,13 +19,10 @@ public abstract class AbstractRecommendTask extends AsyncTask<String, Void, List
 	}
 
 	@Override
-	protected abstract List<String> doInBackground(final String... params);
-
-	@Override
-	protected void onPostExecute(final List<String> list) {
+	protected void onPostExecute(final Result result) {
 		working = false;
 		if (onPostExecuteListener != null) {
-			onPostExecuteListener.onPostExecute(list);
+			onPostExecuteListener.onPostExecute(result);
 		}
 	}
 
@@ -39,7 +35,7 @@ public abstract class AbstractRecommendTask extends AsyncTask<String, Void, List
 		this.onPreExecuteListener = onPreExecuteListener;
 	}
 
-	public void setOnPostExecuteListener(final OnPostExecuteListener onPostExecuteListener) {
+	public void setOnPostExecuteListener(final OnPostExecuteListener<Result> onPostExecuteListener) {
 		this.onPostExecuteListener = onPostExecuteListener;
 	}
 
@@ -47,7 +43,7 @@ public abstract class AbstractRecommendTask extends AsyncTask<String, Void, List
 		void onPreExecute();
 	}
 
-	public interface OnPostExecuteListener {
-		void onPostExecute(List<String> list);
+	public interface OnPostExecuteListener<Result> {
+		void onPostExecute(Result result);
 	}
 }

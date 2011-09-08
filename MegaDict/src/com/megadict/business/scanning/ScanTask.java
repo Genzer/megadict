@@ -4,8 +4,8 @@ import android.widget.ProgressBar;
 
 import com.megadict.bean.DictionaryBean;
 import com.megadict.bean.DictionaryComponent;
-import com.megadict.exception.DataFileNotFoundException;
-import com.megadict.exception.IndexFileNotFoundException;
+import com.megadict.business.AbstractWorkerTask;
+import com.megadict.exception.FileNotFoundException;
 import com.megadict.format.dict.DICTDictionary;
 import com.megadict.format.dict.index.IndexFile;
 import com.megadict.format.dict.reader.DictionaryFile;
@@ -16,7 +16,7 @@ import com.megadict.model.ModelMap;
 import com.megadict.utility.MegaLogger;
 import com.megadict.wiki.WikiDictionary;
 
-public class ScanTask extends AbstractScanTask {
+public class ScanTask extends AbstractWorkerTask<DictionaryBean, Void, Void> {
 	private final DictionaryScanner scanner;
 	private final DictionaryComponent dictionaryComponent;
 	private final ModelMap models;
@@ -65,9 +65,7 @@ public class ScanTask extends AbstractScanTask {
 
 			// Store models.
 			models.put(id, dictionary);
-		} catch (final IndexFileNotFoundException e) {
-			MegaLogger.log(e.getMessage());
-		} catch (final DataFileNotFoundException e) {
+		} catch (final FileNotFoundException e) {
 			MegaLogger.log(e.getMessage());
 		}
 

@@ -22,14 +22,14 @@ import com.megadict.utility.DatabaseHelper;
 
 public final class DictionaryScanner extends Observable implements TaskManager {
 	private final ModelMap models = new ModelMap();
-	private final List<AbstractRescanTask> rescanTasks =
-			new ArrayList<AbstractRescanTask>();
-	private final List<AbstractScanTask> scanTasks =
-			new ArrayList<AbstractScanTask>();
-	private final List<AbstractUpdateTask> updateTasks =
-			new ArrayList<AbstractUpdateTask>();
-	private final List<AbstractAddWikiTask> wikiTasks =
-			new ArrayList<AbstractAddWikiTask>();
+	private final List<RescanTask> rescanTasks =
+			new ArrayList<RescanTask>();
+	private final List<ScanTask> scanTasks =
+			new ArrayList<ScanTask>();
+	private final List<UpdateTask> updateTasks =
+			new ArrayList<UpdateTask>();
+	private final List<AddWikiTask> wikiTasks =
+			new ArrayList<AddWikiTask>();
 
 	public DictionaryScanner() {
 		super();
@@ -140,7 +140,7 @@ public final class DictionaryScanner extends Observable implements TaskManager {
 		rescanComponent.setProgressDialogMessage(R.string.adding);
 
 		for (final String code : countryCodes) {
-			final AbstractAddWikiTask task =
+			final AddWikiTask task =
 					new AddWikiTask(this, models, rescanComponent);
 			task.execute(code);
 			wikiTasks.add(task);
@@ -149,7 +149,7 @@ public final class DictionaryScanner extends Observable implements TaskManager {
 
 	@Override
 	public boolean didAllRescanTasksFinish() {
-		for (final AbstractRescanTask task : rescanTasks) {
+		for (final RescanTask task : rescanTasks) {
 			if (task.isWorking()) {
 				return false;
 			}
@@ -159,7 +159,7 @@ public final class DictionaryScanner extends Observable implements TaskManager {
 
 	@Override
 	public boolean didAllAddWikiTasksFinish() {
-		for (final AbstractAddWikiTask task : wikiTasks) {
+		for (final AddWikiTask task : wikiTasks) {
 			if (task.isWorking()) {
 				return false;
 			}
@@ -169,7 +169,7 @@ public final class DictionaryScanner extends Observable implements TaskManager {
 
 	@Override
 	public boolean didAllScanTasksFinish() {
-		for (final AbstractScanTask task : scanTasks) {
+		for (final ScanTask task : scanTasks) {
 			if (task.isWorking()) {
 				return false;
 			}
@@ -179,7 +179,7 @@ public final class DictionaryScanner extends Observable implements TaskManager {
 
 	@Override
 	public boolean didAllUpdateTasksFinish() {
-		for (final AbstractUpdateTask task : updateTasks) {
+		for (final UpdateTask task : updateTasks) {
 			if (task.isWorking()) {
 				return false;
 			}
@@ -200,7 +200,7 @@ public final class DictionaryScanner extends Observable implements TaskManager {
 
 			final DictionaryBean bean =
 					new DictionaryBean.Builder(id).path(path).type(type).build();
-			final AbstractScanTask task =
+			final ScanTask task =
 					new ScanTask(this, models, dictionaryComponent);
 			task.execute(bean);
 			scanTasks.add(task);
@@ -209,7 +209,7 @@ public final class DictionaryScanner extends Observable implements TaskManager {
 
 	private void executeRecanTasks(final RescanComponent rescanComponent, final List<DictionaryInformation> infos) {
 		for (final DictionaryInformation info : infos) {
-			final AbstractRescanTask task =
+			final RescanTask task =
 					new RescanTask(this, models, rescanComponent);
 			task.execute(info);
 			rescanTasks.add(task);
@@ -218,7 +218,7 @@ public final class DictionaryScanner extends Observable implements TaskManager {
 
 	private void executeUpdateTasks(final DictionaryComponent dictionaryComponent, final List<DictionaryBean> insertedBeans) {
 		for (final DictionaryBean bean : insertedBeans) {
-			final AbstractUpdateTask task =
+			final UpdateTask task =
 					new UpdateTask(this, models, dictionaryComponent);
 			task.execute(bean);
 			updateTasks.add(task);
@@ -236,7 +236,7 @@ public final class DictionaryScanner extends Observable implements TaskManager {
 		final String welcomeStr =
 				(dictCount > 1
 						? dictionaryComponent.getContext().getString(R.string.usingDictionaryPlural, dictCount)
-						: dictionaryComponent.getContext().getString(R.string.usingDictionary, dictCount));
+								: dictionaryComponent.getContext().getString(R.string.usingDictionary, dictCount));
 		final String welcomeHTML =
 				dictionaryComponent.getResultTextMaker().getWelcomeHTML(welcomeStr);
 		dictionaryComponent.getResultView().loadDataWithBaseURL(ResultTextMaker.ASSET_URL, welcomeHTML, "text/html", "utf-8", null);

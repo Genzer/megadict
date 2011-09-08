@@ -3,6 +3,7 @@ package com.megadict.business.scanning;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.megadict.bean.RescanComponent;
+import com.megadict.business.AbstractWorkerTask;
 import com.megadict.format.dict.DICTDictionary;
 import com.megadict.format.dict.index.IndexFile;
 import com.megadict.format.dict.reader.DictionaryFile;
@@ -12,7 +13,7 @@ import com.megadict.model.DictionaryInformation;
 import com.megadict.model.ModelMap;
 import com.megadict.utility.DatabaseHelper;
 
-public class RescanTask extends AbstractRescanTask {
+public class RescanTask extends AbstractWorkerTask<DictionaryInformation, Void, Void> {
 	private final DictionaryScanner scanner;
 	private final RescanComponent rescanComponent;
 	private final ModelMap models;

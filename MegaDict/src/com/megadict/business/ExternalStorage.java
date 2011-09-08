@@ -13,8 +13,13 @@ public final class ExternalStorage {
 	private ExternalStorage() {
 	}
 
+	/**
+	 * Get external storage what stores dictionary data.
+	 * @return The file location of the external storage.
+	 * @throws CouldNotCreateExternalDirectoryException if the SD card is not mounted or the SD card is readonly.
+	 */
 	public static File getExternalDirectory() {
-		if (!isExternalStorageAvailable() && isExternalStorageReadOnly()) {
+		if (!isExternalStorageAvailable() || isExternalStorageReadOnly()) {
 			throw new CouldNotCreateExternalDirectoryException();
 		}
 
@@ -44,11 +49,19 @@ public final class ExternalStorage {
 		return externalDirectory;
 	}
 
+	/**
+	 * Check if the external storage is availabe.
+	 * @return boolean
+	 */
 	private static boolean isExternalStorageAvailable() {
 		final String state = Environment.getExternalStorageState();
 		return Environment.MEDIA_MOUNTED.equals(state);
 	}
 
+	/**
+	 * Check if the external storage is readonly
+	 * @return boolean
+	 */
 	private static boolean isExternalStorageReadOnly() {
 		final String state = Environment.getExternalStorageState();
 		return Environment.MEDIA_MOUNTED_READ_ONLY.equals(state);

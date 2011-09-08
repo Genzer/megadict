@@ -20,7 +20,7 @@
     <string name="wikiMenuItemTitle">Wikipedia</string>
     
     <!-- Common Strings -->
-    <string name="noDefinition">There is no definition. Don\'t be silly, guy!</string>    
+    <string name="noDefinition">There is no definition!</string>    
     <string name="noDictionary">Please choose a dictionary.</string>
     <string name="noDictionary2">There is no dictionary. Please put dictionaries\' data 
     folders in SD card at the location <b>/mnt/sdcard/Download/megadict</b>.</string>    
@@ -33,13 +33,18 @@
     <string name="canNotSelectText">Can\'t select text.</string>
     <string name="emptyHistory">There is no any word.</string>
     <string name="ok">OK</string>
-    <string name="cancel">Cancel</string>
+    <string name="cancel">Cancel</string>    
     <string name="deleteEllipsis">Delete...</string>
     <string name="clear">Clear</string>
     <string name="close">Close</string>
     <string name="searchBarHint">Enter word here</string>
     <string name="adding">Adding... Please wait.</string>
-    <string name="chooseAnItem">Choose an item</string>   
+    <string name="chooseAnItem">Choose an item</string>
+    <string name="couldNotSpeakGoogle">Couldn\'t speak. Please check your Internet connection.</string>
+    <string name="couldNotSpeakTTS">Couldn\'t speak. Something wrong.</string>
+    <string name="languageNotSupported">The speaker language is not supported.</string>
+    <string name="internetNotConnectedWarning">Internet not connected. Some features will not work.</string>
+    <string name="internetNotConnected">Internet not connected.</string>
     
     <!-- Dialog title -->
     <string name="wordListDialogTitle">Pick a word</string>
@@ -49,7 +54,7 @@
     
     <!-- Others -->
     <string name="appName">MegaDict</string>    
-    <string name="aboutContent"><b>This is the best dictionary in the world. The authors are Hieu and Hau.</b><br></br>Contact: 0909327140.<br></br>Hotline: 0949401441.</string>
+    <string name="aboutContent"><b>This is the best dictionary in the world. The authors are Hieu and Hau.</b>\nContact: 0909327140.\nHotline: 0949401441.</string>
     <string name="aboutDialogLabel">All about MegaDict</string>
     <string name="storageLabel">Storage</string>
     

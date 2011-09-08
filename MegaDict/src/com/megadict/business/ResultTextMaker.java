@@ -6,7 +6,11 @@ import android.content.res.AssetManager;
 
 import com.megadict.exception.ResourceNotFoundException;
 
-/* This class is not threadsafe. */
+/**
+ * This class is not threadsafe.
+ * @author HIEUGIOI
+ *
+ */
 public class ResultTextMaker {
 	public static final String ASSET_URL = "file:///android_asset/";
 	private final AssetManager assetManager;

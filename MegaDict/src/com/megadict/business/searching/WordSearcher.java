@@ -20,8 +20,8 @@ public final class WordSearcher implements Observer, SearchTaskManager {
 	// Composition variables.
 	private final SearchTaskInitializer searchTaskInitializer;
 	private String noDictionaryStr = "There is no dictionary";
-	private final List<AbstractSearchTask> searchTasks =
-			new ArrayList<AbstractSearchTask>();
+	private final List<SearchTask> searchTasks =
+			new ArrayList<SearchTask>();
 	private final HistoryManager historyManager = new HistoryManager();
 
 	public WordSearcher(final List<Dictionary> dictionaryModels, final DictionaryComponent dictionaryComponent) {
@@ -33,7 +33,7 @@ public final class WordSearcher implements Observer, SearchTaskManager {
 
 	@Override
 	public boolean didAllSearchTasksFinish() {
-		for (final AbstractSearchTask task : searchTasks) {
+		for (final SearchTask task : searchTasks) {
 			if (task.isWorking()) {
 				return false;
 			}
@@ -66,14 +66,14 @@ public final class WordSearcher implements Observer, SearchTaskManager {
 	}
 
 	private void executeSearchTasks(final String searchedWord) {
-		for (final AbstractSearchTask task : searchTasks) {
+		for (final SearchTask task : searchTasks) {
 			task.execute(searchedWord);
 		}
 	}
 
 	private void createAndStoreSearchTasks() {
 		for (final Dictionary dictionary : dictionaryModels) {
-			final AbstractSearchTask task = new SearchTask(dictionary);
+			final SearchTask task = new SearchTask(dictionary);
 			searchTaskInitializer.setOnPreExecuteListener(task);
 			searchTaskInitializer.setOnPostExecuteListener(task);
 			searchTasks.add(task);

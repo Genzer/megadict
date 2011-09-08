@@ -24,8 +24,8 @@ public final class WordRecommender implements Observer, RecommendTaskManager {
 
 	// Composition variables.
 	private final RecommendTaskInitializer recommendTaskInitializer;
-	private final List<AbstractRecommendTask> recommendTasks =
-			new ArrayList<AbstractRecommendTask>();
+	private final List<RecommendTask> recommendTasks =
+			new ArrayList<RecommendTask>();
 	private final Handler recommendHandler = new RecommendHandler();
 	private Runnable recommendRunnable;
 
@@ -38,7 +38,7 @@ public final class WordRecommender implements Observer, RecommendTaskManager {
 
 	@Override
 	public boolean didAllRecommendTasksFinish() {
-		for (final AbstractRecommendTask task : recommendTasks) {
+		for (final RecommendTask task : recommendTasks) {
 			if (task.isWorking()) {
 				return false;
 			}
@@ -53,7 +53,7 @@ public final class WordRecommender implements Observer, RecommendTaskManager {
 		// Create and execute tasks.
 		for (final Dictionary model : dictionaryModels) {
 			if (model instanceof DICTDictionary) {
-				final AbstractRecommendTask task = new RecommendTask(model);
+				final RecommendTask task = new RecommendTask(model);
 				recommendTaskInitializer.setOnPreExecuteListener(task);
 				recommendTaskInitializer.setOnPostExecuteListener(task);
 				task.execute(word);
@@ -64,7 +64,7 @@ public final class WordRecommender implements Observer, RecommendTaskManager {
 
 	@Override
 	public void cancelRecommending() {
-		for (final AbstractRecommendTask task : recommendTasks) {
+		for (final RecommendTask task : recommendTasks) {
 			task.cancel(true);
 		}
 		// Cancelling must clear old tasks.

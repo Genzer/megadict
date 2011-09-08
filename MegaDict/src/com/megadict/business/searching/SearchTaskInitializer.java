@@ -3,9 +3,9 @@ package com.megadict.business.searching;
 import android.widget.ProgressBar;
 
 import com.megadict.bean.DictionaryComponent;
+import com.megadict.business.AbstractWorkerTask.OnPostExecuteListener;
+import com.megadict.business.AbstractWorkerTask.OnPreExecuteListener;
 import com.megadict.business.ResultTextMaker;
-import com.megadict.business.searching.AbstractSearchTask.OnPostExecuteListener;
-import com.megadict.business.searching.AbstractSearchTask.OnPreExecuteListener;
 import com.megadict.model.Definition;
 
 public class SearchTaskInitializer {
@@ -18,8 +18,8 @@ public class SearchTaskInitializer {
 		this.dictionaryComponent = dictionaryComponent;
 	}
 
-	public void setOnPostExecuteListener(final AbstractSearchTask task) {
-		task.setOnPostExecuteListener(new OnPostExecuteListener() {
+	public void setOnPostExecuteListener(final SearchTask task) {
+		task.setOnPostExecuteListener(new OnPostExecuteListener<Definition>() {
 			@Override
 			public void onPostExecute(final Definition definition) {
 				dictionaryComponent.getResultTextMaker().appendContent(definition.getWord(), definition.exists()
@@ -36,7 +36,7 @@ public class SearchTaskInitializer {
 		});
 	}
 
-	public void setOnPreExecuteListener(final AbstractSearchTask task) {
+	public void setOnPreExecuteListener(final SearchTask task) {
 		task.setOnPreExecuteListener(new OnPreExecuteListener() {
 			@Override
 			public void onPreExecute() {

@@ -4,8 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.megadict.exception.DataFileNotFoundException;
-import com.megadict.exception.IndexFileNotFoundException;
+import com.megadict.exception.FileNotFoundException;
 import com.megadict.model.DictionaryInformation;
 import com.megadict.utility.MegaLogger;
 
@@ -13,8 +12,8 @@ public class ExternalReader {
 	private final List<DictionaryInformation> infos =
 			new ArrayList<DictionaryInformation>();
 	public static final String NO_DICTIONARY = "There is no dictionary.";
-	public static final String INDEX_FILE_NOT_FOUND = "Index file not found.";
-	public static final String DATA_FILE_NOT_FOUND = "Data file not found.";
+	//public static final String INDEX_FILE_NOT_FOUND = "Index file not found.";
+	//public static final String DATA_FILE_NOT_FOUND = "Data file not found.";
 
 	public List<DictionaryInformation> getInfos() {
 		return infos;
@@ -35,16 +34,14 @@ public class ExternalReader {
 					final DictionaryInformation info =
 							createDictionaryInformation(file);
 					infos.add(info);
-				} catch (final IndexFileNotFoundException e) {
-					MegaLogger.log(e.getMessage());
-				} catch (final DataFileNotFoundException e) {
+				} catch (final FileNotFoundException e) {
 					MegaLogger.log(e.getMessage());
 				}
 			}
 		}
 	}
 
-	private DictionaryInformation createDictionaryInformation(final File parentFilePath) throws IndexFileNotFoundException, DataFileNotFoundException {
+	private DictionaryInformation createDictionaryInformation(final File parentFilePath) {
 		return new DictionaryInformation(parentFilePath);
 	}
 }
