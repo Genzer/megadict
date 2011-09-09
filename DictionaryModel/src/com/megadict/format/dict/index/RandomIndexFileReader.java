@@ -14,8 +14,8 @@ import com.megadict.format.dict.util.UnicodeDecoder;
 
 public class RandomIndexFileReader extends BaseIndexFileReader implements IndexFileReader {
 
-    private static final byte[] byteBuffer = new byte[FileUtil.LARGE_BUFFER_SIZE_IN_BYTES];
-    private static final char[] charBuffer = new char[FileUtil.LARGE_BUFFER_SIZE_IN_BYTES / 2];
+    private static final byte[] byteBuffer = new byte[FileUtil.LARGE_BUFFER_SIZE_IN_BYTES * 2];
+    private static final char[] charBuffer = new char[byteBuffer.length / 2];
 
     private static final ByteBuffer decodingByteBuffer = ByteBuffer.allocate(byteBuffer.length);
     private static final CharBuffer decodingCharBuffer = CharBuffer.allocate(charBuffer.length);

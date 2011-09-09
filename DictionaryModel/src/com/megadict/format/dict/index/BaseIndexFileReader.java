@@ -27,7 +27,7 @@ abstract class BaseIndexFileReader implements IndexFileReader {
     
     static {
         CHAR_BUFFER_SIZE = determineCharBufferSize(FileUtil.DEFAULT_BUFFER_SIZE_IN_BYTES);
-        NUM_OF_CHAR_TO_BE_READ_ON = determineNumOfCharShouldBeReadOn(100);
+        NUM_OF_CHAR_TO_BE_READ_ON = determineNumOfCharShouldBeReadOn(200);
     }
 
     private static int determineCharBufferSize(int bufferSizeInBytes) {

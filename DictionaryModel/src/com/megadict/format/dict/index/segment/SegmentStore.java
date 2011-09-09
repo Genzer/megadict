@@ -46,14 +46,14 @@ public class SegmentStore {
 
         if (!greaterOrEqualKeys.isEmpty()) {
 
-            String matchedKey = greaterOrEqualKeys.firstKey();
+            String firstMatched = greaterOrEqualKeys.firstKey();
 
-            if (areTheSame(matchedKey, findingWord) && hasMoreElement(greaterOrEqualKeys)) {
+            if (areTheSame(firstMatched, findingWord) && hasMoreElement(greaterOrEqualKeys)) {
                 String keyOfNextSegment = nextKey(greaterOrEqualKeys, findingWord);
-                matchedKey = keyOfNextSegment;
+                firstMatched = keyOfNextSegment;
             }
 
-            result = greaterOrEqualKeys.get(matchedKey);
+            result = greaterOrEqualKeys.get(firstMatched);
         }
 
         return result;
