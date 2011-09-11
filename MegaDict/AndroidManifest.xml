@@ -20,11 +20,9 @@
     	<!-- Every activities must use MegaDictTheme to set custom window title. 
     	 Refer "http://stackoverflow.com/questions/2086989/custom-title-with-image" -->
         <activity android:name=".activity.DictionaryActivity"
-                  android:label="@string/appName" 
-                  android:windowSoftInputMode="stateAlwaysHidden" 
+                  android:label="@string/appName"                  
                   android:icon="@drawable/megadict_icon"
-                  android:theme="@style/MegaDictTheme" 
-                  android:configChanges="locale">
+                  android:theme="@style/MegaDictTheme" android:configChanges="locale|keyboardHidden|orientation">
         	<intent-filter>
             	<action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
