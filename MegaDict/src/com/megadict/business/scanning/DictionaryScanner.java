@@ -21,6 +21,8 @@ import com.megadict.model.ModelMap;
 import com.megadict.utility.DatabaseHelper;
 
 public final class DictionaryScanner extends Observable implements TaskManager {
+	public static final String MODEL_CHANGED = "modelChanged";
+
 	private final ModelMap models = new ModelMap();
 	private final List<RescanTask> rescanTasks =
 			new ArrayList<RescanTask>();

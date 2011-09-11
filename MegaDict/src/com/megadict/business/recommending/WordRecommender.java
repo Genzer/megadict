@@ -1,39 +1,48 @@
 package com.megadict.business.recommending;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.ProgressBar;
 
+import com.megadict.R;
 import com.megadict.bean.DictionaryComponent;
+import com.megadict.business.AbstractWorkerTask.OnPostExecuteListener;
+import com.megadict.business.AbstractWorkerTask.OnPreExecuteListener;
 import com.megadict.business.scanning.DictionaryScanner;
 import com.megadict.format.dict.DICTDictionary;
 import com.megadict.initializer.AbstractInitializer;
 import com.megadict.model.Dictionary;
+import com.megadict.utility.MegaLogger;
 
 public final class WordRecommender implements Observer, RecommendTaskManager {
-	private final static int DELAY_TIME = 1000;
+	private static final int DELAY_TIME = 1000;
+	private static final int MAX_RECOMMENDED_WORD_COUNT = 300;
 
 	// Aggregation variables.
 	private final List<Dictionary> dictionaryModels;
-	private final DictionaryComponent dictionaryComponent;
+	private DictionaryComponent dictionaryComponent;
 
 	// Composition variables.
-	private final RecommendTaskInitializer recommendTaskInitializer;
 	private final List<RecommendTask> recommendTasks =
 			new ArrayList<RecommendTask>();
 	private final Handler recommendHandler = new RecommendHandler();
 	private Runnable recommendRunnable;
+	private final SortedSet<String> recommendWords = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
 
 	public WordRecommender(final List<Dictionary> dictionaryModels, final DictionaryComponent dictionaryComponent) {
 		this.dictionaryModels = dictionaryModels;
 		this.dictionaryComponent = dictionaryComponent;
-		recommendTaskInitializer =
-				new RecommendTaskInitializer(this, dictionaryComponent);
 	}
 
 	@Override
@@ -54,8 +63,8 @@ public final class WordRecommender implements Observer, RecommendTaskManager {
 		for (final Dictionary model : dictionaryModels) {
 			if (model instanceof DICTDictionary) {
 				final RecommendTask task = new RecommendTask(model);
-				recommendTaskInitializer.setOnPreExecuteListener(task);
-				recommendTaskInitializer.setOnPostExecuteListener(task);
+				setOnPreExecuteListener(task);
+				setOnPostExecuteListener(task);
 				task.execute(word);
 				recommendTasks.add(task);
 			}
@@ -115,6 +124,51 @@ public final class WordRecommender implements Observer, RecommendTaskManager {
 			final String word = msg.getData().getString("word");
 			recommend(word);
 		}
+	}
+
+	public void setOnPreExecuteListener(final RecommendTask task) {
+		task.setOnPreExecuteListener(new OnPreExecuteListener() {
+			@Override
+			public void onPreExecute() {
+				if (didAllRecommendTasksFinish()) {
+					recommendWords.clear();
+					dictionaryComponent.getProgressBar().setVisibility(ProgressBar.VISIBLE);
+				}
+			}
+		});
+	}
+
+	public void setOnPostExecuteListener(final RecommendTask task) {
+		task.setOnPostExecuteListener(new OnPostExecuteListener<List<String>>() {
+			@Override
+			public void onPostExecute(final List<String> list) {
+				if(dictionaryComponent == null) return;
+
+				recommendWords.addAll(list);
+				if (didAllRecommendTasksFinish()) {
+					final List<String> tempList = Arrays.asList(recommendWords.toArray(new String[recommendWords.size()]));
+					final List<String> adaptedList = tempList.subList(0, Math.min(MAX_RECOMMENDED_WORD_COUNT, tempList.size()));
+					final ArrayAdapter<String> adapter = new ArrayAdapter<String>(dictionaryComponent.getContext(), R.layout.dropdown_item, adaptedList);
+
+					final AutoCompleteTextView searchBar = dictionaryComponent.getSearchBar();
+					searchBar.setAdapter(adapter);
+					// This try-catch prevent unexpected errors when orientation changes.
+					try {
+						// Show dropdown list.
+						searchBar.showDropDown();
+						// Hide ProgressBar.
+						final ProgressBar proressBar = dictionaryComponent.getProgressBar();
+						proressBar.setVisibility(ProgressBar.INVISIBLE);
+					} catch (final Exception e) {
+						MegaLogger.log(e.getMessage());
+					}
+				}
+			}
+		});
+	}
+
+	public void setDictionaryComponent(final DictionaryComponent dictionaryComponent) {
+		this.dictionaryComponent = dictionaryComponent;
 	}
 
 	// ============= Inner class ===============//

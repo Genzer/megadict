@@ -28,4 +28,8 @@ public class RecommendTask extends AbstractWorkerTask<String, Void, List<String>
 		}
 		return Collections.emptyList();
 	}
+
+	public void setActivity() {
+
+	}
 }

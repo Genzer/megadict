@@ -1,6 +1,8 @@
 package com.megadict.activity;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -49,6 +51,17 @@ public class ManageActivity extends AbstractListActivity {
 		rescanComponent =
 				new RescanComponent(this, progressDialog, listViewCursor);
 		wikiAdder = new WikiAdder(this, rescanComponent, scanner);
+
+		// Ask for updating models regardless of whether the models change.
+		final Intent returnedIntent = new Intent();
+		returnedIntent.putExtra(DictionaryScanner.MODEL_CHANGED, true);
+		setResult(Activity.RESULT_OK, returnedIntent);
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		finish();
 	}
 
 	@Override

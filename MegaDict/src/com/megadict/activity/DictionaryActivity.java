@@ -7,7 +7,6 @@ import java.util.Set;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -46,7 +45,6 @@ public final class DictionaryActivity extends AbstractActivity {
 	private ProgressBar progressBar;
 	private ResultTextMaker resultTextMaker;
 
-
 	// Member variables
 	private DictionaryComponent dictionaryComponent;
 	private BusinessComponent businessComponent;
@@ -62,6 +60,12 @@ public final class DictionaryActivity extends AbstractActivity {
 
 	@Override
 	public Object onRetainNonConfigurationInstance() {
+		scanner.deleteObservers();
+		// Remove the dictionary component from the recommender.
+		businessComponent.getRecommender().setDictionaryComponent(null);
+		// Remove the dictionary component from the searcher.
+		businessComponent.getSearcher().setDictionaryComponent(null);
+
 		// Retain business component.
 		return businessComponent;
 	}
@@ -70,12 +74,7 @@ public final class DictionaryActivity extends AbstractActivity {
 	public void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		initUIs();
-		initBottomButtons();
-		initResultTextMakerAndResultView();
-		initDictionaryComponent();
-		initBusinessComponent();
-		initInitializers();
+		initSomething();
 
 		// Load language when first start app.
 		Utility.updateLocale(this, LanguagePreference.newInstance(this).getLanguage());
@@ -84,7 +83,7 @@ public final class DictionaryActivity extends AbstractActivity {
 		languageChanged = true;
 
 		// Scan chosen databases when MegaDict opens.
-		doScanningStorage();
+		scanner.scanStorage(dictionaryComponent);
 
 		// Check Internet connection.
 		if(!Utility.isOnline(this)) {
@@ -93,32 +92,19 @@ public final class DictionaryActivity extends AbstractActivity {
 	}
 
 	@Override
-	public void onConfigurationChanged(final Configuration newConfig) {
-		super.onConfigurationChanged(newConfig);
-	}
-
-	@Override
-	protected void onStart() {
-		super.onStart();
-
-		// Update dictionary models.
-		scanner.updateDictionaryModels(dictionaryComponent);
-	}
-
-	@Override
 	protected void onStop() {
 		super.onStop();
 
 		// Reset languageChanged.
 		languageChanged = false;
-		// Cancel recommending to prevent it throw RuntimeException on showDropdown().
-		businessComponent.getRecommender().cancelRecommending();
 	}
 
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
 
+		businessComponent.getRecommender().setDictionaryComponent(null);
+		businessComponent.getSearcher().setDictionaryComponent(null);
 		pronounceButtonInitializer.shutDownTTSSpeaker();
 	}
 
@@ -145,7 +131,7 @@ public final class DictionaryActivity extends AbstractActivity {
 		if (item.getItemId() == R.id.settingMenuItem) {
 			Utility.startActivityForResult(this, ActivityHelper.SETTING_ACTIVITY, ActivityHelper.SETTING_REQUEST);
 		} else if (item.getItemId() == R.id.manageMenuItem) {
-			Utility.startActivity(this, ActivityHelper.MANAGE_ACTIVITY);
+			Utility.startActivityForResult(this, ActivityHelper.MANAGE_ACTIVITY, ActivityHelper.MANAGE_REQUEST);
 		} else if (item.getItemId() == R.id.aboutMenuItem) {
 			Utility.startActivity(this, ActivityHelper.ABOUT_ACTIVITY);
 		} else if (item.getItemId() == R.id.selectTextMenuItem) {
@@ -172,13 +158,15 @@ public final class DictionaryActivity extends AbstractActivity {
 				pronounceButtonInitializer.updateSpeakerLanguage();
 			}
 		}
+
+		if(requestCode == ActivityHelper.MANAGE_REQUEST && resultCode == Activity.RESULT_OK) {
+			if(data.getBooleanExtra(DictionaryScanner.MODEL_CHANGED, false)) {
+				scanner.updateDictionaryModels(dictionaryComponent);
+			}
+		}
 	}
 
 	// ========================= Private functions ======================= //
-	private void doScanningStorage() {
-		scanner.scanStorage(dictionaryComponent);
-	}
-
 	private void inflateMenu(final Menu menu) {
 		final MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.main_menu, menu);
@@ -197,9 +185,23 @@ public final class DictionaryActivity extends AbstractActivity {
 	}
 
 
-
-
 	// ==================== Init functions =================//
+	private void initSomething() {
+		initUIs();
+		initBottomButtons();
+		initResultTextMakerAndResultView();
+		initDictionaryComponent();
+		initBusinessComponent();
+		initInitializers();
+	}
+
+	private void initUIs() {
+		progressBar = (ProgressBar) findViewById(R.id.progressBar);
+		searchButton = (Button) findViewById(R.id.searchButton);
+		pronounceButton = (Button)findViewById(R.id.pronounceButton);
+		searchBar = (AutoCompleteTextView) findViewById(R.id.searchEditText);
+	}
+
 	private void initBottomButtons() {
 		final Button manageButton = (Button)findViewById(R.id.manageButton);
 		final Button historyButton = (Button)findViewById(R.id.historyButton);
@@ -209,13 +211,6 @@ public final class DictionaryActivity extends AbstractActivity {
 		bottomButtonMap.put(historyButton, R.string.historyButtonLabel);
 		bottomButtonMap.put(settingButton, R.string.selectButtonLabel);
 		bottomButtonMap.put(moreButton, R.string.moreButtonLabel);
-	}
-
-	private void initUIs() {
-		progressBar = (ProgressBar) findViewById(R.id.progressBar);
-		searchButton = (Button) findViewById(R.id.searchButton);
-		pronounceButton = (Button)findViewById(R.id.pronounceButton);
-		searchBar = (AutoCompleteTextView) findViewById(R.id.searchEditText);
 	}
 
 	private void initResultTextMakerAndResultView() {
@@ -252,8 +247,16 @@ public final class DictionaryActivity extends AbstractActivity {
 			businessComponent =	new BusinessComponent(searcher, recommender);
 		} else {
 			businessComponent = bc;
+
+			// Restore recommender.
 			recommender = businessComponent.getRecommender();
+			// Reset new dictionary component in recommender.
+			recommender.setDictionaryComponent(dictionaryComponent);
+
+			// Restore searcher.
 			searcher = businessComponent.getSearcher();
+			// Reset new dictionary component in searcher.
+			searcher.setDictionaryComponent(dictionaryComponent);
 		}
 
 		// Register observers for scanner.

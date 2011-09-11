@@ -7,19 +7,24 @@ import java.util.Locale;
 import java.util.Observable;
 import java.util.Observer;
 
+import android.widget.ProgressBar;
+
 import com.megadict.bean.DictionaryComponent;
+import com.megadict.business.AbstractWorkerTask.OnPostExecuteListener;
+import com.megadict.business.AbstractWorkerTask.OnPreExecuteListener;
 import com.megadict.business.HistoryManager;
 import com.megadict.business.ResultTextMaker;
+import com.megadict.model.Definition;
 import com.megadict.model.Dictionary;
 
 public final class WordSearcher implements Observer, SearchTaskManager {
 	// Aggregation variables.
 	private final List<Dictionary> dictionaryModels;
-	private final DictionaryComponent dictionaryComponent;
+	private DictionaryComponent dictionaryComponent;
 
 	// Composition variables.
-	private final SearchTaskInitializer searchTaskInitializer;
 	private String noDictionaryStr = "There is no dictionary";
+	private String noDefinitionStr = "There is no definition.";
 	private final List<SearchTask> searchTasks =
 			new ArrayList<SearchTask>();
 	private final HistoryManager historyManager = new HistoryManager();
@@ -27,8 +32,6 @@ public final class WordSearcher implements Observer, SearchTaskManager {
 	public WordSearcher(final List<Dictionary> dictionaryModels, final DictionaryComponent dictionaryComponent) {
 		this.dictionaryModels = dictionaryModels;
 		this.dictionaryComponent = dictionaryComponent;
-		searchTaskInitializer =
-				new SearchTaskInitializer(this, dictionaryComponent);
 	}
 
 	@Override
@@ -74,8 +77,8 @@ public final class WordSearcher implements Observer, SearchTaskManager {
 	private void createAndStoreSearchTasks() {
 		for (final Dictionary dictionary : dictionaryModels) {
 			final SearchTask task = new SearchTask(dictionary);
-			searchTaskInitializer.setOnPreExecuteListener(task);
-			searchTaskInitializer.setOnPostExecuteListener(task);
+			setOnPreExecuteListener(task);
+			setOnPostExecuteListener(task);
 			searchTasks.add(task);
 		}
 	}
@@ -84,8 +87,8 @@ public final class WordSearcher implements Observer, SearchTaskManager {
 		this.noDictionaryStr = noDictionaryStr;
 	}
 
-	public void setNoDefinitionStr(final String noDefinitionStr) {
-		searchTaskInitializer.setNoDefinitionStr(noDefinitionStr);
+	public void setDictionaryComponent(final DictionaryComponent dictionaryComponent) {
+		this.dictionaryComponent = dictionaryComponent;
 	}
 
 	@Override
@@ -94,6 +97,41 @@ public final class WordSearcher implements Observer, SearchTaskManager {
 		final List<Dictionary> models = (List<Dictionary>) (arg);
 		dictionaryModels.clear();
 		dictionaryModels.addAll(models);
+	}
+
+	private void setOnPostExecuteListener(final SearchTask task) {
+		task.setOnPostExecuteListener(new OnPostExecuteListener<Definition>() {
+			@Override
+			public void onPostExecute(final Definition definition) {
+				if(dictionaryComponent == null) return;
+
+				dictionaryComponent.getResultTextMaker().appendContent(definition.getWord(), definition.exists()
+						? definition.getContent() : noDefinitionStr, definition.getDictionaryName());
+				dictionaryComponent.getResultView().loadDataWithBaseURL(ResultTextMaker.ASSET_URL, dictionaryComponent.getResultTextMaker().getResultHTML(), "text/html", "utf-8", null);
+
+				// Hide progress bar if all tasks finished.
+				if (didAllSearchTasksFinish()) {
+					dictionaryComponent.getProgressBar().setVisibility(ProgressBar.INVISIBLE);
+					// Save word to history.
+					saveWordToHistory(definition.getWord());
+				}
+			}
+		});
+	}
+
+	private void setOnPreExecuteListener(final SearchTask task) {
+		task.setOnPreExecuteListener(new OnPreExecuteListener() {
+			@Override
+			public void onPreExecute() {
+				if (didAllSearchTasksFinish()) {
+					dictionaryComponent.getProgressBar().setVisibility(ProgressBar.VISIBLE);
+				}
+			}
+		});
+	}
+
+	public void setNoDefinitionStr(final String noDefinitionStr) {
+		this.noDefinitionStr = noDefinitionStr;
 	}
 
 	// /////// ================ History operations ==================///////

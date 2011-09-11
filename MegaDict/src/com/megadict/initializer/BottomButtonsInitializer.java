@@ -35,7 +35,7 @@ public class BottomButtonsInitializer extends AbstractInitializer {
 		executors.add(new ButtonExecutor() {
 			@Override
 			public void execute() {
-				Utility.startActivity(context, ActivityHelper.MANAGE_ACTIVITY);
+				Utility.startActivityForResult((Activity)context, ActivityHelper.MANAGE_ACTIVITY, ActivityHelper.MANAGE_REQUEST);
 			}
 		});
 		executors.add(new ButtonExecutor() {
@@ -72,7 +72,7 @@ public class BottomButtonsInitializer extends AbstractInitializer {
 		for(final Button button : bottomButtons) {
 			switch (button.getId()) {
 			case R.id.manageButton:
-				initBottomButtons(button, ActivityHelper.MANAGE_ACTIVITY);
+				initManageButton(button);
 				break;
 			case R.id.historyButton:
 				initHistoryButton(button);
@@ -109,11 +109,11 @@ public class BottomButtonsInitializer extends AbstractInitializer {
 		}).create().show();
 	}
 
-	private void initBottomButtons(final Button button, final String activityClassName) {
+	private void initManageButton(final Button button) {
 		button.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(final View v) {
-				Utility.startActivity(context, activityClassName);
+				Utility.startActivityForResult((Activity)context, ActivityHelper.MANAGE_ACTIVITY, ActivityHelper.MANAGE_REQUEST);
 			}
 		});
 	}
