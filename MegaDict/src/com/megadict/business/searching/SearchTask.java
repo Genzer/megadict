@@ -12,6 +12,10 @@ public class SearchTask extends AbstractWorkerTask<String, Void, Definition> {
 		this.dictionary = dictionary;
 	}
 
+	public static SearchTask create(final Dictionary model) {
+		return new SearchTask(model);
+	}
+
 	@Override
 	protected Definition doInBackground(final String... words) {
 		return dictionary.lookUp(words[0]);

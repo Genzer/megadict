@@ -19,7 +19,7 @@ public final class LanguagePreference {
 
 	public static LanguagePreference newInstance(final Context context) {
 		if(pref == null) {
-			return new LanguagePreference(context);
+			pref = new LanguagePreference(context);
 		}
 		return pref;
 	}

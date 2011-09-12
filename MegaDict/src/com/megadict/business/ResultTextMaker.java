@@ -50,9 +50,7 @@ public class ResultTextMaker {
 			}
 			LEFT_BLOCK.append("</head><body>");
 		} catch (final IOException e) {
-			// Because it's a programming exception, we don't need to catch it.
-			// / Just throw unchecked exception.
-			throw new ResourceNotFoundException(e.getCause());
+			throw new ResourceNotFoundException(e);
 		}
 	}
 

@@ -44,7 +44,7 @@ public class DictionaryInformation {
 	 * @throws FileNotFoundException if index file or data file not found.
 	 * @return DictionaryInformation
 	 */
-	public static DictionaryInformation newInstance(final File parentFilePath) {
+	public static DictionaryInformation create(final File parentFilePath) {
 		return new DictionaryInformation(parentFilePath);
 	}
 
@@ -54,7 +54,7 @@ public class DictionaryInformation {
 	 * @throws FileNotFoundException if index file or data file not found.
 	 * @return DictionaryInformation
 	 */
-	public static DictionaryInformation newInstance(final String parentFilePath) {
+	public static DictionaryInformation create(final String parentFilePath) {
 		return new DictionaryInformation(parentFilePath);
 	}
 

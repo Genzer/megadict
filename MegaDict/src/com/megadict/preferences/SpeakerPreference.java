@@ -19,7 +19,7 @@ public final class SpeakerPreference {
 	public static final String DEFAULT_SPEAKER_LANGUAGE = "en";
 
 	// Useful variables.
-	private static SpeakerPreference speakerPreference;
+	private static SpeakerPreference pref;
 	private final SharedPreferences sharedPref;
 
 	private SpeakerPreference(final Context context) {
@@ -43,9 +43,9 @@ public final class SpeakerPreference {
 	}
 
 	public static SpeakerPreference newInstance(final Context context) {
-		if(speakerPreference == null) {
-			return new SpeakerPreference(context);
+		if(pref == null) {
+			pref = new SpeakerPreference(context);
 		}
-		return speakerPreference;
+		return pref;
 	}
 }

@@ -27,7 +27,7 @@ public class UpdateTask extends AbstractWorkerTask<DictionaryBean, Void, Pair<In
 			Dictionary dictionary;
 			if (type.equals(ChosenModel.LOCAL_DICTIONARY)) {
 				final DictionaryInformation info =
-						DictionaryInformation.newInstance(path);
+						DictionaryInformation.create(path);
 				final IndexFile indexFile =
 						IndexFile.makeFile(info.getIndexFile());
 				final DictionaryFile dictionaryFile =

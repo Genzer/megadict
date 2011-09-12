@@ -62,7 +62,7 @@ public final class WordRecommender implements Observer, RecommendTaskManager {
 		// Create and execute tasks.
 		for (final Dictionary model : dictionaryModels) {
 			if (model instanceof DICTDictionary) {
-				final RecommendTask task = new RecommendTask(model);
+				final RecommendTask task = RecommendTask.create(model);
 				setOnPreExecuteListener(task);
 				setOnPostExecuteListener(task);
 				task.execute(word);

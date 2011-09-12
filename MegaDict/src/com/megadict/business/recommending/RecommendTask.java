@@ -16,6 +16,10 @@ public class RecommendTask extends AbstractWorkerTask<String, Void, List<String>
 		this.model = model;
 	}
 
+	public static RecommendTask create(final Dictionary model) {
+		return new RecommendTask(model);
+	}
+
 	@Override
 	protected void onCancelled() {
 		cancelled = true;
@@ -27,9 +31,5 @@ public class RecommendTask extends AbstractWorkerTask<String, Void, List<String>
 			return model.recommendWord(params[0], RECOMMENDED_WORD_COUNT);
 		}
 		return Collections.emptyList();
-	}
-
-	public void setActivity() {
-
 	}
 }

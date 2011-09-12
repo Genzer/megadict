@@ -7,9 +7,6 @@ import java.util.Set;
 public class HistoryManager {
 	private final Set<String> historySet = new LinkedHashSet<String>();
 
-	public HistoryManager() {
-	}
-
 	public void save(final String word) {
 		if (!historySet.contains(word)) {
 			historySet.add(word);

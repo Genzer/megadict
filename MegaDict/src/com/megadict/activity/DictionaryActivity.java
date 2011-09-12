@@ -22,6 +22,7 @@ import com.megadict.application.MegaDictApp;
 import com.megadict.bean.BusinessComponent;
 import com.megadict.bean.DictionaryComponent;
 import com.megadict.business.HistoryDisplayer;
+import com.megadict.business.ResultTextMaker;
 import com.megadict.business.recommending.WordRecommender;
 import com.megadict.business.scanning.DictionaryScanner;
 import com.megadict.business.searching.WordSearcher;
@@ -157,12 +158,12 @@ public final class DictionaryActivity extends AbstractActivity {
 			}
 		}
 
-		if(requestCode == ActivityHelper.MANAGE_REQUEST && resultCode == Activity.RESULT_OK) {
-			if(data.getBooleanExtra(DictionaryScanner.MODEL_CHANGED, false)) {
-				scanner.updateDictionaryModels(dictionaryComponent);
-			}
+		if(requestCode == ActivityHelper.MANAGE_REQUEST && resultCode == Activity.RESULT_OK &&
+				data.getBooleanExtra(DictionaryScanner.MODEL_CHANGED, false)) {
+			scanner.updateDictionaryModels(dictionaryComponent);
 		}
 	}
+
 
 	// ========================= Private functions ======================= //
 	private void inflateMenu(final Menu menu) {
@@ -226,6 +227,7 @@ public final class DictionaryActivity extends AbstractActivity {
 	private void initBusinessComponent() {
 		// Get scanner from application.
 		scanner = ((MegaDictApp) getApplication()).scanner;
+		final ResultTextMaker resultTextMaker = ((MegaDictApp) getApplication()).resultTextMaker;
 
 		// Get saved instance.
 		final BusinessComponent bc = (BusinessComponent)getLastNonConfigurationInstance();
@@ -234,7 +236,7 @@ public final class DictionaryActivity extends AbstractActivity {
 		if(bc == null) {
 			// Init searcher and recommender.
 			recommender = new WordRecommender(scanner.getDictionaryModels(), dictionaryComponent);
-			searcher = new WordSearcher(scanner.getDictionaryModels(), scanner.getResultTextMaker(), dictionaryComponent);
+			searcher = new WordSearcher(scanner.getDictionaryModels(), resultTextMaker, dictionaryComponent);
 			// Init business component.
 			businessComponent =	new BusinessComponent(searcher, recommender);
 		} else {

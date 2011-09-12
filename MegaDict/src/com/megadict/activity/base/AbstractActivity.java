@@ -11,7 +11,7 @@ import com.megadict.R;
 
 public abstract class AbstractActivity extends Activity {
 	private final int layoutID;
-	private final String TAG = "AbstractActivity";
+	private static final String TAG = "AbstractActivity";
 
 	public AbstractActivity(final int layoutID) {
 		super();

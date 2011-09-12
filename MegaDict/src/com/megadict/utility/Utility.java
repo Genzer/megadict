@@ -82,7 +82,7 @@ public final class Utility {
 	public static boolean isOnline(final Context context) {
 		final ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 		final NetworkInfo info = cm.getActiveNetworkInfo();
-		return info != null ? info.isConnectedOrConnecting() : false;
+		return info == null ? false : info.isConnectedOrConnecting();
 	}
 
 }

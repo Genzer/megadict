@@ -30,7 +30,7 @@ public class ScanTask extends AbstractWorkerTask<DictionaryBean, Void, Pair<Inte
 			if (type.equals(ChosenModel.LOCAL_DICTIONARY)) {
 				// Create dict info.
 				final DictionaryInformation info =
-						DictionaryInformation.newInstance(path);
+						DictionaryInformation.create(path);
 				// Create necessary files.
 				final IndexFile indexFile =
 						IndexFile.makeFile(info.getIndexFile());

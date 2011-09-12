@@ -76,7 +76,7 @@ public final class WordSearcher implements Observer, SearchTaskManager {
 
 	private void createAndStoreSearchTasks() {
 		for (final Dictionary dictionary : dictionaryModels) {
-			final SearchTask task = new SearchTask(dictionary);
+			final SearchTask task = SearchTask.create(dictionary);
 			setOnPreExecuteListener(task);
 			setOnPostExecuteListener(task);
 			searchTasks.add(task);

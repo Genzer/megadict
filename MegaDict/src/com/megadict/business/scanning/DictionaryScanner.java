@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Pair;
@@ -39,9 +38,9 @@ public final class DictionaryScanner extends Observable implements TaskManager {
 	private final List<AddWikiTask> wikiTasks =
 			new ArrayList<AddWikiTask>();
 
-	public DictionaryScanner(final Context context) {
+	public DictionaryScanner(final ResultTextMaker resultTextMaker) {
 		super();
-		resultTextMaker = new ResultTextMaker(context.getAssets());
+		this.resultTextMaker = resultTextMaker;
 	}
 
 	// ============= Public functions. ==========//
@@ -199,10 +198,6 @@ public final class DictionaryScanner extends Observable implements TaskManager {
 
 	public List<Dictionary> getDictionaryModels() {
 		return new ArrayList<Dictionary>(models.values());
-	}
-
-	public ResultTextMaker getResultTextMaker() {
-		return resultTextMaker;
 	}
 
 	// ========================== Private functions ============================ //
