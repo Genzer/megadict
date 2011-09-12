@@ -7,7 +7,6 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ProgressBar;
 
-import com.megadict.business.ResultTextMaker;
 import com.megadict.widget.ResultView;
 
 public class DictionaryComponent {
@@ -15,7 +14,6 @@ public class DictionaryComponent {
 	private final Button pronounceButton;
 	private final AutoCompleteTextView searchBar;
 	private final ResultView resultView;
-	private final ResultTextMaker resultTextMaker;
 	private final ProgressBar progressBar;
 	private final Context context;
 	private final List<Button> bottomButtons;
@@ -25,7 +23,6 @@ public class DictionaryComponent {
 		private Button pronounceButton;
 		private AutoCompleteTextView searchBar;
 		private ResultView resultView;
-		private ResultTextMaker resultTextMaker;
 		private ProgressBar progressBar;
 		private Context context;
 		private List<Button> bottomButtons;
@@ -47,11 +44,6 @@ public class DictionaryComponent {
 
 		public Builder resultView(final ResultView resultView) {
 			this.resultView = resultView;
-			return this;
-		}
-
-		public Builder resultTextMaker(final ResultTextMaker resultTextMaker) {
-			this.resultTextMaker = resultTextMaker;
 			return this;
 		}
 
@@ -80,7 +72,6 @@ public class DictionaryComponent {
 		this.pronounceButton = builder.pronounceButton;
 		this.searchBar = builder.searchBar;
 		this.resultView = builder.resultView;
-		this.resultTextMaker = builder.resultTextMaker;
 		this.progressBar = builder.progressBar;
 		this.context = builder.context;
 		this.bottomButtons = builder.bottomButtons;
@@ -101,11 +92,6 @@ public class DictionaryComponent {
 	public ResultView getResultView() {
 		return resultView;
 	}
-
-	public ResultTextMaker getResultTextMaker() {
-		return resultTextMaker;
-	}
-
 	public ProgressBar getProgressBar() {
 		return progressBar;
 	}

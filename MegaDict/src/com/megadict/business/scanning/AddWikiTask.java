@@ -1,63 +1,30 @@
 package com.megadict.business.scanning;
 
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Pair;
 
-import com.megadict.bean.RescanComponent;
 import com.megadict.business.AbstractWorkerTask;
 import com.megadict.model.ChosenModel;
 import com.megadict.model.Dictionary;
-import com.megadict.model.ModelMap;
-import com.megadict.utility.DatabaseHelper;
 import com.megadict.wiki.WikiDictionary;
 
-public class AddWikiTask extends AbstractWorkerTask<String, Void, Void> {
-	private final DictionaryScanner scanner;
-	private final RescanComponent rescanComponent;
-	private final ModelMap models;
+public class AddWikiTask extends AbstractWorkerTask<String, Void, Pair<Integer, Dictionary>> {
+	private final SQLiteDatabase database;
 
-	public AddWikiTask(final DictionaryScanner scanner, final ModelMap modelMap, final RescanComponent rescanComponent) {
+	public AddWikiTask(final SQLiteDatabase database) {
 		super();
-		this.scanner = scanner;
-		this.models = modelMap;
-		this.rescanComponent = rescanComponent;
+		this.database = database;
 	}
 
 	@Override
-	protected void onPreExecute() {
-		if (scanner.didAllAddWikiTasksFinish()) {
-			rescanComponent.getProgressDialog().show();
-		}
-		super.onPreExecute();
-	}
-
-	@Override
-	protected Void doInBackground(final String... params) {
-		final SQLiteDatabase database =
-				DatabaseHelper.getDatabase(rescanComponent.getContext());
-
+	protected Pair<Integer, Dictionary> doInBackground(final String... params) {
 		// Get country code
 		final String countryCode = params[0];
 		// Create model.
 		final Dictionary model = new WikiDictionary(countryCode);
-		// final Dictionary model = new WikiMobileDictionary(countryCode);
+
 		// Insert dictionary to database.
-		final int dictID =
-				ChosenModel.insertDictionary(database, model.getName(), countryCode, ChosenModel.WIKI_DICTIONARY, 0);
-
-		// Store model.
-		models.put(dictID, model);
-		return null;
-	}
-
-	@Override
-	protected void onPostExecute(final Void result) {
-		super.onPostExecute(result);
-		if (scanner.didAllAddWikiTasksFinish()) {
-			scanner.dictionaryModelsChanged();
-			// Requery the cursor to update list view.
-			rescanComponent.getCursor().requery();
-			// Close progress dialog.
-			rescanComponent.getProgressDialog().dismiss();
-		}
+		final int dictID = ChosenModel.insertDictionary(database, model.getName(), countryCode, ChosenModel.WIKI_DICTIONARY, 0);
+		return Pair.create(dictID, model);
 	}
 }

@@ -9,39 +9,25 @@ import com.megadict.model.DictionaryInformation;
 import com.megadict.utility.MegaLogger;
 
 public class ExternalReader {
-	private final List<DictionaryInformation> infos =
-			new ArrayList<DictionaryInformation>();
-	public static final String NO_DICTIONARY = "There is no dictionary.";
-	//public static final String INDEX_FILE_NOT_FOUND = "Index file not found.";
-	//public static final String DATA_FILE_NOT_FOUND = "Data file not found.";
-
-	public List<DictionaryInformation> getInfos() {
-		return infos;
-	}
-
-	public ExternalReader(final File externalFile) {
-		init(externalFile);
-	}
-
-	private void init(final File externalFile) {
-
+	public static List<DictionaryInformation> readExternalStorage(final File externalFile) {
+		final List<DictionaryInformation> infos = new ArrayList<DictionaryInformation>();
 		final File files[] = externalFile.listFiles();
 		if (files == null)
 			throw new IllegalArgumentException("External storage is not a valid directory.");
 		for (final File file : files) {
 			if (file.isDirectory()) {
 				try {
-					final DictionaryInformation info =
-							createDictionaryInformation(file);
+					final DictionaryInformation info = createDictionaryInformation(file);
 					infos.add(info);
 				} catch (final FileNotFoundException e) {
 					MegaLogger.log(e.getMessage());
 				}
 			}
 		}
+		return infos;
 	}
 
-	private DictionaryInformation createDictionaryInformation(final File parentFilePath) {
+	private static DictionaryInformation createDictionaryInformation(final File parentFilePath) {
 		return new DictionaryInformation(parentFilePath);
 	}
 }

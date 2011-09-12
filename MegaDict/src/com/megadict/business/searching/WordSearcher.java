@@ -20,6 +20,7 @@ import com.megadict.model.Dictionary;
 public final class WordSearcher implements Observer, SearchTaskManager {
 	// Aggregation variables.
 	private final List<Dictionary> dictionaryModels;
+	private final ResultTextMaker resultTextMaker;
 	private DictionaryComponent dictionaryComponent;
 
 	// Composition variables.
@@ -29,8 +30,9 @@ public final class WordSearcher implements Observer, SearchTaskManager {
 			new ArrayList<SearchTask>();
 	private final HistoryManager historyManager = new HistoryManager();
 
-	public WordSearcher(final List<Dictionary> dictionaryModels, final DictionaryComponent dictionaryComponent) {
+	public WordSearcher(final List<Dictionary> dictionaryModels, final ResultTextMaker resultTextMaker, final DictionaryComponent dictionaryComponent) {
 		this.dictionaryModels = dictionaryModels;
+		this.resultTextMaker = resultTextMaker;
 		this.dictionaryComponent = dictionaryComponent;
 	}
 
@@ -49,8 +51,6 @@ public final class WordSearcher implements Observer, SearchTaskManager {
 		// Clear old tasks.
 		searchTasks.clear();
 
-		final ResultTextMaker resultTextMaker =
-				dictionaryComponent.getResultTextMaker();
 		// Reset resultTextMaker to make a new search.
 		resultTextMaker.resetMiddleBlock();
 
@@ -105,9 +105,9 @@ public final class WordSearcher implements Observer, SearchTaskManager {
 			public void onPostExecute(final Definition definition) {
 				if(dictionaryComponent == null) return;
 
-				dictionaryComponent.getResultTextMaker().appendContent(definition.getWord(), definition.exists()
+				resultTextMaker.appendContent(definition.getWord(), definition.exists()
 						? definition.getContent() : noDefinitionStr, definition.getDictionaryName());
-				dictionaryComponent.getResultView().loadDataWithBaseURL(ResultTextMaker.ASSET_URL, dictionaryComponent.getResultTextMaker().getResultHTML(), "text/html", "utf-8", null);
+				dictionaryComponent.getResultView().loadDataWithBaseURL(ResultTextMaker.ASSET_URL, resultTextMaker.getResultHTML(), "text/html", "utf-8", null);
 
 				// Hide progress bar if all tasks finished.
 				if (didAllSearchTasksFinish()) {

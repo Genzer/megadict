@@ -4,13 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Pair;
+import android.widget.ProgressBar;
 
 import com.megadict.R;
 import com.megadict.bean.DictionaryBean;
 import com.megadict.bean.DictionaryComponent;
 import com.megadict.bean.RescanComponent;
+import com.megadict.business.AbstractWorkerTask.OnPostExecuteListener;
+import com.megadict.business.AbstractWorkerTask.OnPreExecuteListener;
 import com.megadict.business.ExternalReader;
 import com.megadict.business.ExternalStorage;
 import com.megadict.business.ResultTextMaker;
@@ -22,6 +27,7 @@ import com.megadict.utility.DatabaseHelper;
 
 public final class DictionaryScanner extends Observable implements TaskManager {
 	public static final String MODEL_CHANGED = "modelChanged";
+	private final ResultTextMaker resultTextMaker;
 
 	private final ModelMap models = new ModelMap();
 	private final List<RescanTask> rescanTasks =
@@ -33,8 +39,9 @@ public final class DictionaryScanner extends Observable implements TaskManager {
 	private final List<AddWikiTask> wikiTasks =
 			new ArrayList<AddWikiTask>();
 
-	public DictionaryScanner() {
+	public DictionaryScanner(final Context context) {
 		super();
+		resultTextMaker = new ResultTextMaker(context.getAssets());
 	}
 
 	// ============= Public functions. ==========//
@@ -69,19 +76,15 @@ public final class DictionaryScanner extends Observable implements TaskManager {
 		// Change ProgressDialog message.
 		rescanComponent.setProgressDialogMessage(R.string.scanning);
 
-		// Scan storage.
-		final ExternalReader externalReader =
-				new ExternalReader(ExternalStorage.getExternalDirectory());
 		// Read from external storage.
-		final List<DictionaryInformation> infos = externalReader.getInfos();
+		final List<DictionaryInformation> infos = ExternalReader.readExternalStorage(ExternalStorage.getExternalDirectory());
 		// Get database.
-		final SQLiteDatabase database =
-				DatabaseHelper.getDatabase(rescanComponent.getContext());
+		final SQLiteDatabase database =	DatabaseHelper.getDatabase(rescanComponent.getContext());
 		// Truncate the table.
 		database.delete(ChosenModel.TABLE_NAME, null, null);
 		// Execute rescan tasks.
 		if (!infos.isEmpty()) {
-			executeRecanTasks(rescanComponent, infos);
+			executeRecanTasks(rescanComponent, database, infos);
 		}
 	}
 
@@ -141,9 +144,14 @@ public final class DictionaryScanner extends Observable implements TaskManager {
 		// Change ProgressDialog message
 		rescanComponent.setProgressDialogMessage(R.string.adding);
 
+		final SQLiteDatabase database =
+				DatabaseHelper.getDatabase(rescanComponent.getContext());
+
 		for (final String code : countryCodes) {
 			final AddWikiTask task =
-					new AddWikiTask(this, models, rescanComponent);
+					new AddWikiTask(database);
+			setOnPreExecuteForAddWikiTask(task, rescanComponent);
+			setOnPostExecuteForAddWikiTask(task, rescanComponent);
 			task.execute(code);
 			wikiTasks.add(task);
 		}
@@ -193,6 +201,10 @@ public final class DictionaryScanner extends Observable implements TaskManager {
 		return new ArrayList<Dictionary>(models.values());
 	}
 
+	public ResultTextMaker getResultTextMaker() {
+		return resultTextMaker;
+	}
+
 	// ========================== Private functions ============================ //
 	private void executeScanTasks(final DictionaryComponent dictionaryComponent, final Cursor cursor) {
 		for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
@@ -202,17 +214,19 @@ public final class DictionaryScanner extends Observable implements TaskManager {
 
 			final DictionaryBean bean =
 					new DictionaryBean.Builder(id).path(path).type(type).build();
-			final ScanTask task =
-					new ScanTask(this, models, dictionaryComponent);
+			final ScanTask task = new ScanTask();
+			setOnPreExecuteForScanTask(task, dictionaryComponent);
+			setOnPostExecuteForScanTask(task, dictionaryComponent);
 			task.execute(bean);
 			scanTasks.add(task);
 		}
 	}
 
-	private void executeRecanTasks(final RescanComponent rescanComponent, final List<DictionaryInformation> infos) {
+	private void executeRecanTasks(final RescanComponent rescanComponent, final SQLiteDatabase database, final List<DictionaryInformation> infos) {
 		for (final DictionaryInformation info : infos) {
-			final RescanTask task =
-					new RescanTask(this, models, rescanComponent);
+			final RescanTask task = new RescanTask(database);
+			setOnPreExecuteForRescanTask(task, rescanComponent);
+			setOnPostExecuteForRescanTask(task, rescanComponent);
 			task.execute(info);
 			rescanTasks.add(task);
 		}
@@ -220,11 +234,126 @@ public final class DictionaryScanner extends Observable implements TaskManager {
 
 	private void executeUpdateTasks(final DictionaryComponent dictionaryComponent, final List<DictionaryBean> insertedBeans) {
 		for (final DictionaryBean bean : insertedBeans) {
-			final UpdateTask task =
-					new UpdateTask(this, models, dictionaryComponent);
+			final UpdateTask task =	new UpdateTask();
+			setOnPreExecuteForUpdateTask(task, dictionaryComponent);
+			setOnPostExecuteForUpdateTask(task, dictionaryComponent);
 			task.execute(bean);
 			updateTasks.add(task);
 		}
+	}
+
+	private void setOnPreExecuteForUpdateTask(final UpdateTask task, final DictionaryComponent dictionaryComponent) {
+		task.setOnPreExecuteListener(new OnPreExecuteListener() {
+			@Override
+			public void onPreExecute() {
+				if (didAllUpdateTasksFinish()) {
+					dictionaryComponent.getProgressBar().setVisibility(ProgressBar.VISIBLE);
+				}
+			}
+		});
+	}
+
+	private void setOnPostExecuteForUpdateTask(final UpdateTask task, final DictionaryComponent dictionaryComponent) {
+		task.setOnPostExecuteListener(new OnPostExecuteListener<Pair<Integer, Dictionary>>() {
+			@Override
+			public void onPostExecute(final Pair<Integer, Dictionary> result) {
+				if(result != null) models.put(result.first, result.second);
+
+				if (didAllUpdateTasksFinish()) {
+					// Notify for observers.
+					dictionaryModelsChanged();
+					// Refresh start page.
+					refreshStartPage(dictionaryComponent);
+					// Hide ProgressBar.
+					dictionaryComponent.getProgressBar().setVisibility(ProgressBar.INVISIBLE);
+				}
+			}
+		});
+	}
+
+	private void setOnPreExecuteForScanTask(final ScanTask task, final DictionaryComponent dictionaryComponent) {
+		task.setOnPreExecuteListener(new OnPreExecuteListener() {
+			@Override
+			public void onPreExecute() {
+				if (didAllScanTasksFinish()) {
+					dictionaryComponent.getProgressBar().setVisibility(ProgressBar.VISIBLE);
+				}
+			}
+		});
+	}
+
+	private void setOnPostExecuteForScanTask(final ScanTask task, final DictionaryComponent dictionaryComponent) {
+		task.setOnPostExecuteListener(new OnPostExecuteListener<Pair<Integer,Dictionary>>() {
+			@Override
+			public void onPostExecute(final Pair<Integer, Dictionary> result) {
+				if(result != null) models.put(result.first, result.second);
+
+				if (didAllScanTasksFinish()) {
+					// Notify observers.
+					dictionaryModelsChanged();
+					// Refresh start page.
+					refreshStartPage(dictionaryComponent);
+					// Hide ProgressBar.
+					dictionaryComponent.getProgressBar().setVisibility(ProgressBar.INVISIBLE);
+				}
+			}
+		});
+	}
+
+	private void setOnPreExecuteForAddWikiTask(final AddWikiTask task, final RescanComponent rescanComponent) {
+		task.setOnPreExecuteListener(new OnPreExecuteListener() {
+			@Override
+			public void onPreExecute() {
+				if (didAllAddWikiTasksFinish()) {
+					rescanComponent.getProgressDialog().show();
+				}
+			}
+		});
+	}
+
+	private void setOnPostExecuteForAddWikiTask(final AddWikiTask task, final RescanComponent rescanComponent) {
+		task.setOnPostExecuteListener(new OnPostExecuteListener<Pair<Integer,Dictionary>>() {
+			@Override
+			public void onPostExecute(final Pair<Integer, Dictionary> result) {
+				// Store model.
+				models.put(result.first, result.second);
+				if (didAllAddWikiTasksFinish()) {
+					dictionaryModelsChanged();
+					// Requery the cursor to update list view.
+					rescanComponent.getCursor().requery();
+					// Close progress dialog.
+					rescanComponent.getProgressDialog().dismiss();
+				}
+			}
+		});
+	}
+
+	private void setOnPreExecuteForRescanTask(final RescanTask task, final RescanComponent rescanComponent) {
+		task.setOnPreExecuteListener(new OnPreExecuteListener() {
+			@Override
+			public void onPreExecute() {
+				if (didAllRescanTasksFinish()) {
+					rescanComponent.getProgressDialog().show();
+				}
+			}
+		});
+	}
+
+	private void setOnPostExecuteForRescanTask(final RescanTask task, final RescanComponent rescanComponent) {
+		task.setOnPostExecuteListener(new OnPostExecuteListener<Pair<Integer, Dictionary>>() {
+			@Override
+			public void onPostExecute(final Pair<Integer, Dictionary> result) {
+				models.put(result.first, result.second);
+
+				if (didAllRescanTasksFinish()) {
+					dictionaryModelsChanged();
+					// Requery the cursor to update list view.
+					rescanComponent.getCursor().requery();
+					// Close progress dialog.
+					rescanComponent.getProgressDialog().dismiss();
+				}
+			}
+		});
 	}
 
 	// ========================== Protected functions ============================ //
@@ -239,8 +368,7 @@ public final class DictionaryScanner extends Observable implements TaskManager {
 				(dictCount > 1
 						? dictionaryComponent.getContext().getString(R.string.usingDictionaryPlural, dictCount)
 								: dictionaryComponent.getContext().getString(R.string.usingDictionary, dictCount));
-		final String welcomeHTML =
-				dictionaryComponent.getResultTextMaker().getWelcomeHTML(welcomeStr);
+		final String welcomeHTML = resultTextMaker.getWelcomeHTML(welcomeStr);
 		dictionaryComponent.getResultView().loadDataWithBaseURL(ResultTextMaker.ASSET_URL, welcomeHTML, "text/html", "utf-8", null);
 	}
 

@@ -8,14 +8,16 @@
 
 package com.megadict.application;
 
-import java.io.File;
-
 import android.app.Application;
 
-import com.megadict.business.ExternalStorage;
 import com.megadict.business.scanning.DictionaryScanner;
 
 public final class MegaDictApp extends Application {
-	public final File externalStorage = ExternalStorage.getExternalDirectory();
-	public final DictionaryScanner scanner = new DictionaryScanner();
+	public DictionaryScanner scanner;
+
+	@Override
+	public void onCreate() {
+		super.onCreate();
+		scanner = new DictionaryScanner(getApplicationContext());
+	}
 }

@@ -22,7 +22,6 @@ import com.megadict.application.MegaDictApp;
 import com.megadict.bean.BusinessComponent;
 import com.megadict.bean.DictionaryComponent;
 import com.megadict.business.HistoryDisplayer;
-import com.megadict.business.ResultTextMaker;
 import com.megadict.business.recommending.WordRecommender;
 import com.megadict.business.scanning.DictionaryScanner;
 import com.megadict.business.searching.WordSearcher;
@@ -43,7 +42,6 @@ public final class DictionaryActivity extends AbstractActivity {
 	private ResultView resultView;
 	private AutoCompleteTextView searchBar;
 	private ProgressBar progressBar;
-	private ResultTextMaker resultTextMaker;
 
 	// Member variables
 	private DictionaryComponent dictionaryComponent;
@@ -189,7 +187,6 @@ public final class DictionaryActivity extends AbstractActivity {
 	private void initSomething() {
 		initUIs();
 		initBottomButtons();
-		initResultTextMakerAndResultView();
 		initDictionaryComponent();
 		initBusinessComponent();
 		initInitializers();
@@ -200,6 +197,7 @@ public final class DictionaryActivity extends AbstractActivity {
 		searchButton = (Button) findViewById(R.id.searchButton);
 		pronounceButton = (Button)findViewById(R.id.pronounceButton);
 		searchBar = (AutoCompleteTextView) findViewById(R.id.searchEditText);
+		resultView = new ResultView(this);
 	}
 
 	private void initBottomButtons() {
@@ -213,11 +211,6 @@ public final class DictionaryActivity extends AbstractActivity {
 		bottomButtonMap.put(moreButton, R.string.moreButtonLabel);
 	}
 
-	private void initResultTextMakerAndResultView() {
-		resultTextMaker = new ResultTextMaker(getAssets());
-		resultView = new ResultView(this);
-	}
-
 	private void initDictionaryComponent() {
 		dictionaryComponent =
 				new DictionaryComponent.Builder().
@@ -225,7 +218,6 @@ public final class DictionaryActivity extends AbstractActivity {
 				pronounceButton(pronounceButton).
 				searchBar(searchBar).
 				resultView(resultView).
-				resultTextMaker(resultTextMaker).
 				progressBar(progressBar).
 				context(this).
 				bottomButtons(new ArrayList<Button>(bottomButtonMap.keySet())).build();
@@ -242,7 +234,7 @@ public final class DictionaryActivity extends AbstractActivity {
 		if(bc == null) {
 			// Init searcher and recommender.
 			recommender = new WordRecommender(scanner.getDictionaryModels(), dictionaryComponent);
-			searcher = new WordSearcher(scanner.getDictionaryModels(), dictionaryComponent);
+			searcher = new WordSearcher(scanner.getDictionaryModels(), scanner.getResultTextMaker(), dictionaryComponent);
 			// Init business component.
 			businessComponent =	new BusinessComponent(searcher, recommender);
 		} else {
