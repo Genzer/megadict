@@ -2,8 +2,6 @@ package com.megadict.initializer;
 
 import android.content.Context;
 import android.text.ClipboardManager;
-import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.AutoCompleteTextView;
 
 import com.megadict.bean.BusinessComponent;
@@ -26,11 +24,6 @@ public final class ResultViewInitializer extends AbstractInitializer {
 		final ResultView resultView = dictionaryComponent.getResultView();
 		final AutoCompleteTextView searchBar =
 				dictionaryComponent.getSearchBar();
-
-		//ViewGroup.LayoutParams param = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
-
-		resultView.setLayoutParams(new ViewGroup.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
-
 		resultView.setBackgroundColor(0x00000000);
 		resultView.setOnSelectTextListener(new OnSelectTextListener() {
 			@Override

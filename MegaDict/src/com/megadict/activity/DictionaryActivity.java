@@ -38,16 +38,13 @@ import com.megadict.utility.Utility;
 import com.megadict.widget.ResultView;
 
 public final class DictionaryActivity extends AbstractActivity {
-	// Activity control variables.
-	private Button searchButton, pronounceButton;
-	private ResultView resultView;
-	private AutoCompleteTextView searchBar;
-	private ProgressBar progressBar;
+	// Application-scope variables.
+	private DictionaryScanner scanner;
+	private ResultTextMaker resultTextMaker;
 
 	// Member variables
 	private DictionaryComponent dictionaryComponent;
 	private BusinessComponent businessComponent;
-	private DictionaryScanner scanner;
 	private HistoryDisplayer historyDisplayer;
 	private PronounceButtonInitializer pronounceButtonInitializer;
 	private final Map<Button, Integer> bottomButtonMap = new HashMap<Button, Integer>();
@@ -86,7 +83,7 @@ public final class DictionaryActivity extends AbstractActivity {
 
 		// Check Internet connection.
 		if(!Utility.isOnline(this)) {
-			Utility.messageBox2(this, R.string.internetNotConnectedWarning);
+			Utility.messageBoxLong(this, R.string.internetNotConnectedWarning);
 		}
 	}
 
@@ -134,7 +131,7 @@ public final class DictionaryActivity extends AbstractActivity {
 		} else if (item.getItemId() == R.id.aboutMenuItem) {
 			Utility.startActivity(this, ActivityHelper.ABOUT_ACTIVITY);
 		} else if (item.getItemId() == R.id.selectTextMenuItem) {
-			Utility.selectText(this, resultView);
+			Utility.selectText(this, dictionaryComponent.getResultView());
 		} else if (item.getItemId() == R.id.historyMenuItem) {
 			historyDisplayer.showHistoryDialog(businessComponent.getSearcher().getHistoryList());
 		}
@@ -181,38 +178,50 @@ public final class DictionaryActivity extends AbstractActivity {
 		for(final Button button : buttons) {
 			button.setText(bottomButtonMap.get(button));
 		}
+		// Refresh start page.
+		refreshStartPage();
+	}
+
+	private void refreshStartPage() {
+		final int dictCount = scanner.getDictionaryModels().size();
+		final String welcomeStr =
+				(dictCount > 1
+						? dictionaryComponent.getContext().getString(R.string.usingDictionaryPlural, dictCount)
+								: dictionaryComponent.getContext().getString(R.string.usingDictionary, dictCount));
+		final String welcomeHTML = resultTextMaker.getWelcomeHTML(welcomeStr);
+		dictionaryComponent.getResultView().loadDataWithBaseURL(ResultTextMaker.ASSET_URL, welcomeHTML, "text/html", "utf-8", null);
 	}
 
 
 	// ==================== Init functions =================//
 	private void initSomething() {
-		initUIs();
-		initBottomButtons();
 		initDictionaryComponent();
 		initBusinessComponent();
 		initInitializers();
+		// Init result panel.
+		//((LinearLayout)findViewById(R.id.resultPanel)).addView(resultView);
 	}
 
-	private void initUIs() {
-		progressBar = (ProgressBar) findViewById(R.id.progressBar);
-		searchButton = (Button) findViewById(R.id.searchButton);
-		pronounceButton = (Button)findViewById(R.id.pronounceButton);
-		searchBar = (AutoCompleteTextView) findViewById(R.id.searchEditText);
-		resultView = new ResultView(this);
-	}
-
-	private void initBottomButtons() {
+	private void initDictionaryComponent() {
+		// Init UIs.
+		final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
+		final Button searchButton = (Button) findViewById(R.id.searchButton);
+		final Button pronounceButton = (Button)findViewById(R.id.pronounceButton);
+		final AutoCompleteTextView searchBar = (AutoCompleteTextView) findViewById(R.id.searchEditText);
+		final ResultView resultView = new ResultView(this);
+		((LinearLayout)findViewById(R.id.resultPanel)).addView(resultView);
 		final Button manageButton = (Button)findViewById(R.id.manageButton);
 		final Button historyButton = (Button)findViewById(R.id.historyButton);
 		final Button settingButton = (Button)findViewById(R.id.selectButton);
 		final Button moreButton = (Button)findViewById(R.id.moreButton);
+
+		// Store bottom buttons.
 		bottomButtonMap.put(manageButton, R.string.manageButtonLabel);
 		bottomButtonMap.put(historyButton, R.string.historyButtonLabel);
 		bottomButtonMap.put(settingButton, R.string.selectButtonLabel);
 		bottomButtonMap.put(moreButton, R.string.moreButtonLabel);
-	}
 
-	private void initDictionaryComponent() {
+		// Init dictionary component.
 		dictionaryComponent =
 				new DictionaryComponent.Builder().
 				searchButton(searchButton).
@@ -225,9 +234,9 @@ public final class DictionaryActivity extends AbstractActivity {
 	}
 
 	private void initBusinessComponent() {
-		// Get scanner from application.
+		// Get application variables.
 		scanner = ((MegaDictApp) getApplication()).scanner;
-		final ResultTextMaker resultTextMaker = ((MegaDictApp) getApplication()).resultTextMaker;
+		resultTextMaker = ((MegaDictApp) getApplication()).resultTextMaker;
 
 		// Get saved instance.
 		final BusinessComponent bc = (BusinessComponent)getLastNonConfigurationInstance();
@@ -279,15 +288,10 @@ public final class DictionaryActivity extends AbstractActivity {
 		resultViewInitializer.init();
 		resultViewInitializer.addObserver(businessComponent.getRecommender());
 
-		// Init history retriever.
+		// Init history displayer.
 		historyDisplayer = new HistoryDisplayer(businessComponent, dictionaryComponent);
 		historyDisplayer.init();
 		historyDisplayer.addObserver(businessComponent.getRecommender());
-
-		// Init result panel.
-		final LinearLayout resultPanel =
-				(LinearLayout) findViewById(R.id.resultPanel);
-		resultPanel.addView(resultView);
 
 		// Init bottom buttons.
 		final BottomButtonsInitializer bottomInitializer = new BottomButtonsInitializer(historyDisplayer, businessComponent, dictionaryComponent);

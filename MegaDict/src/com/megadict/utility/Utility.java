@@ -30,7 +30,7 @@ public final class Utility {
 		Toast.makeText(context, context.getString(resID), Toast.LENGTH_SHORT).show();
 	}
 
-	public static void messageBox2(final Context context, final int resID) {
+	public static void messageBoxLong(final Context context, final int resID) {
 		Toast.makeText(context, context.getString(resID), Toast.LENGTH_LONG).show();
 	}
 

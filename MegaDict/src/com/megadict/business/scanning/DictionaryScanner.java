@@ -357,7 +357,7 @@ public final class DictionaryScanner extends Observable implements TaskManager {
 		notifyObservers(getDictionaryModels());
 	}
 
-	protected void refreshStartPage(final DictionaryComponent dictionaryComponent) {
+	private void refreshStartPage(final DictionaryComponent dictionaryComponent) {
 		final int dictCount = models.size();
 		final String welcomeStr =
 				(dictCount > 1
