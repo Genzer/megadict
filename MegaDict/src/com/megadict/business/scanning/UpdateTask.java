@@ -1,5 +1,6 @@
 package com.megadict.business.scanning;
 
+import android.util.Log;
 import android.util.Pair;
 
 import com.megadict.bean.DictionaryBean;
@@ -11,10 +12,11 @@ import com.megadict.format.dict.reader.DictionaryFile;
 import com.megadict.model.ChosenModel;
 import com.megadict.model.Dictionary;
 import com.megadict.model.DictionaryInformation;
-import com.megadict.utility.MegaLogger;
 import com.megadict.wiki.WikiDictionary;
 
 public class UpdateTask extends AbstractWorkerTask<DictionaryBean, Void, Pair<Integer, Dictionary>> {
+	private static final String TAG = "UpdateTask";
+
 	@Override
 	protected Pair<Integer, Dictionary> doInBackground(final DictionaryBean... params) {
 		// Get properties from bean.
@@ -39,7 +41,7 @@ public class UpdateTask extends AbstractWorkerTask<DictionaryBean, Void, Pair<In
 			}
 			return Pair.create(id, dictionary);
 		} catch (final FileNotFoundException e) {
-			MegaLogger.log(e.getMessage());
+			Log.w(TAG, e.getMessage(), e);
 			return null;
 		}
 	}

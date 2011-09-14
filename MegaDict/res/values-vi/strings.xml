@@ -11,7 +11,7 @@
     <string name="pronounceButtonLabel">Phát âm</string>
     
     <!-- Menu items titles -->
-    <string name="rescanMenuItemTitle">Tìm từ điển trong kho lưu trữ</string>
+    <string name="rescanMenuItemTitle">Rescan</string>
     <string name="settingMenuItemTitle">Cấu hình</string>
     <string name="manageMenuItemTitle">Quản lý</string>
     <string name="aboutMenuItemTitle">Thông tin</string>
@@ -23,7 +23,7 @@
     <string name="noDefinition">Không tìm thấy nghĩa!</string>    
     <string name="noDictionary">Làm ơn chọn từ điển.</string>
     <string name="noDictionary2">Không có từ điểm. Làm ơn chép các thư mục từ điển vào thẻ nhớ tại vị trí
-     <br>/mnt/sdcard/Download/megadict</br>.</string>    
+     <b>/mnt/sdcard/Download/megadict và Rescan</b>.</string>    
     <string name="searching">Đang tìm... Làm ơn chờ.</string>
     <string name="recommending">Đang tìm từ gần đúng... Làm ơn chờ.</string>
     <string name="scanning">Đang tìm từ điển... Làm ơn chờ.</string>

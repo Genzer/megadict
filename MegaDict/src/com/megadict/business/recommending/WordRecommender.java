@@ -11,6 +11,7 @@ import java.util.TreeSet;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ProgressBar;
@@ -23,9 +24,9 @@ import com.megadict.business.scanning.DictionaryScanner;
 import com.megadict.format.dict.DICTDictionary;
 import com.megadict.initializer.AbstractInitializer;
 import com.megadict.model.Dictionary;
-import com.megadict.utility.MegaLogger;
 
 public final class WordRecommender implements Observer, RecommendTaskManager {
+	private static final String TAG = "WordRecommender";
 	private static final int DELAY_TIME = 1000;
 	private static final int MAX_RECOMMENDED_WORD_COUNT = 300;
 
@@ -160,7 +161,7 @@ public final class WordRecommender implements Observer, RecommendTaskManager {
 						final ProgressBar proressBar = dictionaryComponent.getProgressBar();
 						proressBar.setVisibility(ProgressBar.INVISIBLE);
 					} catch (final Exception e) {
-						MegaLogger.log(e.getMessage());
+						Log.w(TAG, e.getMessage(), e);
 					}
 				}
 			}

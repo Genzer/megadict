@@ -12,4 +12,28 @@
 	<style name="WindowTitleBackground">     
        <item name="android:background">@color/titleBar</item>                   
 	</style>
+	
+	<style name="DreamStyle">
+		<item name="android:textSize">17sp</item>
+		<item name="android:textColor">@color/forestGreen</item>
+		<item name="android:background">@color/ivory</item>
+	</style>
+	
+	<style name="DreamTextView">
+		<item name="android:textSize">17sp</item>
+		<item name="android:textColor">@color/forestGreen</item>
+		<item name="android:background">@color/ivory</item>
+	</style>
+	
+	<style name="DreamListView">						   			   
+		<item name="android:textSize">17sp</item>
+		<item name="android:textColor">@color/forestGreen</item>
+		<item name="android:background">@color/ivory</item>
+		<item name="android:choiceMode">singleChoice</item>
+		<item name="android:drawSelectorOnTop">false</item>
+		<item name="android:divider">@color/mistyRose</item>
+		<item name="android:dividerHeight">5dip</item>
+		<item name="android:headerDividersEnabled">true</item>
+		<item name="android:footerDividersEnabled">true</item>
+	</style>
 </resources>

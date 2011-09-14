@@ -338,7 +338,7 @@ public final class DictionaryScanner extends Observable implements TaskManager {
 		task.setOnPostExecuteListener(new OnPostExecuteListener<Pair<Integer, Dictionary>>() {
 			@Override
 			public void onPostExecute(final Pair<Integer, Dictionary> result) {
-				models.put(result.first, result.second);
+				if(result != null) models.put(result.first, result.second);
 
 				if (didAllRescanTasksFinish()) {
 					dictionaryModelsChanged();

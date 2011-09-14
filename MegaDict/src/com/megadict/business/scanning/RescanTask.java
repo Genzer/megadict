@@ -1,6 +1,7 @@
 package com.megadict.business.scanning;
 
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 import android.util.Pair;
 
 import com.megadict.business.AbstractWorkerTask;
@@ -12,6 +13,7 @@ import com.megadict.model.Dictionary;
 import com.megadict.model.DictionaryInformation;
 
 public class RescanTask extends AbstractWorkerTask<DictionaryInformation, Void, Pair<Integer, Dictionary>> {
+	private static final String TAG = "RescanTask";
 	private final SQLiteDatabase database;
 
 	public RescanTask(final SQLiteDatabase database) {
@@ -21,19 +23,23 @@ public class RescanTask extends AbstractWorkerTask<DictionaryInformation, Void, 
 
 	@Override
 	protected Pair<Integer, Dictionary> doInBackground(final DictionaryInformation... params) {
-		final DictionaryInformation info = params[0];
+		try {
+			final DictionaryInformation info = params[0];
 
-		// Create necessary files.
-		final IndexFile indexFile = IndexFile.makeFile(info.getIndexFile());
-		final DictionaryFile dictFile =
-				DictionaryFile.makeRandomAccessFile(info.getDataFile());
-		// Create model.
-		final Dictionary model =
-				new DICTDictionary.Builder(indexFile, dictFile).enableSplittingIndexFile().build();
-		// Insert dictionary infos to database.
-		final int dictID =
-				ChosenModel.insertDictionary(database, model.getName(), info.getParentFile().getAbsolutePath(), ChosenModel.LOCAL_DICTIONARY, 0);
+			// Create necessary files.
+			final IndexFile indexFile = IndexFile.makeFile(info.getIndexFile());
+			final DictionaryFile dictFile =
+					DictionaryFile.makeRandomAccessFile(info.getDataFile());
+			// Create model.
+			final Dictionary model = new DICTDictionary.Builder(indexFile, dictFile).enableSplittingIndexFile().build();
+			// Insert dictionary infos to database.
+			final int dictID =
+					ChosenModel.insertDictionary(database, model.getName(), info.getParentFile().getAbsolutePath(), ChosenModel.LOCAL_DICTIONARY, 0);
 
-		return Pair.create(dictID, model);
+			return Pair.create(dictID, model);
+		} catch (final Exception e) {
+			Log.w(TAG, e.getMessage(), e);
+			return null;
+		}
 	}
 }

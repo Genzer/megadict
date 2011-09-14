@@ -9,7 +9,8 @@
     				android:layout_weight="0"
     				android:paddingTop="2dip"
     				android:paddingBottom="0dip" 
-    				android:layout_height="46dip" android:background="@color/snow2"> 
+    				android:layout_height="46dip" 
+    				android:background="@color/snow2"> 
     				   				
         <Button android:layout_width="wrap_content"
         		android:layout_height="wrap_content"
@@ -25,7 +26,8 @@
         					  android:hint="@string/searchBarHint" 
         					  android:imeOptions="actionGo|actionSearch|actionSend|actionNext|actionDone" 
         					  android:layout_toLeftOf="@+id/searchButton"
-        					  android:layout_toRightOf="@+id/pronounceButton" android:layout_alignParentBottom="true">
+        					  android:layout_toRightOf="@+id/pronounceButton" 
+        					  android:layout_alignParentBottom="true" >
             <requestFocus></requestFocus>
         </AutoCompleteTextView>
         

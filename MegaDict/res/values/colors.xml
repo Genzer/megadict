@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources> 
+    <color name="transparent">#00000000</color>
+    <color name="black">#000000</color>
+    <color name="white">#ffffff</color>    
+    <color name="red">#ff0000</color>
+    <color name="green">#00ff00</color>
+    <color name="blue">#0000ff</color>
+    <color name="titleBar">#323331</color>
+    <color name="android">#A4C639</color>
+    
+    <!-- Whites and pastels -->
+    <color name="mistyRose">#ffe4e1</color>
+    <color name="seaShell">#fff5ee</color>
+    <color name="lavenderBlush">#fff0f5</color>
+    <color name="azure">#f0ffff</color>
+    <color name="mintCream">#f5fffa</color>
+    <color name="snow2">#eee9e9</color>
+    <color name="snow3">#cdc9c9</color>
+    <color name="snow4">#8b8989</color>
+    <color name="ivory">#fffff0</color>
+    <color name="ivory2">#eeeee0</color>
+    <color name="ivory3">#cdcdc1</color>   
+    
+    <!-- Greens -->
+    <color name="darkGreen">#006400</color>
+    <color name="seaGreen">#2e8b57</color>
+    <color name="mediumSeaGreen">#3cb371</color>
+    <color name="forestGreen">#228b22</color>
+</resources>
