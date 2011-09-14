@@ -4,7 +4,7 @@
          android:layout_width="fill_parent"
          android:layout_height="fill_parent" 
          android:padding="10dip"
-         style="@style/DreamStyle">
+         style="@style/DreamStyle" android:background="@color/ivory">
 
 	<!-- I really want to use list selector (android:listSelector) here but it is too difficult to apply.
 			I think I'll improve it in the future, just don't know exactly when. @_@ -->

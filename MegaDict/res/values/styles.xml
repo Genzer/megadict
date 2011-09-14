@@ -33,6 +33,7 @@
 		<item name="android:drawSelectorOnTop">false</item>
 		<item name="android:divider">@color/mistyRose</item>
 		<item name="android:dividerHeight">5dip</item>
+		<item name="android:fadingEdge">none</item>
 		<item name="android:headerDividersEnabled">true</item>
 		<item name="android:footerDividersEnabled">true</item>
 	</style>
