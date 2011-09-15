@@ -14,15 +14,16 @@ import com.megadict.R;
 import com.megadict.activity.base.AbstractListActivity;
 import com.megadict.adapter.ChosenDictionaryCheckBoxAdapter;
 import com.megadict.application.MegaDictApp;
-import com.megadict.bean.RescanComponent;
+import com.megadict.bean.ManageComponent;
 import com.megadict.business.WikiAdder;
 import com.megadict.business.scanning.DictionaryScanner;
 import com.megadict.model.ChosenModel;
 import com.megadict.utility.DatabaseHelper;
+import com.megadict.utility.Utility;
 
 public class ManageActivity extends AbstractListActivity {
 	private DictionaryScanner scanner;
-	private RescanComponent rescanComponent;
+	private ManageComponent manageComponent;
 	private WikiAdder wikiAdder;
 	private Cursor listViewCursor;
 
@@ -48,9 +49,9 @@ public class ManageActivity extends AbstractListActivity {
 		final ProgressDialog progressDialog = new ProgressDialog(this);
 		progressDialog.setMessage("Scanning storage... ");
 
-		rescanComponent =
-				new RescanComponent(this, progressDialog, listViewCursor);
-		wikiAdder = new WikiAdder(this, rescanComponent, scanner);
+		manageComponent =
+				new ManageComponent(progressDialog, listViewCursor);
+		wikiAdder = new WikiAdder(this, manageComponent, scanner);
 
 		// Ask for updating models regardless of whether the models change.
 		final Intent returnedIntent = new Intent();
@@ -89,6 +90,10 @@ public class ManageActivity extends AbstractListActivity {
 
 	// ======================= Private functions =================== //
 	private void doRescanning() {
-		scanner.rescan(rescanComponent);
+		if(scanner.didAllRescanTasksFinish()) {
+			scanner.rescan(manageComponent);
+		} else {
+			Utility.messageBox(this, R.string.scanning);
+		}
 	}
 }

@@ -8,6 +8,7 @@ import java.util.Observer;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -33,6 +34,7 @@ public final class WordRecommender implements Observer, RecommendTaskManager {
 	// Aggregation variables.
 	private final List<Dictionary> dictionaryModels;
 	private DictionaryComponent dictionaryComponent;
+	private final Context context;
 
 	// Composition variables.
 	private final List<RecommendTask> recommendTasks =
@@ -41,7 +43,8 @@ public final class WordRecommender implements Observer, RecommendTaskManager {
 	private Runnable recommendRunnable;
 	private final SortedSet<String> recommendWords = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
 
-	public WordRecommender(final List<Dictionary> dictionaryModels, final DictionaryComponent dictionaryComponent) {
+	public WordRecommender(final Context context, final List<Dictionary> dictionaryModels, final DictionaryComponent dictionaryComponent) {
+		this.context = context;
 		this.dictionaryModels = dictionaryModels;
 		this.dictionaryComponent = dictionaryComponent;
 	}
@@ -149,7 +152,7 @@ public final class WordRecommender implements Observer, RecommendTaskManager {
 				if (didAllRecommendTasksFinish()) {
 					final List<String> tempList = Arrays.asList(recommendWords.toArray(new String[recommendWords.size()]));
 					final List<String> adaptedList = tempList.subList(0, Math.min(MAX_RECOMMENDED_WORD_COUNT, tempList.size()));
-					final ArrayAdapter<String> adapter = new ArrayAdapter<String>(dictionaryComponent.getContext(), R.layout.dropdown_item, adaptedList);
+					final ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, R.layout.dropdown_item, adaptedList);
 
 					final AutoCompleteTextView searchBar = dictionaryComponent.getSearchBar();
 					searchBar.setAdapter(adapter);

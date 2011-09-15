@@ -2,7 +2,6 @@ package com.megadict.bean;
 
 import java.util.List;
 
-import android.content.Context;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -15,7 +14,6 @@ public class DictionaryComponent {
 	private final AutoCompleteTextView searchBar;
 	private final ResultView resultView;
 	private final ProgressBar progressBar;
-	private final Context context;
 	private final List<Button> bottomButtons;
 
 	public static class Builder {
@@ -24,7 +22,6 @@ public class DictionaryComponent {
 		private AutoCompleteTextView searchBar;
 		private ResultView resultView;
 		private ProgressBar progressBar;
-		private Context context;
 		private List<Button> bottomButtons;
 
 		public Builder searchButton(final Button searchButton) {
@@ -52,11 +49,6 @@ public class DictionaryComponent {
 			return this;
 		}
 
-		public Builder context(final Context context) {
-			this.context = context;
-			return this;
-		}
-
 		public Builder bottomButtons(final List<Button> bottomButtons) {
 			this.bottomButtons = bottomButtons;
 			return this;
@@ -73,7 +65,6 @@ public class DictionaryComponent {
 		this.searchBar = builder.searchBar;
 		this.resultView = builder.resultView;
 		this.progressBar = builder.progressBar;
-		this.context = builder.context;
 		this.bottomButtons = builder.bottomButtons;
 	}
 
@@ -94,10 +85,6 @@ public class DictionaryComponent {
 	}
 	public ProgressBar getProgressBar() {
 		return progressBar;
-	}
-
-	public Context getContext() {
-		return context;
 	}
 
 	public List<Button> getBottomButtons() {

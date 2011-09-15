@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.DialogInterface.OnMultiChoiceClickListener;
@@ -16,16 +17,16 @@ import com.megadict.utility.Utility;
 
 public class HistoryDisplayer extends AbstractInitializer {
 	// Composition variables.
-	public HistoryDisplayer(final BusinessComponent businessComponent, final DictionaryComponent dictionaryComponent) {
-		super(businessComponent, dictionaryComponent);
+	public HistoryDisplayer(final Context context, final BusinessComponent businessComponent, final DictionaryComponent dictionaryComponent) {
+		super(context, businessComponent, dictionaryComponent);
 	}
 
 	public void showHistoryDialog(final List<String> list) {
 		if(list.isEmpty()) {
-			Utility.messageBox(dictionaryComponent.getContext(), R.string.emptyHistory);
+			Utility.messageBox(context, R.string.emptyHistory);
 			return;
 		}
-		new AlertDialog.Builder(dictionaryComponent.getContext()).
+		new AlertDialog.Builder(context).
 		setTitle(R.string.historyDialogTitle).setIcon(R.drawable.crystal_history).
 		setPositiveButton(R.string.deleteEllipsis, new OnClickListener() {
 			@Override
@@ -56,7 +57,7 @@ public class HistoryDisplayer extends AbstractInitializer {
 	private void showDeleteDialog(final List<String> list) {
 		final List<String> removedItems = new ArrayList<String>();
 
-		new AlertDialog.Builder(dictionaryComponent.getContext()).setTitle(R.string.historyDialogTitle).setIcon(R.drawable.crystal_history).setPositiveButton(R.string.ok, new OnClickListener() {
+		new AlertDialog.Builder(context).setTitle(R.string.historyDialogTitle).setIcon(R.drawable.crystal_history).setPositiveButton(R.string.ok, new OnClickListener() {
 			@Override
 			public void onClick(final DialogInterface dialog, final int which) {
 				businessComponent.getSearcher().removeWordFromHistory(removedItems);

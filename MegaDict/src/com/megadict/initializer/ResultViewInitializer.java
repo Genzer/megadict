@@ -12,15 +12,15 @@ import com.megadict.widget.ResultView;
 import com.megadict.widget.ResultView.OnSelectTextListener;
 
 public final class ResultViewInitializer extends AbstractInitializer {
-	public ResultViewInitializer(final BusinessComponent businessComponent, final DictionaryComponent dictionaryComponent) {
-		super(businessComponent, dictionaryComponent);
+	public ResultViewInitializer(final Context context, final BusinessComponent businessComponent, final DictionaryComponent dictionaryComponent) {
+		super(context, businessComponent, dictionaryComponent);
 	}
 
 	@Override
 	public void init() {
 		// Prepare components.
 		final ClipboardManager clipboardManager =
-				(ClipboardManager) dictionaryComponent.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+				(ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
 		final ResultView resultView = dictionaryComponent.getResultView();
 		final AutoCompleteTextView searchBar =
 				dictionaryComponent.getSearchBar();
@@ -29,7 +29,7 @@ public final class ResultViewInitializer extends AbstractInitializer {
 			@Override
 			public void onSelectText() {
 				final String text = clipboardManager.getText().toString();
-				final WordListTask task = new WordListTask(dictionaryComponent.getContext(), text);
+				final WordListTask task = new WordListTask(context, text);
 				task.setOnClickWordListener(new OnClickWordListener() {
 					@Override
 					public void onClickWord() {

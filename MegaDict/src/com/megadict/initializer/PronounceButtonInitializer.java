@@ -28,8 +28,8 @@ public class PronounceButtonInitializer {
 	private final TextToSpeechSpeaker ttsSpeaker;
 	private GoogleSpeaker googleSpeaker;
 
-	public PronounceButtonInitializer(final DictionaryComponent dictionaryComponent) {
-		this.context = dictionaryComponent.getContext();
+	public PronounceButtonInitializer(final Context context, final DictionaryComponent dictionaryComponent) {
+		this.context = context;
 
 		// Init speaker preference.
 		speakerPreference = SpeakerPreference.newInstance(context);

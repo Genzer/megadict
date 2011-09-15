@@ -2,6 +2,8 @@ package com.megadict.initializer;
 
 import java.util.Observable;
 
+import android.content.Context;
+
 import com.megadict.R;
 import com.megadict.bean.BusinessComponent;
 import com.megadict.bean.DictionaryComponent;
@@ -13,10 +15,12 @@ public abstract class AbstractInitializer extends Observable implements Initiali
 	// Aggregation variables.
 	protected final BusinessComponent businessComponent;
 	protected final DictionaryComponent dictionaryComponent;
+	protected final Context context;
 
 	// Composition variables.
-	public AbstractInitializer(final BusinessComponent businessComponent, final DictionaryComponent dictionaryComponent) {
+	public AbstractInitializer(final Context context, final BusinessComponent businessComponent, final DictionaryComponent dictionaryComponent) {
 		super();
+		this.context = context;
 		this.businessComponent = businessComponent;
 		this.dictionaryComponent = dictionaryComponent;
 	}
@@ -34,14 +38,13 @@ public abstract class AbstractInitializer extends Observable implements Initiali
 		final WordSearcher searcher = businessComponent.getSearcher();
 		final WordRecommender recommender = businessComponent.getRecommender();
 
-		if (!recommender.didAllRecommendTasksFinish()) {
-			recommender.cancelRecommending();
-		}
+		// Cancel recommending anyway if searching triggers!
+		recommender.cancelRecommending();
 
 		if (searcher.didAllSearchTasksFinish()) {
 			searcher.search(word);
 		} else {
-			Utility.messageBox(dictionaryComponent.getContext(), R.string.searching);
+			Utility.messageBox(context, R.string.searching);
 		}
 	}
 }

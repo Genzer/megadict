@@ -1,11 +1,3 @@
-/**
- * IDICTIONARY APPLICATION.
- * 
- * CREATION DATE 10-April-2011
- * 
- * DEVELOPER TEAM :PREPOOLK11 - IDICTGROUP
- */
-
 package com.megadict.application;
 
 import android.app.Application;
@@ -26,6 +18,7 @@ public final class MegaDictApp extends Application {
 
 		// Prepare application variables.
 		resultTextMaker = new ResultTextMaker(getAssets());
-		scanner = new DictionaryScanner(resultTextMaker);
+		scanner = new DictionaryScanner(this);
+		scanner.scanStorage();
 	}
 }

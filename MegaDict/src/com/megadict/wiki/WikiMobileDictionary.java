@@ -10,6 +10,7 @@ import com.megadict.exception.NotImplementedException;
 import com.megadict.model.Definition;
 import com.megadict.model.Dictionary;
 
+@Deprecated
 public class WikiMobileDictionary implements Dictionary {
 	public static final String NO_DEFINITION = "There is no definition";
 	private static final String PREFIX = "Wikipedia ";

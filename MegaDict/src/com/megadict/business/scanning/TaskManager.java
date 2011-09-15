@@ -2,8 +2,7 @@ package com.megadict.business.scanning;
 
 import java.util.List;
 
-import com.megadict.bean.DictionaryComponent;
-import com.megadict.bean.RescanComponent;
+import com.megadict.bean.ManageComponent;
 
 public interface TaskManager {
 	boolean didAllRescanTasksFinish();
@@ -12,11 +11,11 @@ public interface TaskManager {
 
 	boolean didAllAddWikiTasksFinish();
 
-	void scanStorage(final DictionaryComponent dictionaryComponent);
+	void scanStorage();
 
-	void rescan(final RescanComponent rescanComponent);
+	void rescan(final ManageComponent manageComponent);
 
-	void updateDictionaryModels(final DictionaryComponent dictionaryComponent);
+	void updateDictionaryModels();
 
-	void addWikiDictionaries(final List<String> countryCodes, final RescanComponent rescanComponent);
+	void addWikiDictionaries(final List<String> countryCodes, final ManageComponent manageComponent);
 }

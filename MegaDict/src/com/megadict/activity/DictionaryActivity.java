@@ -25,6 +25,7 @@ import com.megadict.business.HistoryDisplayer;
 import com.megadict.business.ResultTextMaker;
 import com.megadict.business.recommending.WordRecommender;
 import com.megadict.business.scanning.DictionaryScanner;
+import com.megadict.business.scanning.DictionaryScanner.OnRefreshStartPageListener;
 import com.megadict.business.searching.WordSearcher;
 import com.megadict.initializer.BottomButtonsInitializer;
 import com.megadict.initializer.PronounceButtonInitializer;
@@ -77,9 +78,6 @@ public final class DictionaryActivity extends AbstractActivity {
 		refreshStrings();
 		// Set this to update menus.
 		languageChanged = true;
-
-		// Scan chosen databases when MegaDict opens.
-		scanner.scanStorage(dictionaryComponent);
 
 		// Check Internet connection.
 		if(!Utility.isOnline(this)) {
@@ -157,7 +155,7 @@ public final class DictionaryActivity extends AbstractActivity {
 
 		if(requestCode == ActivityHelper.MANAGE_REQUEST && resultCode == Activity.RESULT_OK &&
 				data.getBooleanExtra(DictionaryScanner.MODEL_CHANGED, false)) {
-			scanner.updateDictionaryModels(dictionaryComponent);
+			scanner.updateDictionaryModels();
 		}
 	}
 
@@ -186,20 +184,40 @@ public final class DictionaryActivity extends AbstractActivity {
 		final int dictCount = scanner.getDictionaryModels().size();
 		final String welcomeStr =
 				(dictCount > 1
-						? dictionaryComponent.getContext().getString(R.string.usingDictionaryPlural, dictCount)
-								: dictionaryComponent.getContext().getString(R.string.usingDictionary, dictCount));
+						? getString(R.string.usingDictionaryPlural, dictCount)
+								: getString(R.string.usingDictionary, dictCount));
 		final String welcomeHTML = resultTextMaker.getWelcomeHTML(welcomeStr);
 		dictionaryComponent.getResultView().loadDataWithBaseURL(ResultTextMaker.ASSET_URL, welcomeHTML, "text/html", "utf-8", null);
 	}
 
-
 	// ==================== Init functions =================//
 	private void initSomething() {
+		// Must init UI first!
 		initDictionaryComponent();
+		// The application-scoped because scanner must set DictionaryComponent.
+		initScanner();
+		initResultTextMaker();
+		// Init anything else.
 		initBusinessComponent();
 		initInitializers();
-		// Init result panel.
-		//((LinearLayout)findViewById(R.id.resultPanel)).addView(resultView);
+	}
+
+	private void initScanner() {
+		// Get application variables.
+		scanner = ((MegaDictApp) getApplication()).scanner;
+		// Set dictionary component for global scanner.
+		scanner.setDictionaryComponent(dictionaryComponent);
+		// Set refresh page listener.
+		scanner.setRefreshStartPageListener(new OnRefreshStartPageListener() {
+			@Override
+			public void resfreshStartPage() {
+				refreshStartPage();
+			}
+		});
+	}
+
+	private void initResultTextMaker() {
+		resultTextMaker = ((MegaDictApp) getApplication()).resultTextMaker;
 	}
 
 	private void initDictionaryComponent() {
@@ -229,22 +247,17 @@ public final class DictionaryActivity extends AbstractActivity {
 				searchBar(searchBar).
 				resultView(resultView).
 				progressBar(progressBar).
-				context(this).
 				bottomButtons(new ArrayList<Button>(bottomButtonMap.keySet())).build();
 	}
 
 	private void initBusinessComponent() {
-		// Get application variables.
-		scanner = ((MegaDictApp) getApplication()).scanner;
-		resultTextMaker = ((MegaDictApp) getApplication()).resultTextMaker;
-
 		// Get saved instance.
 		final BusinessComponent bc = (BusinessComponent)getLastNonConfigurationInstance();
 		WordSearcher searcher;
 		WordRecommender recommender;
 		if(bc == null) {
 			// Init searcher and recommender.
-			recommender = new WordRecommender(scanner.getDictionaryModels(), dictionaryComponent);
+			recommender = new WordRecommender(this, scanner.getDictionaryModels(), dictionaryComponent);
 			searcher = new WordSearcher(scanner.getDictionaryModels(), resultTextMaker, dictionaryComponent);
 			// Init business component.
 			businessComponent =	new BusinessComponent(searcher, recommender);
@@ -270,31 +283,31 @@ public final class DictionaryActivity extends AbstractActivity {
 	private void initInitializers() {
 		// Init search button.
 		final SearchButtonInitializer searchButtonInitializer =
-				new SearchButtonInitializer(businessComponent, dictionaryComponent);
+				new SearchButtonInitializer(this, businessComponent, dictionaryComponent);
 		searchButtonInitializer.init();
 
 		// Init pronounce button.
-		pronounceButtonInitializer = new PronounceButtonInitializer(dictionaryComponent);
+		pronounceButtonInitializer = new PronounceButtonInitializer(this, dictionaryComponent);
 
 		// Init search bar.
 		final SearchBarInitializer searchBarInitializer =
-				new SearchBarInitializer(businessComponent, dictionaryComponent);
+				new SearchBarInitializer(this, businessComponent, dictionaryComponent);
 		searchBarInitializer.init();
 		searchBarInitializer.addObserver(businessComponent.getRecommender());
 
 		// Init Result view.
 		final ResultViewInitializer resultViewInitializer =
-				new ResultViewInitializer(businessComponent, dictionaryComponent);
+				new ResultViewInitializer(this, businessComponent, dictionaryComponent);
 		resultViewInitializer.init();
 		resultViewInitializer.addObserver(businessComponent.getRecommender());
 
 		// Init history displayer.
-		historyDisplayer = new HistoryDisplayer(businessComponent, dictionaryComponent);
+		historyDisplayer = new HistoryDisplayer(this, businessComponent, dictionaryComponent);
 		historyDisplayer.init();
 		historyDisplayer.addObserver(businessComponent.getRecommender());
 
 		// Init bottom buttons.
-		final BottomButtonsInitializer bottomInitializer = new BottomButtonsInitializer(historyDisplayer, businessComponent, dictionaryComponent);
+		final BottomButtonsInitializer bottomInitializer = new BottomButtonsInitializer(this, historyDisplayer, businessComponent, dictionaryComponent);
 		bottomInitializer.init();
 	}
 

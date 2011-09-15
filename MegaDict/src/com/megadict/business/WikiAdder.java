@@ -9,20 +9,20 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 
 import com.megadict.R;
-import com.megadict.bean.RescanComponent;
+import com.megadict.bean.ManageComponent;
 import com.megadict.business.scanning.DictionaryScanner;
 import com.megadict.wiki.Wiki;
 
 public class WikiAdder {
 	private final Context context;
-	private final RescanComponent rescanComponent;
+	private final ManageComponent manageComponent;
 	private final DictionaryScanner scanner;
 	private final List<String> languageNames = Wiki.getLanguageNames();
 	private final List<String> countryCodes = Wiki.getCountryCodes();
 
-	public WikiAdder(final Context context, final RescanComponent rescanComponent, final DictionaryScanner scanner) {
+	public WikiAdder(final Context context, final ManageComponent manageComponent, final DictionaryScanner scanner) {
 		this.context = context;
-		this.rescanComponent = rescanComponent;
+		this.manageComponent = manageComponent;
 		this.scanner = scanner;
 	}
 
@@ -37,7 +37,7 @@ public class WikiAdder {
 		}).setPositiveButton(R.string.ok, new OnClickListener() {
 			@Override
 			public void onClick(final DialogInterface dialog, final int which) {
-				scanner.addWikiDictionaries(addedCodes, rescanComponent);
+				scanner.addWikiDictionaries(addedCodes, manageComponent);
 			}
 		}).setNegativeButton(R.string.cancel, new OnClickListener() {
 			@Override

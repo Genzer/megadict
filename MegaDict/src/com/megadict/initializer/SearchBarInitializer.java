@@ -1,5 +1,6 @@
 package com.megadict.initializer;
 
+import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -17,8 +18,8 @@ import com.megadict.utility.Utility;
 
 public class SearchBarInitializer extends AbstractInitializer {
 
-	public SearchBarInitializer(final BusinessComponent businessComponent, final DictionaryComponent dictionaryComponent) {
-		super(businessComponent, dictionaryComponent);
+	public SearchBarInitializer(final Context context, final BusinessComponent businessComponent, final DictionaryComponent dictionaryComponent) {
+		super(context, businessComponent, dictionaryComponent);
 	}
 
 	@Override
@@ -34,7 +35,7 @@ public class SearchBarInitializer extends AbstractInitializer {
 		setOnItemClickListener(searchBar);
 
 		// Disable soft keyboard.
-		Utility.disableSoftKeyboard(dictionaryComponent.getContext(), searchBar);
+		Utility.disableSoftKeyboard(context, searchBar);
 	}
 
 	private void addTextChangedListener(final AutoCompleteTextView searchBar) {

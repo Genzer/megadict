@@ -20,13 +20,11 @@ import com.megadict.utility.Utility;
 
 public class BottomButtonsInitializer extends AbstractInitializer {
 	private final HistoryDisplayer historyDisplayer;
-	private final Context context;
 	private final List<ButtonExecutor> executors = new ArrayList<BottomButtonsInitializer.ButtonExecutor>();
 
-	public BottomButtonsInitializer(final HistoryDisplayer historyDisplayer, final BusinessComponent businessComponent, final DictionaryComponent dictionaryComponent) {
-		super(businessComponent, dictionaryComponent);
+	public BottomButtonsInitializer(final Context context, final HistoryDisplayer historyDisplayer, final BusinessComponent businessComponent, final DictionaryComponent dictionaryComponent) {
+		super(context, businessComponent, dictionaryComponent);
 		this.historyDisplayer = historyDisplayer;
-		this.context = dictionaryComponent.getContext();
 		// Init executors to execute items in AlertDialog.
 		initExecutors();
 	}
@@ -55,7 +53,7 @@ public class BottomButtonsInitializer extends AbstractInitializer {
 			public void execute() {
 				// Downcasting Context to Activity because I ensure this context is an activity,
 				/// but this seems to be a bad practice AFAIK.
-				Utility.startActivityForResult((Activity)dictionaryComponent.getContext(), ActivityHelper.SETTING_ACTIVITY, ActivityHelper.SETTING_REQUEST);
+				Utility.startActivityForResult((Activity)context, ActivityHelper.SETTING_ACTIVITY, ActivityHelper.SETTING_REQUEST);
 			}
 		});
 		executors.add(new ButtonExecutor() {
