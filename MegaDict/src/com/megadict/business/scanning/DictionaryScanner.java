@@ -33,8 +33,6 @@ public final class DictionaryScanner extends Observable implements TaskManager {
 			new ArrayList<RescanTask>();
 	private final List<ScanTask> scanTasks =
 			new ArrayList<ScanTask>();
-	private final List<UpdateTask> updateTasks =
-			new ArrayList<UpdateTask>();
 	private final List<AddWikiTask> wikiTasks =
 			new ArrayList<AddWikiTask>();
 
@@ -90,7 +88,7 @@ public final class DictionaryScanner extends Observable implements TaskManager {
 	@Override
 	public void updateDictionaryModels(final DictionaryComponent dictionaryComponent) {
 		// Clear all tasks.
-		updateTasks.clear();
+		scanTasks.clear();
 
 		// Prepare useful lists for updating models.
 		final List<Integer> oldIDs = new ArrayList<Integer>(models.keySet());
@@ -186,16 +184,6 @@ public final class DictionaryScanner extends Observable implements TaskManager {
 		return true;
 	}
 
-	@Override
-	public boolean didAllUpdateTasksFinish() {
-		for (final UpdateTask task : updateTasks) {
-			if (task.isWorking()) {
-				return false;
-			}
-		}
-		return true;
-	}
-
 	public List<Dictionary> getDictionaryModels() {
 		return new ArrayList<Dictionary>(models.values());
 	}
@@ -229,41 +217,12 @@ public final class DictionaryScanner extends Observable implements TaskManager {
 
 	private void executeUpdateTasks(final DictionaryComponent dictionaryComponent, final List<DictionaryBean> insertedBeans) {
 		for (final DictionaryBean bean : insertedBeans) {
-			final UpdateTask task =	new UpdateTask();
-			setOnPreExecuteForUpdateTask(task, dictionaryComponent);
-			setOnPostExecuteForUpdateTask(task, dictionaryComponent);
+			final ScanTask task =	new ScanTask();
+			setOnPreExecuteForScanTask(task, dictionaryComponent);
+			setOnPostExecuteForScanTask(task, dictionaryComponent);
 			task.execute(bean);
-			updateTasks.add(task);
+			scanTasks.add(task);
 		}
-	}
-
-	private void setOnPreExecuteForUpdateTask(final UpdateTask task, final DictionaryComponent dictionaryComponent) {
-		task.setOnPreExecuteListener(new OnPreExecuteListener() {
-			@Override
-			public void onPreExecute() {
-				if (didAllUpdateTasksFinish()) {
-					dictionaryComponent.getProgressBar().setVisibility(ProgressBar.VISIBLE);
-				}
-			}
-		});
-	}
-
-	private void setOnPostExecuteForUpdateTask(final UpdateTask task, final DictionaryComponent dictionaryComponent) {
-		task.setOnPostExecuteListener(new OnPostExecuteListener<Pair<Integer, Dictionary>>() {
-			@Override
-			public void onPostExecute(final Pair<Integer, Dictionary> result) {
-				if(result != null) models.put(result.first, result.second);
-
-				if (didAllUpdateTasksFinish()) {
-					// Notify for observers.
-					dictionaryModelsChanged();
-					// Refresh start page.
-					refreshStartPage(dictionaryComponent);
-					// Hide ProgressBar.
-					dictionaryComponent.getProgressBar().setVisibility(ProgressBar.INVISIBLE);
-				}
-			}
-		});
 	}
 
 	private void setOnPreExecuteForScanTask(final ScanTask task, final DictionaryComponent dictionaryComponent) {

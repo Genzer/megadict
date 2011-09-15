@@ -10,8 +10,6 @@ public interface TaskManager {
 
 	boolean didAllScanTasksFinish();
 
-	boolean didAllUpdateTasksFinish();
-
 	boolean didAllAddWikiTasksFinish();
 
 	void scanStorage(final DictionaryComponent dictionaryComponent);
