@@ -6,8 +6,8 @@ import android.widget.AutoCompleteTextView;
 
 import com.megadict.bean.BusinessComponent;
 import com.megadict.bean.DictionaryComponent;
-import com.megadict.business.recommending.WordListTask;
-import com.megadict.business.recommending.WordListTask.OnClickWordListener;
+import com.megadict.business.WordListTask;
+import com.megadict.business.WordListTask.OnClickWordListener;
 import com.megadict.widget.ResultView;
 import com.megadict.widget.ResultView.OnSelectTextListener;
 
@@ -34,8 +34,8 @@ public final class ResultViewInitializer extends AbstractInitializer {
 					@Override
 					public void onClickWord() {
 						searchBar.setText(task.getWord());
-						doSearching(searchBar.getText().toString());
 						preventRecommending();
+						doSearching(searchBar.getText().toString());
 					}
 				});
 				task.execute((Void[]) null);

@@ -17,10 +17,10 @@ import com.megadict.R;
 import com.megadict.model.ChosenModel;
 import com.megadict.utility.DatabaseHelper;
 
-public class ChosenDictionaryCheckBoxAdapter extends ResourceCursorAdapter {
+public class DictionaryAdapter extends ResourceCursorAdapter {
 	private final LayoutInflater inflater;
 
-	public ChosenDictionaryCheckBoxAdapter(final Context context, final Cursor cursor) {
+	public DictionaryAdapter(final Context context, final Cursor cursor) {
 		super(context, R.layout.textview_checkbox_row, cursor, true);
 		this.inflater = LayoutInflater.from(context);
 	}

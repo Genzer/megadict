@@ -12,7 +12,7 @@ import android.view.MenuItem;
 
 import com.megadict.R;
 import com.megadict.activity.base.AbstractListActivity;
-import com.megadict.adapter.ChosenDictionaryCheckBoxAdapter;
+import com.megadict.adapter.DictionaryAdapter;
 import com.megadict.application.MegaDictApp;
 import com.megadict.bean.ManageComponent;
 import com.megadict.business.WikiAdder;
@@ -42,8 +42,8 @@ public class ManageActivity extends AbstractListActivity {
 		final SQLiteDatabase database = DatabaseHelper.getDatabase(this);
 		listViewCursor =
 				ChosenModel.selectChosenDictionaryIDsNameAndEnabled(database);
-		final ChosenDictionaryCheckBoxAdapter adapter =
-				new ChosenDictionaryCheckBoxAdapter(this, listViewCursor);
+		final DictionaryAdapter adapter =
+				new DictionaryAdapter(this, listViewCursor);
 		setListAdapter(adapter);
 
 		final ProgressDialog progressDialog = new ProgressDialog(this);

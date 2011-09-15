@@ -1,4 +1,4 @@
-package com.megadict.business.recommending;
+package com.megadict.business;
 
 import java.util.ArrayList;
 import java.util.List;
