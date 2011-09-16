@@ -31,8 +31,12 @@ public class DICTDictionaryTestBugs {
 
         Dictionary dict = new DICTDictionary.Builder(indexFile, dictFile).enableSplittingIndexFile().build();
 
-        Definition def = dict.lookUp("học tập");
-
+        List<String> similarWords = dict.recommendWord("tốt bụng");
+        
+        System.out.println(similarWords);
+        
+        Definition def = dict.lookUp("tốt bụng");
+        
         System.out.println(def.getContent());
     }
 
