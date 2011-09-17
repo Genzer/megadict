@@ -21,6 +21,11 @@ public class DictionaryFile {
         return makeRandomAccessFile(new File(dictFilePath));
     }
     
+    public static DictionaryFile makeGZipFile(File dictFile) {
+        DictFileReader gzipReader = new GZipDictFileReader(dictFile);
+        return new DictionaryFile(dictFile, gzipReader);
+    }
+    
     public boolean exists() {
         return dictFile.exists();
     }

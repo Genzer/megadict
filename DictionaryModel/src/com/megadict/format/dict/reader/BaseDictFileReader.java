@@ -17,10 +17,12 @@ abstract class BaseDictFileReader implements DictFileReader {
             openStream();
         } catch (FileNotFoundException fnf) {
             throw new ResourceMissingException(dictFile, fnf);
+        } catch (IOException ioe) {
+            throw new OperationFailedException("opening dict file", ioe);
         }
     }
 
-    protected abstract void openStream() throws FileNotFoundException;
+    protected abstract void openStream() throws FileNotFoundException, IOException;
 
     public byte[] read(int offset, int length) {
         try {

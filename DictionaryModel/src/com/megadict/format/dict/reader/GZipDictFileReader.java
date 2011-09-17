@@ -6,41 +6,35 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.zip.GZIPInputStream;
 
-import com.megadict.exception.OperationFailedException;
-import com.megadict.exception.ResourceMissingException;
+class GZipDictFileReader extends BaseDictFileReader implements DictFileReader {
 
-class GZipDictFileReader implements DictFileReader {
-
-    private final File gzipFile;
-    private GZIPInputStream gzipReader;
+    private GZIPInputStream reader;
 
     public GZipDictFileReader(File gzipFile) {
-        this.gzipFile = gzipFile;
+        super(gzipFile);
     }
 
     @Override
-    public void open() {
-        try {
-            FileInputStream fis = new FileInputStream(gzipFile);
-            gzipReader = new GZIPInputStream(fis);
-        } catch (FileNotFoundException fnf) {
-            throw new ResourceMissingException(gzipFile);
-        } catch (IOException ioe) {
-            throw new OperationFailedException("opening GZIP dict file", ioe);
-        }
+    protected void openStream() throws FileNotFoundException, IOException {
+        FileInputStream fis = new FileInputStream(dictFile);
+        reader = new GZIPInputStream(fis);
     }
 
     @Override
-    public byte[] read(int offset, int length) {
-        return new byte[0];
+    protected void jumpTo(int offset) throws IOException {
+        reader.skip(offset);
     }
 
     @Override
-    public void close() {
-        try {
-            gzipReader.close();
-        } catch (IOException ioe) {
-            throw new OperationFailedException("closing reader", ioe);
-        }
+    protected byte[] readWithAmountOf(int length) throws IOException {
+        byte[] readBytes = new byte[length];
+        reader.read(readBytes);
+        return readBytes;
     }
+
+    @Override
+    protected void closeReader() throws IOException {
+        reader.close();
+    }
+
 }
