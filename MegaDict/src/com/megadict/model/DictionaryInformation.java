@@ -22,14 +22,10 @@ public class DictionaryInformation {
 
 		/* Create index and data file path. */
 		final String filePath = parentFilePath.getAbsolutePath();
-		final String separator = System.getProperty("file.separator");
-		final String indexFilePath = filePath + separator + "dict.index";
-		final String dataFilePath = filePath + separator + "dict.dict";
+		indexFile = new File(filePath + File.separator + "dict.index");
+		dataFile = new File(filePath + File.separator + "dict.dict");
 
 		/* Check if index file and data file exist. If not, throw exception. */
-		indexFile = new File(indexFilePath);
-		dataFile = new File(dataFilePath);
-
 		if (!indexFile.exists()) {
 			throw new FileNotFoundException("Index", filePath);
 		}
