@@ -18,7 +18,7 @@ public class WikiDictionary implements Dictionary {
 	private static final String URI_PATTERN =
 			"http://%s.wikipedia.org/w/index.php?title=%s&action=render";
 	private static final String FULL_ARTICLE_PATTERN =
-			"<a href=\"http://en.wikipedia.org/wiki/%s\">Full Article..</a>";
+			"<a href=\"http://%s.wikipedia.org/wiki/%s\">Full Article..</a>";
 	private String dictionaryName;
 	private final String countryCode;
 
@@ -58,7 +58,7 @@ public class WikiDictionary implements Dictionary {
 				if (paragraphs.length() == 0) {
 					paragraphs.append(pTags.get(0).toString());
 				}
-				paragraphs.append(String.format(FULL_ARTICLE_PATTERN, searchedWord));
+				paragraphs.append(String.format(FULL_ARTICLE_PATTERN, countryCode, searchedWord));
 				definition =
 						Definition.makeDefinition(word, paragraphs.toString(), dictionaryName);
 			}
