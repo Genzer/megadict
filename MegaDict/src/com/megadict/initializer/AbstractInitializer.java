@@ -33,6 +33,10 @@ public abstract class AbstractInitializer extends Observable implements Initiali
 		notifyObservers(true);
 	}
 
+	/**
+	 * This function does two jobs: Cancel the current RecommendTasks then search.
+	 * @param word
+	 */
 	protected void doSearching(final String word) {
 		// Get useful components.
 		final WordSearcher searcher = businessComponent.getSearcher();

@@ -37,6 +37,8 @@
     <string name="deleteEllipsis">Xóa...</string>
     <string name="clear">Xóa hết</string>
     <string name="close">Đóng</string>
+    <string name="search">Tra từ</string>
+    <string name="split">Tách từ</string>
     <string name="searchBarHint">Nhập từ cần tra</string>
     <string name="adding">Đang thêm từ điển... Làm ơn chờ.</string>
     <string name="chooseAnItem">Chọn một từ</string>
@@ -48,6 +50,7 @@
     
     <!-- Dialog title -->
     <string name="wordListDialogTitle">Chọn một từ</string>
+    <string name="searchOrSplitDialogTitle">Tra từ hay tách từ</string>
     <string name="historyDialogTitle">Danh sách từ đã tra</string>
     <string name="wikiDialogTitle">Thêm Wikipedia</string>
     <string name="operationDialogTitle">Thao tác</string>

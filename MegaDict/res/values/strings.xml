@@ -37,6 +37,8 @@
     <string name="deleteEllipsis">Delete...</string>
     <string name="clear">Clear</string>
     <string name="close">Close</string>
+    <string name="search">Search</string>
+    <string name="split">Split</string>
     <string name="searchBarHint">Enter word here</string>
     <string name="adding">Adding... Please wait.</string>
     <string name="chooseAnItem">Choose an item</string>
@@ -48,6 +50,7 @@
     
     <!-- Dialog title -->
     <string name="wordListDialogTitle">Pick a word</string>
+    <string name="searchOrSplitDialogTitle">Search or split</string>
     <string name="historyDialogTitle">History</string>    
     <string name="wikiDialogTitle">New Wikipedia</string>
     <string name="operationDialogTitle">Operations</string>
