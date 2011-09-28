@@ -27,6 +27,8 @@ public final class ResultViewInitializer extends AbstractInitializer {
 		// Prepare components.
 		final ClipboardManager clipboardManager =
 				(ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+		// Clear clipboard at intial time.
+		clipboardManager.setText(null);
 		final ResultView resultView = dictionaryComponent.getResultView();
 		resultView.setBackgroundColor(0x00000000);
 		resultView.setOnSelectTextListener(new OnSelectTextListener() {
