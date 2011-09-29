@@ -20,10 +20,10 @@
     <string name="wikiMenuItemTitle">Wikipedia</string>
     
     <!-- Common Strings -->
-    <string name="noDefinition">There is no definition!</string>    
+    <string name="noDefinition">There is no definition.</string>    
     <string name="noDictionary">Please choose a dictionary.</string>
     <string name="noDictionary2">There is no dictionary. Please put dictionaries\' data 
-    folders in SD card at the location <b>/mnt/sdcard/Download/megadict</b>.</string>    
+    folders in SD card at the location <b>/sdcard/Download/megadict</b>.</string>    
     <string name="searching">Searching... Please wait.</string>
     <string name="recommending">Recommending... Please wait.</string>
     <string name="scanning">Scanning... Please wait.</string>
@@ -57,7 +57,7 @@
     
     <!-- Others -->
     <string name="appName">MegaDict</string>    
-    <string name="aboutContent"><b>This is the best dictionary in the world. The authors are Hieu and Hau.</b>\nContact: 0909327140.\nHotline: 0949401441.</string>
+    <string name="aboutContent"><b>- This is the best dictionary in the world.\n\n- MegaDict is developed by Megatron team.\n\n- Contact:\nemerald.hieu@gmail.com or\ngenzers@gmail.com.</b></string>
     <string name="aboutDialogLabel">All about MegaDict</string>
     <string name="storageLabel">Storage</string>
     

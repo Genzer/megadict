@@ -17,7 +17,7 @@ public class ResultTextMaker {
 
 	private static final String MIDDLE_WELCOME_BLOCK =
 			"<div class=\"welcomeBlock\">";
-	private static final String RIGHT_WELCOME_BLOKC = "</div></body></html>";
+	private static final String RIGHT_WELCOME_BLOCK = "</div></body></html>";
 
 	private static final String MIDDLE_NO_DICT_BLOCK =
 			"<div class=\"noDictionaryBlock\">";
@@ -35,7 +35,7 @@ public class ResultTextMaker {
 	private void initLefltBlock() {
 		try {
 			LEFT_BLOCK.append("<html>");
-			// Append stylesheets.
+			// Append CSS.
 			final String[] cssNames = assetManager.list("css");
 			LEFT_BLOCK.append("<head>");
 			for (final String cssName : cssNames) {
@@ -69,7 +69,7 @@ public class ResultTextMaker {
 
 	public String getWelcomeHTML(final String welcomeStr) {
 		return LEFT_BLOCK.toString() + MIDDLE_WELCOME_BLOCK + welcomeStr
-				+ RIGHT_WELCOME_BLOKC;
+				+ RIGHT_WELCOME_BLOCK;
 	}
 
 	public String getNoDictionaryHTML(final String noDictContent) {

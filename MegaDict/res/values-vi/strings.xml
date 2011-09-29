@@ -20,10 +20,10 @@
     <string name="wikiMenuItemTitle">Wikipedia</string>
     
     <!-- Common Strings -->
-    <string name="noDefinition">Không tìm thấy nghĩa!</string>    
+    <string name="noDefinition">Không tìm thấy nghĩa.</string>    
     <string name="noDictionary">Làm ơn chọn từ điển.</string>
     <string name="noDictionary2">Không có từ điểm. Làm ơn chép các thư mục từ điển vào thẻ nhớ tại vị trí
-     <b>/mnt/sdcard/Download/megadict và Rescan</b>.</string>    
+     <b>/sdcard/Download/megadict và Rescan</b>.</string>    
     <string name="searching">Đang tìm... Làm ơn chờ.</string>
     <string name="recommending">Đang tìm từ gần đúng... Làm ơn chờ.</string>
     <string name="scanning">Đang tìm từ điển... Làm ơn chờ.</string>
@@ -56,8 +56,8 @@
     <string name="operationDialogTitle">Thao tác</string>
     
     <!-- Others -->
-    <string name="appName">MegaDict</string>    
-    <string name="aboutContent"><b>Đây là từ điển tốt nhất thế giới. Tác giả là Hiếu và Hậu.</b>\nĐiện thoại liên lạc: 0909327140.\nĐường dây nóng: 0949401441.</string>
+    <string name="appName">MegaDict</string>
+    <string name="aboutContent"><b>- Đây là từ điển tốt nhất thế giới.\n\n- MegaDict được phát triển bởi nhóm Megatron.\n\n- Liên lạc:\nemerald.hieu@gmail.com hoặc\ngenzers@gmail.com.</b></string>
     <string name="aboutDialogLabel">Thông tin về MegaDict</string>
     <string name="storageLabel">Kho chứa</string>
     

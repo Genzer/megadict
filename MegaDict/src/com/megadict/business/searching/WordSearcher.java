@@ -24,8 +24,8 @@ public final class WordSearcher implements Observer, SearchTaskManager {
 	private DictionaryComponent dictionaryComponent;
 
 	// Composition variables.
-	private String noDictionaryStr = "There is no dictionary";
-	private String noDefinitionStr = "There is no definition.";
+	private String noDictionaryStr = "There is no dictionary (this should not be shown).";
+	private String noDefinitionStr = "There is no definition (this should not be shown).";
 	private final List<SearchTask> searchTasks =
 			new ArrayList<SearchTask>();
 	private final HistoryManager historyManager = new HistoryManager();
@@ -107,7 +107,10 @@ public final class WordSearcher implements Observer, SearchTaskManager {
 
 				resultTextMaker.appendContent(definition.getWord(), definition.exists()
 						? definition.getContent() : noDefinitionStr, definition.getDictionaryName());
-				dictionaryComponent.getResultView().loadDataWithBaseURL(ResultTextMaker.ASSET_URL, resultTextMaker.getResultHTML(), "text/html", "utf-8", null);
+				dictionaryComponent.getResultView().loadDataWithBaseURL(
+						ResultTextMaker.ASSET_URL,
+						resultTextMaker.getResultHTML(),
+						"text/html", "utf-8", null);
 
 				// Hide progress bar if all tasks finished.
 				if (didAllSearchTasksFinish()) {

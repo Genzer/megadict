@@ -1,4 +1,4 @@
-
+/*=================== COMMONS ===============*/
 @font-face { 
     font-family: 'DejaVuSans';
     src: url('file:///android_asset/fonts/DejaVuSans.ttf');
@@ -13,45 +13,21 @@ body {
 	font-family: 'DejaVuSans';
 }
 
+
+/*=================== BLOCKS ===============*/
 .dictionaryBlock {
 	padding: 0.3em;
-	margin: 0.3em 0.3em 0.4em 0.3em;
-	
-	background-color: #fff;
+	margin: 0.3em 0.2em 0.3em 0.2em;
 	border: 0.2em solid #59922B;
 	border-radius: 0.8em;
-	
-	word-wrap: break-word;
-}
-
-.searchedWord {
-	padding: 0.3em 0.6em 0.9em 0.6em;	
 	font-size: 1em;
-	
-	color: #fff;
-	background: url(file:///android_asset/images/wordbg.png) bottom left repeat-x;
-	background-color: #59922B;
-	border-radius: 0.7em;
-}
-
-.dictionaryContent {
-	padding: 0.4em;
-	font-size: 0.9em;
-}
-
-.dictionaryName {
-	padding-top: 0.3em;
-	font-size: 0.9em;
-	
-	border-top: 0.2em solid #59922B;	
-	text-align: right;
-	font-weight: bold;
-	color: #59922B;
+	word-wrap: break-word;
+	background-color: #fff; /* white */
 }
 
 .welcomeBlock {
 	margin: 0.4em;
-	fonrt-size: 1em;
+	font-size: 1em;
 	color: green;
 }
 
@@ -59,4 +35,54 @@ body {
 	margin: 0.4em;
 	font-size: 1em;
 	color: red;
+}
+
+
+/*=================== OTHERS ===============*/
+.searchedWord {
+	padding: 0.3em 0.6em 0.9em 0.6em;
+	background: url(file:///android_asset/images/wordbg.png) bottom left repeat-x;	
+	border-radius: 0.7em;
+	color: #fff; /* white */
+	background-color: #59922B;		
+}
+
+.dictionaryContent {
+	padding: 0.4em;
+	line-height: 1.4;
+}
+
+.dictionaryName {
+	padding-top: 0.3em;
+	font-size: 0.9em;
+	border-top: 0.2em solid #59922B;	
+	text-align: right;
+	font-weight: bold;
+	color: #8b8682; /* seashell4 */
+}
+
+
+/*=================== DICTIONARY ELEMENTS ===============*/
+.entry {
+	color: #006400; /* dark green */
+}
+
+.wordKind {
+	color: #00f; /* blue */
+}
+
+.meaning {
+	color: #000; /* black */
+}
+
+.exampleBegin {
+	color: #f00; /* red */
+}
+
+.exampleSeparator {
+	color: #696969 /* dim gray */
+}
+
+.idiom {
+	color: #b22222 /* firebrick */
 }

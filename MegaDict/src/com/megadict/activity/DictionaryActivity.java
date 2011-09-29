@@ -71,13 +71,16 @@ public final class DictionaryActivity extends AbstractActivity {
 	public void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		initSomething();
-
 		// Load language when first start app.
 		Utility.updateLocale(this, LanguagePreference.newInstance(this).getLanguage());
-		refreshStrings();
 		// Set this to update menus.
 		languageChanged = true;
+
+		// Init all UIs.
+		initSomething();
+
+		// Once UI was initialized, refresh all strings.
+		refreshStrings();
 
 		// Check Internet connection.
 		if(!Utility.isOnline(this)) {
@@ -141,6 +144,7 @@ public final class DictionaryActivity extends AbstractActivity {
 		if(requestCode == ActivityHelper.SETTING_REQUEST && resultCode == Activity.RESULT_OK) {
 			if(data.getBooleanExtra(LanguagePreference.LANGUAGE_CHANGED, false)) {
 				refreshStrings();
+				// Set this to update menus.
 				languageChanged = true;
 			}
 
@@ -169,6 +173,7 @@ public final class DictionaryActivity extends AbstractActivity {
 	private void refreshStrings() {
 		// Change noDefinition string.
 		businessComponent.getSearcher().setNoDefinitionStr(getString(R.string.noDefinition));
+		businessComponent.getSearcher().setNoDictionaryStr(getString(R.string.noDictionary));
 		// Redraw search bar hint
 		dictionaryComponent.getSearchBar().setHint(R.string.searchBarHint);
 		// Redraw bottom buttons.

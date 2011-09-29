@@ -32,20 +32,20 @@
         <activity android:name=".activity.SettingActivity" 
         		  android:icon="@drawable/megadict_icon"
         		  android:theme="@style/MegaDictTheme" 
-        		  android:configChanges="locale">
+        		  android:configChanges="locale|keyboardHidden|orientation">
         </activity>
         
         <activity android:name=".activity.ManageActivity" 
         		  android:icon="@drawable/megadict_icon"
         		  android:theme="@style/MegaDictTheme" 
-        		  android:configChanges="locale">
+        		  android:configChanges="locale|keyboardHidden|orientation">
 		</activity>
 		
         <activity android:name=".activity.AboutActivity" 
         		  android:theme="@android:style/Theme.Dialog" 
         		  android:label="@string/aboutDialogLabel" 
         		  android:icon="@drawable/megadict_icon" 
-        		  android:configChanges="locale">
+        		  android:configChanges="locale|keyboardHidden|orientation">
 		</activity>
 		
     </application>

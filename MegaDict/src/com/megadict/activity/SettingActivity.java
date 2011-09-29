@@ -50,8 +50,9 @@ public class SettingActivity extends PreferenceActivity {
 				if(!languagePreference.getLanguage().equals(newValue)) {
 					languagePreference.setLanguage(newValue.toString());
 					Utility.updateLocale(SettingActivity.this, newValue.toString());
-					// Update preference text.
 					updatePreferenceTexts();
+					// Change Settings Activity title.
+					setTitle(R.string.settingButtonLabel);
 					returnedIntent.putExtra(LanguagePreference.LANGUAGE_CHANGED, true);
 				}
 				return true;

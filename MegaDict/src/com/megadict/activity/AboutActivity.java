@@ -11,4 +11,10 @@ public class AboutActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.about);
 	}
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+		setTitle(R.string.aboutDialogLabel);
+	}
 }
