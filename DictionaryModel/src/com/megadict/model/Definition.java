@@ -42,7 +42,7 @@ public class Definition {
     }
     
     /**
-     * @return - true if this definition is not found in the dictionary, otherwise, return false.
+     * @return - true if this definition is found in the dictionary, otherwise, return false.
      */
     public boolean exists() {
         return exists;

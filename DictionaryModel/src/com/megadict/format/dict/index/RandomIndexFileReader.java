@@ -51,19 +51,25 @@ public class RandomIndexFileReader extends BaseIndexFileReader implements IndexF
     @Override
     protected int locateIndexStringOf(String headword) throws IOException {
         synchronized (byteBuffer) {
-            Segment segment = determineContainingSegment(headword);
+            int foundPosition = -1;
+            
+            Segment containingSegment = determineContainingSegment(headword);
+            
+            if (containingSegment != null) {
+                randomReader.clear();
+                randomReader.position(containingSegment.offset());
 
-            randomReader.clear();
-            randomReader.position(segment.offset());
+                int contentLength = determineContentLength(containingSegment.length());
+                randomReader.get(byteBuffer, 0, contentLength);
 
-            int contentLength = determineContentLength(segment.length());
-            randomReader.get(byteBuffer, 0, contentLength);
+                decodeToCharArray(byteBuffer, charBuffer);
 
-            decodeToCharArray(byteBuffer, charBuffer);
+                builder.append(charBuffer);
+                
+                foundPosition = builder.indexOf(headword);
+            }
 
-            builder.append(charBuffer);
-            int foundPosition = builder.indexOf(headword);
-            return (foundPosition != -1) ? foundPosition : -1;
+            return foundPosition;
         }        
     }
 
