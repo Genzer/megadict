@@ -25,30 +25,30 @@ class IndexCache {
         return innerCache.get(word);
     }
 
-    public int countSimilarWords(String word) {
-        return filterSimilarWord(word).size();
-    }
-
     public List<String> getSimilarWord(String word, int preferredNumber) {
-        return extractByPreferredNumber(filterSimilarWord(word), preferredNumber);
-    }
-
-    private Set<Map.Entry<String, Index>> filterSimilarWord(String headword) {
-        return innerCache.tailMap(headword).entrySet();
-    }
-
-    private List<String> extractByPreferredNumber(Set<Map.Entry<String, Index>> filtered, int preferredNumber) {
-
-        int size = Math.min(filtered.size(), preferredNumber);
         
-        List<String> result = new ArrayList<String>(size);
+        Set<Map.Entry<String, Index>> adjacents = adjacentWords(word);
 
-        Iterator<Map.Entry<String, Index>> iterator = filtered.iterator();
+        int size = Math.min(adjacents.size(), preferredNumber);
+        
+        List<String> similarWords = new ArrayList<String>(size);
 
-        for (int numOfItem = 0; numOfItem < size; numOfItem++) {
-            result.add(iterator.next().getKey());
+        Iterator<Map.Entry<String, Index>> iterator = adjacents.iterator();        
+        
+        for (int numOfItem = 0; (numOfItem < size) && iterator.hasNext(); numOfItem++) {
+            
+            String adjacent = iterator.next().getKey();   
+            
+            if (adjacent.startsWith(word)) {
+                similarWords.add(adjacent);
+            }
+            
         }
+        
+        return similarWords;
+    }
 
-        return result;
+    private Set<Map.Entry<String, Index>> adjacentWords(String headword) {
+        return innerCache.tailMap(headword).entrySet();
     }
 }
