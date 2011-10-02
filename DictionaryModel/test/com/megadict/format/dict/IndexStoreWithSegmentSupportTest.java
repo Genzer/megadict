@@ -22,9 +22,10 @@ public class IndexStoreWithSegmentSupportTest {
         };
 
         for (String testWord : testWords) {
-            Index foundIndex = store.getIndexOf(testWord);
-            assertNotNull(foundIndex);
-            System.out.println(foundIndex);
+            if (store.containsWord(testWord)) {
+                Index foundIndex = store.getIndexOf(testWord);
+                assertNotNull(foundIndex);
+            }
         }
     }
 
@@ -33,17 +34,13 @@ public class IndexStoreWithSegmentSupportTest {
         IndexFile indexFile = IndexFile.makeFile("C:/test/av.index");
 
         IndexStore store = new IndexStoreWithSegmentSupport(indexFile);
-        
+
         String testWord = "hell";
-        
-        List<String> words = store.getSimilarWord(testWord, 20);
-        
+
+        List<String> words = store.getSimilarWords(testWord, 20);
+
         assertNotNull(words);
         assertFalse(words.isEmpty());
-        
-        for (String word : words) {
-            System.out.println(word);
-        }
     }
 
 }

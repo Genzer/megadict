@@ -25,17 +25,13 @@ public class DICTDictionaryTestBugs {
     @Test
     public void testWrongResultRecommendingWithVEDict() {
 
-        IndexFile indexFile = IndexFile.makeFile("C:/test/ve.index");
+        IndexFile indexFile = IndexFile.makeFile("C:/test/foldoc.index");
 
-        DictionaryFile dictFile = DictionaryFile.makeRandomAccessFile("C:/test/ve.dict");
+        DictionaryFile dictFile = DictionaryFile.makeRandomAccessFile("C:/test/foldoc.dict");
 
         Dictionary dict = new DICTDictionary.Builder(indexFile, dictFile).enableSplittingIndexFile().build();
 
-        List<String> similarWords = dict.recommendWord("tốt bụng");
-        
-        System.out.println(similarWords);
-        
-        Definition def = dict.lookUp("tốt bụng");
+        Definition def = dict.lookUp("base class");
         
         System.out.println(def.getContent());
     }

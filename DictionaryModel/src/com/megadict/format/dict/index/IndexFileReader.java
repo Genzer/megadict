@@ -4,5 +4,5 @@ import java.util.Set;
 
 public interface IndexFileReader {
     Index getIndexOf(String headword);
-    Set<Index> getIndexesSurrounding(String headWordInclusive);
+    Set<Index> getAdjacentIndexes(String headWordInclusive);
 }

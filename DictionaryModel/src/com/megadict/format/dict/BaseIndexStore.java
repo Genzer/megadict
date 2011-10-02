@@ -29,13 +29,13 @@ class BaseIndexStore implements IndexStore {
 
     @Override
     public boolean containsWord(String word) {
-        if (findInCache(word) == false) {
+        if (cacheContains(word) == false) {
             attempToFindInFileAndCache(word);
         }
-        return findInCache(word);
+        return cacheContains(word);
     }
 
-    private boolean findInCache(String word) {
+    private boolean cacheContains(String word) {
         return cache.contains(word);
     }
 
@@ -46,7 +46,7 @@ class BaseIndexStore implements IndexStore {
 
     protected Set<Index> findInFile(String headword) {
         IndexFileReader reader = new RegularIndexFileReader(indexFile.asRawFile());
-        return reader.getIndexesSurrounding(headword);
+        return reader.getAdjacentIndexes(headword);
     }
 
     private void cacheAll(Iterable<Index> indexes) {
@@ -62,7 +62,7 @@ class BaseIndexStore implements IndexStore {
     }
 
     @Override
-    public List<String> getSimilarWord(String headword, int preferredNumber) {
+    public List<String> getSimilarWords(String headword, int preferredNumber) {
 
         if (notEnoughSimilarWords(preferredNumber, headword)) {
             attempToFindInFileAndCache(headword);

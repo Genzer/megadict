@@ -49,7 +49,7 @@ public class RandomIndexFileReaderTest {
         
         String testWord = "zebra";
         
-        Set<Index> indexes = reader.getIndexesSurrounding(testWord);
+        Set<Index> indexes = reader.getAdjacentIndexes(testWord);
         
         for (Index index : indexes) {
             System.out.println(index);

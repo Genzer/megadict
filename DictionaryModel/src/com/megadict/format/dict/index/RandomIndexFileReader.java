@@ -119,7 +119,7 @@ public class RandomIndexFileReader extends BaseIndexFileReader implements IndexF
 
     @Override
     protected void closeReader() {
-        // Do nothing because JVM will garbage collector will automically do the
+        // Do nothing because JVM's garbage collector will automically do the
         // job.
     }
 }

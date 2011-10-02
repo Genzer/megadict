@@ -87,7 +87,7 @@ public class RegularIndexFileReaderTest {
     public void testGetIndexesFromHeadword() {
         String word = "00-database-short";
         
-        Set<Index> found = testee.getIndexesSurrounding(word);
+        Set<Index> found = testee.getAdjacentIndexes(word);
         
         boolean empty = found.isEmpty();
         assertFalse(empty);

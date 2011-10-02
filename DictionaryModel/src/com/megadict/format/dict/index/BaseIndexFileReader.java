@@ -52,7 +52,7 @@ abstract class BaseIndexFileReader implements IndexFileReader {
     }
 
     @Override
-    public Set<Index> getIndexesSurrounding(String headwordInclusive) {
+    public Set<Index> getAdjacentIndexes(String headwordInclusive) {
 
         Set<Index> indexes = new HashSet<Index>();
         String[] indexStrings = readSurroundingOf(headwordInclusive);

@@ -100,20 +100,20 @@ public class DICTDictionary implements Dictionary {
 
     @Override
     public List<String> recommendWord(String word) {
-        return supportedWords.getSimilarWord(word, 20);
+        return supportedWords.getSimilarWords(word, 20);
     }
 
     @Override
     public List<String> recommendWord(String word, int preferredNumOfWord) {
         synchronized (supportedWords) {
-            return supportedWords.getSimilarWord(word, preferredNumOfWord);
+            return supportedWords.getSimilarWords(word, preferredNumOfWord);
         }
     }
 
     @Override
     public Definition lookUp(String word) {
         synchronized (supportedWords) {
-            Definition result = validateWord(word) ? find(word) : makeNotFound(word);
+            Definition result = validateWord(word) ? performLookup(word) : makeNotFound(word);
             definitionCache.cache(word, result);
             return result;
         }
@@ -123,7 +123,7 @@ public class DICTDictionary implements Dictionary {
         return StringChecker.check(word);
     }
 
-    private Definition find(String word) {
+    private Definition performLookup(String word) {
 
         Definition result = null;
 

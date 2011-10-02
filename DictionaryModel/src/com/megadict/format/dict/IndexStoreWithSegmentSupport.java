@@ -32,6 +32,6 @@ class IndexStoreWithSegmentSupport extends BaseIndexStore implements IndexStore 
     
     @Override
     protected Set<Index> findInFile(String word) {
-        return reader.getIndexesSurrounding(word);
+        return reader.getAdjacentIndexes(word);
     }
 }

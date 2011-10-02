@@ -56,7 +56,7 @@ public class Base64TextParserTest {
     
     @Test
     public void testParsingByteArray() {
-        String valid = "oTBE";
+        String valid = "tE35";
         int expected = 11816441;
         
         int actual = Base64TextParser.parseByteArray(valid.getBytes());
