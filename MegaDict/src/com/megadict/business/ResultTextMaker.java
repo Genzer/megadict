@@ -55,10 +55,13 @@ public class ResultTextMaker {
 	}
 
 	public void appendContent(final String searchedWord, final String content, final String dictionaryName) {
-		final String formattedContent = content.trim().replace("\n", "<br/>");
+		//		final String formattedContent = content.trim().replace("\n", "<br/>")
+		//				.replace("<", "&lt")
+		//				.replace(">", "&gt");
+
 		MIDDLE_BLOCK.append("<div class=\"dictionaryBlock\">"
 				+ "<div class=\"searchedWord\">" + searchedWord + "</div>"
-				+ "<div class=\"dictionaryContent\">" + formattedContent
+				+ "<div class=\"dictionaryContent\">" + content
 				+ "</div>" + "<div class=\"dictionaryName\">" + dictionaryName
 				+ "</div></div>");
 	}

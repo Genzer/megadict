@@ -69,6 +69,7 @@ public final class DictionaryActivity extends AbstractActivity {
 
 	@Override
 	public void onCreate(final Bundle savedInstanceState) {
+		//Debug.startMethodTracing("calc");
 		super.onCreate(savedInstanceState);
 
 		// Load language when first start app.
@@ -98,6 +99,7 @@ public final class DictionaryActivity extends AbstractActivity {
 
 	@Override
 	protected void onDestroy() {
+		//Debug.stopMethodTracing();
 		super.onDestroy();
 
 		businessComponent.getRecommender().setDictionaryComponent(null);

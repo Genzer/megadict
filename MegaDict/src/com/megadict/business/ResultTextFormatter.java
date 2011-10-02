@@ -39,7 +39,12 @@ public final class ResultTextFormatter {
 
 		for(final String line : lines) {
 			String className = "";
-			String changedLine = line;
+
+			// Trim and escape tag characters.
+			String changedLine = line.trim()
+					.replace("<", "&lt;")
+					.replace(">", "&gt;");
+
 			if(line.startsWith(ENTRY)) {
 				className = ENTRY_CLASS;
 			} else if(line.startsWith(WORDKIND)) {
@@ -57,6 +62,7 @@ public final class ResultTextFormatter {
 			} else if(line.startsWith(IDIOM)) {
 				className = IDIOM_CLASS;
 			}
+
 			final String formattedLine = String.format(START_DIV, className) + changedLine + END_DIV;
 			builder.append(formattedLine);
 		}

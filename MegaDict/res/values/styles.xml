@@ -16,19 +16,20 @@
 	<style name="DreamStyle">
 		<item name="android:textSize">17sp</item>
 		<item name="android:textColor">@color/forestGreen</item>
-		<item name="android:background">@color/ivory</item>
+		<item name="android:background">@color/azure</item>
 	</style>
 	
 	<style name="DreamTextView">
 		<item name="android:textSize">17sp</item>
 		<item name="android:textColor">@color/forestGreen</item>
-		<item name="android:background">@color/ivory</item>
+		<item name="android:background">@color/azure</item>
 	</style>
 	
 	<style name="DreamListView">						   			   
 		<item name="android:textSize">17sp</item>
 		<item name="android:textColor">@color/forestGreen</item>
-		<item name="android:background">@color/ivory</item>
+		<item name="android:background">@color/azure</item>
+		
 		<item name="android:choiceMode">singleChoice</item>
 		<item name="android:drawSelectorOnTop">false</item>
 		<item name="android:divider">@color/mistyRose</item>

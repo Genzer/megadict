@@ -58,7 +58,7 @@ public final class WordSearcher implements Observer, SearchTaskManager {
 			dictionaryComponent.getResultView().loadDataWithBaseURL(ResultTextMaker.ASSET_URL, resultTextMaker.getNoDictionaryHTML(noDictionaryStr), "text/html", "utf-8", null);
 		} else {
 			// Lower and trim it.
-			final String searchedWord = word.toLowerCase(Locale.ENGLISH).trim();
+			final String searchedWord = word.trim().toLowerCase(Locale.US);
 
 			// Only search if searchedWord is not empty.
 			if (!"".equals(searchedWord)) {

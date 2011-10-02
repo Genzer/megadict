@@ -20,7 +20,12 @@
     <color name="snow4">#8b8989</color>
     <color name="ivory">#fffff0</color>
     <color name="ivory2">#eeeee0</color>
-    <color name="ivory3">#cdcdc1</color>   
+    <color name="ivory3">#cdcdc1</color>
+    <color name="bisque">#ffe4c4</color>
+    
+    <!-- Blues -->
+    <color name="steelBlue">#4682b4</color>
+    <color name="skyBlue">#87ceeb</color>
     
     <!-- Greens -->
     <color name="darkGreen">#006400</color>

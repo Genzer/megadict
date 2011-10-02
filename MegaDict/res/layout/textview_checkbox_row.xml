@@ -5,8 +5,7 @@
   android:layout_height="match_parent" 
   android:layout_width="match_parent" 
   android:layout_gravity="center_vertical"
-  style="@style/DreamStyle"
-  >
+  style="@style/DreamStyle" android:padding="5dip">
   
     <TextView android:layout_weight="1"
     android:id="@+id/dictionaryName"  
@@ -14,7 +13,6 @@
     android:layout_width="match_parent"  
     android:text="This is sample text."      
     android:layout_gravity="center_vertical"    
-    android:layout_marginLeft="5dip"
     style="@style/DreamTextView"    
     />    
     
@@ -22,7 +20,6 @@
     android:layout_width="wrap_content" 
     android:layout_height="wrap_content" 
     android:id="@+id/dictionaryEnabled"     
-    android:layout_marginRight="5dip" 
     android:layout_marginLeft="5dip"     
     android:layout_gravity="center_vertical"
     />

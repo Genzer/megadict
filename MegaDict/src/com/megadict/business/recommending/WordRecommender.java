@@ -1,8 +1,10 @@
 package com.megadict.business.recommending;
 
+import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.SortedSet;
@@ -41,12 +43,22 @@ public final class WordRecommender implements Observer, RecommendTaskManager {
 			new ArrayList<RecommendTask>();
 	private final Handler recommendHandler = new RecommendHandler();
 	private Runnable recommendRunnable;
-	private final SortedSet<String> recommendWords = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+	private final SortedSet<String> recommendWords;
 
 	public WordRecommender(final Context context, final List<Dictionary> dictionaryModels, final DictionaryComponent dictionaryComponent) {
 		this.context = context;
 		this.dictionaryModels = dictionaryModels;
 		this.dictionaryComponent = dictionaryComponent;
+
+		/*
+		 * Init recommend word list.
+		 * I JUST TEMPORARY USE VIETNAMESE LOCALE HERE TO PASS THE GRADUATION COURSE. xD
+		 * IN FACT, I MUST STORE THE LOCALE IN AN XML FILE ACCOMPANIED BY "dict.index" and "dict.dict".
+		 * I DON'T PROMISE I WILL FIX IT BUT I WILL TRY IT AT LEASURE TIME.
+		 */
+		final Collator collator = Collator.getInstance(new Locale("vi", "VN"));
+		collator.setStrength(Collator.PRIMARY);
+		recommendWords = new TreeSet<String>(collator);
 	}
 
 	@Override
@@ -125,7 +137,7 @@ public final class WordRecommender implements Observer, RecommendTaskManager {
 	private class RecommendHandler extends Handler {
 		@Override
 		public void handleMessage(final Message msg) {
-			final String word = msg.getData().getString("word");
+			final String word = msg.getData().getString("word").trim().toLowerCase(Locale.US);
 			recommend(word);
 		}
 	}
