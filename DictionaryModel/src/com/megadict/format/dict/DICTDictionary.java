@@ -52,7 +52,7 @@ public class DICTDictionary implements Dictionary {
 
     }
 
-    private static final String[] NAME_REDUNDANT_STRINGS = { "@00-database-short", "FVDP "};
+    private static final String[] NAME_REDUNDANT_STRINGS = { "@00-database-short", "FVDP " };
 
     private static final String NOT_FOUND_CONTENT_PATTERN = "There is no definition of \"%s\"";
     private static final String TO_STRING_PATTERN = "DICTDictionary[name: %s; indexFile: %s; dictFile: %s]";
@@ -83,19 +83,21 @@ public class DICTDictionary implements Dictionary {
     }
 
     private static String cleanedUpName(String rawName) {
-        String noNewLineCharactersName = rawName.replaceAll("(\n|- )", "");
-        
+        String[] NAME_REDUNDANT_STRINGS = { "00-database-short", "FVDP" };
+
+        String noNewLineCharactersName = rawName.replaceAll("(\n|- |@)", "");
+
         StringBuilder builder = new StringBuilder(noNewLineCharactersName);
-        
+
         for (String redundant : NAME_REDUNDANT_STRINGS) {
             int index = builder.indexOf(redundant);
-            
+
             if (index != -1) {
                 builder.delete(index, redundant.length());
-            } 
+            }
         }
-        
-        return builder.toString();
+
+        return builder.toString().trim();
     }
 
     @Override

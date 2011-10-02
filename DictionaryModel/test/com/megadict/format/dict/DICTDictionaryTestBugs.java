@@ -31,9 +31,7 @@ public class DICTDictionaryTestBugs {
 
         Dictionary dict = new DICTDictionary.Builder(indexFile, dictFile).enableSplittingIndexFile().build();
 
-        Definition def = dict.lookUp("base class");
-        
-        System.out.println(def.getContent());
+        System.out.println(dict.getName());
     }
 
     @Ignore @Test
