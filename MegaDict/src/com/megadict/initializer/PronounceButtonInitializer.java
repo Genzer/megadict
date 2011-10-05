@@ -56,6 +56,26 @@ public class PronounceButtonInitializer {
 		});
 	}
 
+	public void updateSpeakerType() {
+		Log.d(TAG, "updateSpeakerType");
+		initSpeakerBySpeakerType();
+	}
+
+	public void updateSpeakerLanguage() {
+		Log.d(TAG, "updateSpeakerLanguage");
+
+		// Get speaker language from speaker preference.
+		final Locale speakerLanguage = new Locale(speakerPreference.getSpeakerLanguage());
+		// Update speaker language for GoogleSpeaker.
+		googleSpeaker = createGoogleTranslateSpeaker(speakerLanguage);
+		// Update speaker language for TTSSpeaker.
+		ttsSpeaker.setLanguage(speakerLanguage);
+	}
+
+	public void shutDownTTSSpeaker() {
+		ttsSpeaker.shutDown();
+	}
+
 	private TextToSpeechSpeaker createTextToSpeechSpeaker(final Locale speakerLanguage) {
 		return new TextToSpeechSpeaker(context, speakerLanguage);
 	}
@@ -75,24 +95,8 @@ public class PronounceButtonInitializer {
 		return speaker;
 	}
 
-	public void updateSpeakerType() {
-		Log.d(TAG, "updateSpeakerType");
-		initSpeakerBySpeakerType();
-	}
-
 	private void initSpeakerBySpeakerType() {
 		speakerType = speakerPreference.getSpeakerType();
-	}
-
-	public void updateSpeakerLanguage() {
-		Log.d(TAG, "updateSpeakerLanguage");
-
-		// Get speaker language from speaker preference.
-		final Locale speakerLanguage = new Locale(speakerPreference.getSpeakerLanguage());
-		// Update speaker language for GoogleSpeaker.
-		googleSpeaker = createGoogleTranslateSpeaker(speakerLanguage);
-		// Update speaker language for TTSSpeaker.
-		ttsSpeaker.setLanguage(speakerLanguage);
 	}
 
 	private void doSpeaking(final String word) {
@@ -119,9 +123,5 @@ public class PronounceButtonInitializer {
 		} else {
 			Utility.messageBox(context, R.string.couldNotSpeakGoogle);
 		}
-	}
-
-	public void shutDownTTSSpeaker() {
-		ttsSpeaker.shutDown();
 	}
 }

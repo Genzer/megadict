@@ -12,7 +12,7 @@ import com.megadict.model.ChosenModel;
 import com.megadict.model.Dictionary;
 import com.megadict.model.DictionaryInformation;
 
-public class RescanTask extends AbstractWorkerTask<DictionaryInformation, Void, Pair<Integer, Dictionary>> {
+class RescanTask extends AbstractWorkerTask<DictionaryInformation, Void, Pair<Integer, Dictionary>> {
 	private static final String TAG = "RescanTask";
 	private final SQLiteDatabase database;
 

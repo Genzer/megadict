@@ -3,7 +3,7 @@ package com.megadict.wiki;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Wiki {
+public final class Wiki {
 	private static final String DEFAULT_COUNTRY_NAME = "England";
 	private static final String DEFAULT_LANGUAGE_NAME = "English";
 	private static final String DEFAULT_COUNTRY_CODE = "en";
@@ -16,6 +16,8 @@ public class Wiki {
 			LANGUAGES.add(new Language(countryNames[i], countryCodes[i], languageNames[i]));
 		}
 	}
+
+	private Wiki() {}
 
 	public static List<Language> getLanguages() {
 		return LANGUAGES;

@@ -1,12 +1,9 @@
 package com.megadict.business.recommending;
 
-import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -23,18 +20,16 @@ import com.megadict.R;
 import com.megadict.bean.DictionaryComponent;
 import com.megadict.business.AbstractWorkerTask.OnPostExecuteListener;
 import com.megadict.business.AbstractWorkerTask.OnPreExecuteListener;
-import com.megadict.business.scanning.DictionaryScanner;
 import com.megadict.format.dict.DICTDictionary;
-import com.megadict.initializer.AbstractInitializer;
 import com.megadict.model.Dictionary;
 
-public final class WordRecommender implements Observer, RecommendTaskManager {
+public final class WordRecommender {
 	private static final String TAG = "WordRecommender";
 	private static final int DELAY_TIME = 1000;
 	private static final int MAX_RECOMMENDED_WORD_COUNT = 300;
 
 	// Aggregation variables.
-	private final List<Dictionary> dictionaryModels;
+	private final List<Dictionary> dictionaryModels = new ArrayList<Dictionary>();
 	private DictionaryComponent dictionaryComponent;
 	private final Context context;
 
@@ -43,25 +38,13 @@ public final class WordRecommender implements Observer, RecommendTaskManager {
 			new ArrayList<RecommendTask>();
 	private final Handler recommendHandler = new RecommendHandler();
 	private Runnable recommendRunnable;
-	private final SortedSet<String> recommendWords;
+	private final SortedSet<String> recommendWords = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
 
-	public WordRecommender(final Context context, final List<Dictionary> dictionaryModels, final DictionaryComponent dictionaryComponent) {
+	public WordRecommender(final Context context, final DictionaryComponent dictionaryComponent) {
 		this.context = context;
-		this.dictionaryModels = dictionaryModels;
 		this.dictionaryComponent = dictionaryComponent;
-
-		/*
-		 * Init recommend word list.
-		 * I JUST TEMPORARY USE VIETNAMESE LOCALE HERE TO PASS THE GRADUATION COURSE. xD
-		 * IN FACT, I MUST STORE THE LOCALE IN AN XML FILE ACCOMPANIED BY "dict.index" and "dict.dict".
-		 * I DON'T PROMISE I WILL FIX IT BUT I WILL TRY IT AT LEASURE TIME.
-		 */
-		final Collator collator = Collator.getInstance(new Locale("vi", "VN"));
-		collator.setStrength(Collator.PRIMARY);
-		recommendWords = new TreeSet<String>(collator);
 	}
 
-	@Override
 	public boolean didAllRecommendTasksFinish() {
 		for (final RecommendTask task : recommendTasks) {
 			if (task.isWorking()) {
@@ -71,23 +54,6 @@ public final class WordRecommender implements Observer, RecommendTaskManager {
 		return true;
 	}
 
-	@Override
-	public void recommend(final String word) {
-		// Clear old tasks.
-		recommendTasks.clear();
-		// Create and execute tasks.
-		for (final Dictionary model : dictionaryModels) {
-			if (model instanceof DICTDictionary) {
-				final RecommendTask task = RecommendTask.create(model);
-				setOnPreExecuteListener(task);
-				setOnPostExecuteListener(task);
-				task.execute(word);
-				recommendTasks.add(task);
-			}
-		}
-	}
-
-	@Override
 	public void cancelRecommending() {
 		for (final RecommendTask task : recommendTasks) {
 			task.cancel(true);
@@ -96,53 +62,33 @@ public final class WordRecommender implements Observer, RecommendTaskManager {
 		recommendTasks.clear();
 	}
 
-	@Override
-	public void update(final Observable o, final Object arg) {
-		if (o instanceof DictionaryScanner) {
-			updateModels(arg);
-		} else if (o instanceof AbstractInitializer) {
-			// Should prevent recommending?
-			if(arg instanceof Boolean) {
-				preventRecommending();
-			}
+	public void setDictionaryComponent(final DictionaryComponent dictionaryComponent) {
+		this.dictionaryComponent = dictionaryComponent;
+	}
 
-			// Should recommending?
-			if (arg instanceof String) {
-				// Remove older runnable (if there is any)
-				recommendHandler.removeCallbacks(recommendRunnable);
-				final String word = arg.toString();
-				// Check if a Runnable should be posted.
-				if (!"".equals(word)) {
-					recommendRunnable = new RecommendRunnable(word);
-					recommendHandler.postDelayed(recommendRunnable, DELAY_TIME);
-				}
-			}
+	public void updateDictionaryModels(final List<Dictionary> models) {
+		dictionaryModels.clear();
+		dictionaryModels.addAll(models);
+	}
+
+	public void recommend(final String word) {
+		// Remove older runnable (if there is any)
+		recommendHandler.removeCallbacks(recommendRunnable);
+		// Check if a Runnable should be posted.
+		if (!"".equals(word)) {
+			recommendRunnable = new RecommendRunnable(word);
+			recommendHandler.postDelayed(recommendRunnable, DELAY_TIME);
 		}
 	}
 
-	private void preventRecommending() {
+	public void preventRecommending() {
 		// Remove old runnable in handler.
 		recommendHandler.removeCallbacks(recommendRunnable);
 		// Dismiss if drop down list presented.
 		dictionaryComponent.getSearchBar().dismissDropDown();
 	}
 
-	private void updateModels(final Object arg) {
-		@SuppressWarnings("unchecked")
-		final List<Dictionary> models = (List<Dictionary>) (arg);
-		dictionaryModels.clear();
-		dictionaryModels.addAll(models);
-	}
-
-	private class RecommendHandler extends Handler {
-		@Override
-		public void handleMessage(final Message msg) {
-			final String word = msg.getData().getString("word").trim().toLowerCase(Locale.US);
-			recommend(word);
-		}
-	}
-
-	public void setOnPreExecuteListener(final RecommendTask task) {
+	private void setOnPreExecuteListener(final RecommendTask task) {
 		task.setOnPreExecuteListener(new OnPreExecuteListener() {
 			@Override
 			public void onPreExecute() {
@@ -154,7 +100,7 @@ public final class WordRecommender implements Observer, RecommendTaskManager {
 		});
 	}
 
-	public void setOnPostExecuteListener(final RecommendTask task) {
+	private void setOnPostExecuteListener(final RecommendTask task) {
 		task.setOnPostExecuteListener(new OnPostExecuteListener<List<String>>() {
 			@Override
 			public void onPostExecute(final List<String> list) {
@@ -183,11 +129,30 @@ public final class WordRecommender implements Observer, RecommendTaskManager {
 		});
 	}
 
-	public void setDictionaryComponent(final DictionaryComponent dictionaryComponent) {
-		this.dictionaryComponent = dictionaryComponent;
+	private void recommendHelper(final String word) {
+		// Clear old tasks.
+		recommendTasks.clear();
+		// Create and execute tasks.
+		for (final Dictionary model : dictionaryModels) {
+			if (model instanceof DICTDictionary) {
+				final RecommendTask task = RecommendTask.create(model);
+				setOnPreExecuteListener(task);
+				setOnPostExecuteListener(task);
+				task.execute(word);
+				recommendTasks.add(task);
+			}
+		}
 	}
 
 	// ============= Inner class ===============//
+	private class RecommendHandler extends Handler {
+		@Override
+		public void handleMessage(final Message msg) {
+			final String word = msg.getData().getString("word").trim().toLowerCase(Locale.US);
+			recommendHelper(word);
+		}
+	}
+
 	private class RecommendRunnable implements Runnable {
 		private final String word;
 

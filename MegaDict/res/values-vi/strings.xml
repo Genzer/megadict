@@ -20,6 +20,7 @@
     <string name="wikiMenuItemTitle">Wikipedia</string>
     
     <!-- Common Strings -->
+    <string name="welcome">Từ điển MegaDict phiên bản 1.3</string>   
     <string name="noDefinition">Không tìm thấy nghĩa.</string>    
     <string name="noDictionary">Làm ơn chọn từ điển.</string>
     <string name="noDictionary2">Không có từ điểm. Làm ơn chép các thư mục từ điển vào thẻ nhớ tại vị trí
@@ -47,6 +48,7 @@
     <string name="languageNotSupported">Ngôn ngữ phát âm không được hỗ trợ.</string>
     <string name="internetNotConnectedWarning">Không có Internet. Một số tính năng sẽ không hoạt động.</string>
     <string name="internetNotConnected">Không có Internet.</string>
+    <string name="launchURI">Mở URI này?</string>
     
     <!-- Dialog title -->
     <string name="wordListDialogTitle">Chọn một từ</string>

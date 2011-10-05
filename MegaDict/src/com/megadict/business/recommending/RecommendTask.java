@@ -6,7 +6,7 @@ import java.util.List;
 import com.megadict.business.AbstractWorkerTask;
 import com.megadict.model.Dictionary;
 
-public class RecommendTask extends AbstractWorkerTask<String, Void, List<String>> {
+class RecommendTask extends AbstractWorkerTask<String, Void, List<String>> {
 	private final static int RECOMMENDED_WORD_COUNT = 100;
 	private final Dictionary model;
 	private boolean cancelled = false;

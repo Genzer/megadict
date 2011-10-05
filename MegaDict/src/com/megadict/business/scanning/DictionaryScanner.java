@@ -1,8 +1,8 @@
 package com.megadict.business.scanning;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Observable;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -24,10 +24,11 @@ import com.megadict.model.DictionaryInformation;
 import com.megadict.model.ModelMap;
 import com.megadict.utility.DatabaseHelper;
 
-public final class DictionaryScanner extends Observable implements TaskManager {
+public final class DictionaryScanner {
 	public static final String MODEL_CHANGED = "modelChanged";
 	private final Context context;
-	private OnRefreshStartPageListener onRefreshStartPageListener;
+	private OnAfterCompleteScanListener onAfterCompleteScanListener;
+	private OnCompleteScanListener onCompleteScanListener;
 
 	// This is lazy initialization variables. It can be null if you don't set it.
 	private DictionaryComponent dictionaryComponent;
@@ -42,7 +43,6 @@ public final class DictionaryScanner extends Observable implements TaskManager {
 			new ArrayList<AddWikiTask>();
 
 	public DictionaryScanner(final Context context) {
-		super();
 		this.context = context;
 	}
 
@@ -54,7 +54,6 @@ public final class DictionaryScanner extends Observable implements TaskManager {
 		}
 	}
 
-	@Override
 	public void scanStorage() {
 		// Clear old models.
 		models.clear();
@@ -70,13 +69,12 @@ public final class DictionaryScanner extends Observable implements TaskManager {
 		if (cursor.getCount() > 0) {
 			executeScanTasks(cursor);
 		} else {
-			refreshStartPage();
+			afterCompleteScan();
 		}
 		// Close cursor.
 		cursor.close();
 	}
 
-	@Override
 	public void rescan(final ManageComponent manageComponent) {
 		// Remove old models.
 		models.clear();
@@ -97,7 +95,6 @@ public final class DictionaryScanner extends Observable implements TaskManager {
 		}
 	}
 
-	@Override
 	public void updateDictionaryModels() {
 		// Clear all tasks.
 		scanTasks.clear();
@@ -134,10 +131,8 @@ public final class DictionaryScanner extends Observable implements TaskManager {
 		removeOldModels(models, oldIDs, newIDs);
 		// Execute update tasks.
 		if (insertedBeans.isEmpty()) {
-			// Notify for observers.
-			dictionaryModelsChanged();
-			// Refresh start page.
-			refreshStartPage();
+			completeScan();
+			afterCompleteScan();
 		} else {
 			executeUpdateTasks(insertedBeans);
 		}
@@ -146,7 +141,6 @@ public final class DictionaryScanner extends Observable implements TaskManager {
 		cursor.close();
 	}
 
-	@Override
 	public void addWikiDictionaries(final List<String> countryCodes, final ManageComponent manageComponent) {
 		// Clear all tasks.
 		wikiTasks.clear();
@@ -166,7 +160,6 @@ public final class DictionaryScanner extends Observable implements TaskManager {
 		}
 	}
 
-	@Override
 	public boolean didAllRescanTasksFinish() {
 		for (final RescanTask task : rescanTasks) {
 			if (task.isWorking()) {
@@ -176,7 +169,6 @@ public final class DictionaryScanner extends Observable implements TaskManager {
 		return true;
 	}
 
-	@Override
 	public boolean didAllAddWikiTasksFinish() {
 		for (final AddWikiTask task : wikiTasks) {
 			if (task.isWorking()) {
@@ -186,7 +178,6 @@ public final class DictionaryScanner extends Observable implements TaskManager {
 		return true;
 	}
 
-	@Override
 	public boolean didAllScanTasksFinish() {
 		for (final ScanTask task : scanTasks) {
 			if (task.isWorking()) {
@@ -196,8 +187,16 @@ public final class DictionaryScanner extends Observable implements TaskManager {
 		return true;
 	}
 
-	public List<Dictionary> getDictionaryModels() {
-		return new ArrayList<Dictionary>(models.values());
+	public int getDictionaryModelCount() {
+		return models.size();
+	}
+
+	public void setOnAfterCompleteScanListener(final OnAfterCompleteScanListener onAfterCompleteScanListener) {
+		this.onAfterCompleteScanListener = onAfterCompleteScanListener;
+	}
+
+	public void setOnCompleteScanListener(final OnCompleteScanListener onCompleteScanListener) {
+		this.onCompleteScanListener = onCompleteScanListener;
 	}
 
 	// ========================== Private functions ============================ //
@@ -255,12 +254,11 @@ public final class DictionaryScanner extends Observable implements TaskManager {
 				if(result != null) models.put(result.first, result.second);
 
 				if (didAllScanTasksFinish()) {
-					// Notify observers.
-					dictionaryModelsChanged();
+					completeScan();
 
 					if(dictionaryComponentNotNull()) {
-						// Refresh start page.
-						refreshStartPage();
+						afterCompleteScan();
+
 						// Hide ProgressBar.
 						dictionaryComponent.getProgressBar().setVisibility(ProgressBar.INVISIBLE);
 					}
@@ -318,17 +316,16 @@ public final class DictionaryScanner extends Observable implements TaskManager {
 	}
 
 	private void endTasksUseManageComponent(final ManageComponent manageComponent) {
-		// Notify observers.
-		dictionaryModelsChanged();
+		completeScan();
 		// Requery the cursor to update list view.
 		manageComponent.getCursor().requery();
 		// Close progress dialog.
 		manageComponent.getProgressDialog().dismiss();
 	}
 
-	private void refreshStartPage() {
-		if(onRefreshStartPageListener != null) {
-			onRefreshStartPageListener.resfreshStartPage();
+	private void afterCompleteScan() {
+		if(onAfterCompleteScanListener != null) {
+			onAfterCompleteScanListener.onAfterCompleteScan();
 		}
 	}
 
@@ -337,12 +334,15 @@ public final class DictionaryScanner extends Observable implements TaskManager {
 	}
 
 	// ========================== Protected functions ============================ //
-	protected void dictionaryModelsChanged() {
-		setChanged();
-		notifyObservers(getDictionaryModels());
+	private void completeScan() {
+		//		setChanged();
+		//		notifyObservers(Collections.unmodifiableList(new ArrayList<Dictionary>(models.values())));
+		if(onCompleteScanListener != null) {
+			onCompleteScanListener.onCompleteScan(Collections.unmodifiableList(new ArrayList<Dictionary>(models.values())));
+		}
 	}
 
-	protected void removeOldModels(final ModelMap models, final List<Integer> oldIDs, final List<Integer> newIDs) {
+	private void removeOldModels(final ModelMap models, final List<Integer> oldIDs, final List<Integer> newIDs) {
 		// Loop through oldIDs, if an ID is in oldIDs and not in newIDs,
 		// / we remove its model.
 		for (final Integer i : oldIDs) {
@@ -352,12 +352,12 @@ public final class DictionaryScanner extends Observable implements TaskManager {
 		}
 	}
 
-	//============== RefreshStartPageListener ===============//
-	public void setRefreshStartPageListener(final OnRefreshStartPageListener listner) {
-		this.onRefreshStartPageListener = listner;
+	// ================ Interfaces ==============//
+	public interface OnAfterCompleteScanListener {
+		void onAfterCompleteScan();
 	}
 
-	public interface OnRefreshStartPageListener {
-		void resfreshStartPage();
+	public interface OnCompleteScanListener {
+		void onCompleteScan(List<Dictionary> dictionaryModels);
 	}
 }

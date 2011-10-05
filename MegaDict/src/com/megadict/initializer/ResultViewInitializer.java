@@ -1,57 +1,81 @@
 package com.megadict.initializer;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.text.ClipboardManager;
-import android.widget.EditText;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import com.megadict.R;
-import com.megadict.bean.BusinessComponent;
-import com.megadict.bean.DictionaryComponent;
+import com.megadict.business.AbstractWorkerTask;
 import com.megadict.business.AbstractWorkerTask.OnPostExecuteListener;
-import com.megadict.business.WordListTask;
+import com.megadict.business.DictionaryClient;
+import com.megadict.business.ResultTextMaker;
 import com.megadict.widget.ResultView;
 import com.megadict.widget.ResultView.OnSelectTextListener;
 
-public final class ResultViewInitializer extends AbstractInitializer {
+public final class ResultViewInitializer implements Initializer {
+	private final DictionaryClient dictionaryClient;
 
-	public ResultViewInitializer(final Context context, final BusinessComponent businessComponent, final DictionaryComponent dictionaryComponent) {
-		super(context, businessComponent, dictionaryComponent);
+	public ResultViewInitializer(final DictionaryClient dictionaryClient) {
+		this.dictionaryClient = dictionaryClient;
 	}
 
 	@Override
 	public void init() {
 		// Prepare components.
-		final ClipboardManager clipboardManager =
-				(ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+		final ClipboardManager clipboardManager = (ClipboardManager) dictionaryClient.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+		final ResultView resultView = dictionaryClient.getResultView();
+
 		// Clear clipboard at intial time.
 		clipboardManager.setText(null);
-		final ResultView resultView = dictionaryComponent.getResultView();
+
+		// Set transparent color.
 		resultView.setBackgroundColor(0x00000000);
+
+		// Set custom WebViewClient.
+		resultView.setWebViewClient(new ResultViewClient());
+
+		setOnSelectTextListener(clipboardManager, resultView);
+	}
+
+	private void setOnSelectTextListener(final ClipboardManager clipboardManager, final ResultView resultView) {
 		resultView.setOnSelectTextListener(new OnSelectTextListener() {
 			@Override
 			public void onSelectText() {
 				final String text = clipboardManager.getText().toString();
-				// Search if text is not multiple words.
+				// Show question dialog if it is multiple words.
 				if(text.contains(" ")) {
 					showQuestionDialog(text);
 				} else {
-					searchWithUI(text);
+					dictionaryClient.searchWithUI();
 				}
 			} // End onSelectText().
 		});
 	}
 
+	public void loadWelcomeStr() {
+		// If welcome string is showing, refresh it.
+		final String welcomeStr = ResultTextMaker.getWelcomeHTML(dictionaryClient.getContext().getString(R.string.welcome));
+		dictionaryClient.getResultView().loadDataWithBaseURL(ResultTextMaker.ASSET_URL, welcomeStr, "text/html", "utf-8", null);
+	}
+
 	private void showQuestionDialog(final String text) {
-		new AlertDialog.Builder(context).
+		new AlertDialog.Builder(dictionaryClient.getContext()).
 		setTitle(R.string.searchOrSplitDialogTitle).
 		setPositiveButton(R.string.search, new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(final DialogInterface dialog, final int which) {
-				searchWithUI(text);
+				dictionaryClient.searchWithUI();
 			}
 		}).
 		setNeutralButton(R.string.split, new DialogInterface.OnClickListener() {
@@ -77,7 +101,7 @@ public final class ResultViewInitializer extends AbstractInitializer {
 	}
 
 	private void showWordListDialog(final List<String> words) {
-		new AlertDialog.Builder(context).
+		new AlertDialog.Builder(dictionaryClient.getContext()).
 		setTitle(R.string.wordListDialogTitle).
 		setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
 			@Override
@@ -88,20 +112,56 @@ public final class ResultViewInitializer extends AbstractInitializer {
 		setItems(words.toArray(new CharSequence[words.size()]), new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(final DialogInterface dialog, final int which) {
-				searchWithUI(words.get(which));
+				dictionaryClient.searchWithUI(words.get(which));
 			}
 		}).show();
 	}
 
+	private class ResultViewClient extends WebViewClient {
+		@Override
+		public boolean shouldOverrideUrlLoading(final WebView view, final String url) {
+			if(url.startsWith("http://")) {
+				showLaunchURIDialog(view, url);
+			} else {
+				final int slashIndex = url.lastIndexOf("/");
+				if(slashIndex != -1 && slashIndex + 1 < url.length()) {
+					final String searchedWord = url.substring(slashIndex + 1);
+					dictionaryClient.searchWithUI(searchedWord);
+				}
+			}
+			return true;
+		}
 
-	/**
-	 * This function does three jobs: Insert word to search bar, prevent recommending and search.
-	 * @param word
-	 */
-	private void searchWithUI(final String word) {
-		final EditText searchBar = dictionaryComponent.getSearchBar();
-		searchBar.setText(word);
-		preventRecommending();
-		doSearching(searchBar.getText().toString());
+		private void showLaunchURIDialog(final WebView view, final String url) {
+			new AlertDialog.Builder(dictionaryClient.getContext())
+			.setMessage(R.string.launchURI)
+			.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(final DialogInterface dialog, final int id) {
+					dialog.cancel();
+
+					// Open the link by using other Activity.
+					final Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+					dictionaryClient.getContext().startActivity(browserIntent);
+				}
+			})
+			.setNegativeButton("No", new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(final DialogInterface dialog, final int id) {
+					dialog.cancel();
+				}
+			}).create().show();
+		}
+	} // End ResultViewClient class.
+
+	private static class WordListTask extends AbstractWorkerTask<String, Void, List<String>> {
+		private final static String SPLIT_REGEX = "[^\\w]+";
+
+		@Override
+		protected List<String> doInBackground(final String... params) {
+			final String []items = params[0].split(SPLIT_REGEX);
+			final Set<String> words = new HashSet<String>(Arrays.asList(items));
+			return new ArrayList<String>(words);
+		}
 	}
 }

@@ -1,86 +1,59 @@
 package com.megadict.business;
 
-import java.io.IOException;
 
-import android.content.res.AssetManager;
-
-import com.megadict.exception.ResourceNotFoundException;
-
-/**
- * This class is not threadsafe.
- * @author HIEUGIOI
- *
- */
-public class ResultTextMaker {
+public final class ResultTextMaker {
 	public static final String ASSET_URL = "file:///android_asset/";
-	private final AssetManager assetManager;
 
-	private static final String MIDDLE_WELCOME_BLOCK =
-			"<div class=\"welcomeBlock\">";
-	private static final String RIGHT_WELCOME_BLOCK = "</div></body></html>";
+	private static final String RESULT_HTML =
+			"<html>" +
+					"<head>" +
+					"<link href=\"css/result.css\" rel=\"stylesheet\" type=\"text/css\"/>" +
+					"<script src=\"scripts/result.js\" type=\"text/javascript\"/></script>" +
+					"</head>" +
+					"<body>%s</body>" +
+					"</html>";
 
-	private static final String MIDDLE_NO_DICT_BLOCK =
-			"<div class=\"noDictionaryBlock\">";
-	private static final String RIGHT_NO_DICT_BLOCK = "</div></body></html>";
+	private static final String CONTENT_FAILURE_HTML =
+			"<div class=\"dictionaryBlock\">" +
+					"<div class=\"searchedWord\">%s</div>" +
+					"<div class=\"dictionaryContentFailure\">%s</div>" +
+					"</div>";
 
-	private static final StringBuilder LEFT_BLOCK = new StringBuilder();
-	private static final StringBuilder MIDDLE_BLOCK = new StringBuilder();
-	private static final String RIGHT_BLOCK = "</body></html>";
+	private static final String CONTENT_HTML =
+			"<div class=\"dictionaryBlock\">" +
+					"<div class=\"searchedWord\">%s</div>" +
+					"<div class=\"dictionaryContent\">%s</div>" +
+					"<div class=\"dictionaryName\">%s</div>" +
+					"</div>";
 
-	public ResultTextMaker(final AssetManager assetManager) {
-		this.assetManager = assetManager;
-		initLefltBlock();
+	private static final String CONTENT_WELCOME_HTML =
+			"<div class=\"welcomeBlock\">" +
+					"%s" +
+					"</div>";
+
+	private static final StringBuilder CONTENT_MAKER = new StringBuilder();
+
+	private ResultTextMaker() {}
+
+	public static void appendContent(final String searchedWord, final String content, final String dictionaryName) {
+		CONTENT_MAKER.append(String.format(CONTENT_HTML, searchedWord, content, dictionaryName));
 	}
 
-	private void initLefltBlock() {
-		try {
-			LEFT_BLOCK.append("<html>");
-			// Append CSS.
-			final String[] cssNames = assetManager.list("css");
-			LEFT_BLOCK.append("<head>");
-			for (final String cssName : cssNames) {
-				LEFT_BLOCK.append("<link href=\"css/" + cssName
-						+ "\" rel=\"stylesheet\" type=\"text/css\" />");
-			}
-			// Append JQuery.
-			final String[] scriptNames = assetManager.list("scripts");
-			for (final String scriptName : scriptNames) {
-				LEFT_BLOCK.append("<script src=\"scripts/" + scriptName
-						+ "\" type=\"text/javascript\"></script>");
-			}
-			LEFT_BLOCK.append("</head><body>");
-		} catch (final IOException e) {
-			throw new ResourceNotFoundException(e);
-		}
+	public static String getResultHTML() {
+		return String.format(RESULT_HTML, CONTENT_MAKER.toString());
 	}
 
-	public void appendContent(final String searchedWord, final String content, final String dictionaryName) {
-		//		final String formattedContent = content.trim().replace("\n", "<br/>")
-		//				.replace("<", "&lt")
-		//				.replace(">", "&gt");
-
-		MIDDLE_BLOCK.append("<div class=\"dictionaryBlock\">"
-				+ "<div class=\"searchedWord\">" + searchedWord + "</div>"
-				+ "<div class=\"dictionaryContent\">" + content
-				+ "</div>" + "<div class=\"dictionaryName\">" + dictionaryName
-				+ "</div></div>");
+	public static String getNoResultHTML( final String searchedWord, final String noResultStr) {
+		final String contentFailureHTML = String.format(CONTENT_FAILURE_HTML, searchedWord, noResultStr);
+		return String.format(RESULT_HTML, contentFailureHTML);
 	}
 
-	public String getResultHTML() {
-		return LEFT_BLOCK.toString() + MIDDLE_BLOCK.toString() + RIGHT_BLOCK;
+	public static String getWelcomeHTML(final String welcomeStr) {
+		final String contentWelcomeHTML = String.format(CONTENT_WELCOME_HTML, welcomeStr);
+		return String.format(RESULT_HTML, contentWelcomeHTML);
 	}
 
-	public String getWelcomeHTML(final String welcomeStr) {
-		return LEFT_BLOCK.toString() + MIDDLE_WELCOME_BLOCK + welcomeStr
-				+ RIGHT_WELCOME_BLOCK;
-	}
-
-	public String getNoDictionaryHTML(final String noDictContent) {
-		return LEFT_BLOCK.toString() + MIDDLE_NO_DICT_BLOCK + noDictContent
-				+ RIGHT_NO_DICT_BLOCK;
-	}
-
-	public void resetMiddleBlock() {
-		MIDDLE_BLOCK.setLength(0);
+	public static void resetMiddleBlock() {
+		CONTENT_MAKER.setLength(0);
 	}
 }

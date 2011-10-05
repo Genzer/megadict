@@ -44,6 +44,6 @@ implements Workable {
 	}
 
 	public interface OnPostExecuteListener<Result> {
-		void onPostExecute(Result result);
+		void onPostExecute(final Result result);
 	}
 }

@@ -1,25 +1,24 @@
 package com.megadict.initializer;
 
-import android.content.Context;
+import com.megadict.business.DictionaryClient;
+
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 
-import com.megadict.bean.BusinessComponent;
-import com.megadict.bean.DictionaryComponent;
+public class SearchButtonInitializer implements Initializer {
 
-public class SearchButtonInitializer extends AbstractInitializer {
-
-	public SearchButtonInitializer(final Context context, final BusinessComponent businessComponent, final DictionaryComponent dictionaryComponent) {
-		super(context, businessComponent, dictionaryComponent);
+	private final DictionaryClient dictionaryClient;
+	public SearchButtonInitializer(final DictionaryClient dictionaryClient) {
+		this.dictionaryClient = dictionaryClient;
 	}
 
 	@Override
 	public void init() {
-		final Button searchButton = dictionaryComponent.getSearchButton();
+		final Button searchButton = dictionaryClient.getSearchButton();
 		final AutoCompleteTextView searchBar =
-				dictionaryComponent.getSearchBar();
+				dictionaryClient.getSearchBar();
 		setOnClickListener(searchButton, searchBar);
 	}
 
@@ -27,8 +26,7 @@ public class SearchButtonInitializer extends AbstractInitializer {
 		searchButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(final View v) {
-				doSearching(searchBar.getText().toString());
-				preventRecommending();
+				dictionaryClient.searchWithUI();
 			}
 		});
 	}

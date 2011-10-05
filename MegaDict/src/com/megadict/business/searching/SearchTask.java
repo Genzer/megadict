@@ -1,12 +1,12 @@
 package com.megadict.business.searching;
 
 import com.megadict.business.AbstractWorkerTask;
-import com.megadict.business.ResultTextFormatter;
 import com.megadict.model.Definition;
 import com.megadict.model.Dictionary;
 
-public class SearchTask extends AbstractWorkerTask<String, Void, Definition> {
+class SearchTask extends AbstractWorkerTask<String, Void, Definition> {
 	private final Dictionary dictionary;
+	private OnCompleteSearchListener onCompleteSearchListener;
 
 	public SearchTask(final Dictionary dictionary) {
 		super();
@@ -19,11 +19,23 @@ public class SearchTask extends AbstractWorkerTask<String, Void, Definition> {
 
 	@Override
 	protected Definition doInBackground(final String... words) {
-		final Definition d = dictionary.lookUp(words[0]);
-		if(!d.exists()) return d;
+		final Definition definition = dictionary.lookUp(words[0]);
+		if(definition.exists() && onCompleteSearchListener != null) {
+			return onCompleteSearchListener.onCompleteSearch(definition);
+		}
+		return definition;
+	}
 
-		// Add colors to content.
-		final String formattedContent = ResultTextFormatter.format(d.getContent());
-		return Definition.makeDefinition(d.getWord(), formattedContent, d.getDictionaryName());
+	/**
+	 * Set onCompleteSearchListener.
+	 * This listener runs on background thread, particularly used for formatting search result.
+	 * @param onCompleteSearchListener
+	 */
+	public void setOnCompleteSearchListener(final OnCompleteSearchListener onCompleteSearchListener) {
+		this.onCompleteSearchListener = onCompleteSearchListener;
+	}
+
+	public interface OnCompleteSearchListener {
+		Definition onCompleteSearch(Definition definition);
 	}
 }

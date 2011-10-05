@@ -4,29 +4,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.DialogInterface.OnMultiChoiceClickListener;
 
 import com.megadict.R;
-import com.megadict.bean.BusinessComponent;
-import com.megadict.bean.DictionaryComponent;
-import com.megadict.initializer.AbstractInitializer;
 import com.megadict.utility.Utility;
 
-public class HistoryDisplayer extends AbstractInitializer {
+public class HistoryDisplayer {
+	private final DictionaryClient dictionaryClient;
+
 	// Composition variables.
-	public HistoryDisplayer(final Context context, final BusinessComponent businessComponent, final DictionaryComponent dictionaryComponent) {
-		super(context, businessComponent, dictionaryComponent);
+	public HistoryDisplayer(final DictionaryClient dictionaryClient) {
+		this.dictionaryClient = dictionaryClient;
 	}
 
 	public void showHistoryDialog(final List<String> list) {
 		if(list.isEmpty()) {
-			Utility.messageBox(context, R.string.emptyHistory);
+			Utility.messageBox(dictionaryClient.getContext(), R.string.emptyHistory);
 			return;
 		}
-		new AlertDialog.Builder(context).
+		new AlertDialog.Builder(dictionaryClient.getContext()).
 		setTitle(R.string.historyDialogTitle).setIcon(R.drawable.crystal_history).
 		setPositiveButton(R.string.deleteEllipsis, new OnClickListener() {
 			@Override
@@ -36,7 +34,7 @@ public class HistoryDisplayer extends AbstractInitializer {
 		}).setNeutralButton(R.string.clear, new OnClickListener() {
 			@Override
 			public void onClick(final DialogInterface dialog, final int which) {
-				businessComponent.getSearcher().clearHistory();
+				dictionaryClient.clearHistory();
 			}
 		}).setNegativeButton(R.string.close, new OnClickListener() {
 			@Override
@@ -46,10 +44,7 @@ public class HistoryDisplayer extends AbstractInitializer {
 		}).setItems(list.toArray(new String[list.size()]), new OnClickListener() {
 			@Override
 			public void onClick(final DialogInterface dialog, final int which) {
-				final String chosenWord = list.get(which);
-				dictionaryComponent.getSearchBar().setText(chosenWord);
-				preventRecommending();
-				doSearching(chosenWord);
+				dictionaryClient.searchWithUI(list.get(which));
 			}
 		}).create().show();
 	}
@@ -57,10 +52,10 @@ public class HistoryDisplayer extends AbstractInitializer {
 	private void showDeleteDialog(final List<String> list) {
 		final List<String> removedItems = new ArrayList<String>();
 
-		new AlertDialog.Builder(context).setTitle(R.string.historyDialogTitle).setIcon(R.drawable.crystal_history).setPositiveButton(R.string.ok, new OnClickListener() {
+		new AlertDialog.Builder(dictionaryClient.getContext()).setTitle(R.string.historyDialogTitle).setIcon(R.drawable.crystal_history).setPositiveButton(R.string.ok, new OnClickListener() {
 			@Override
 			public void onClick(final DialogInterface dialog, final int which) {
-				businessComponent.getSearcher().removeWordFromHistory(removedItems);
+				dictionaryClient.removeWordFromHistory(removedItems);
 			}
 		}).setNegativeButton(R.string.cancel, new OnClickListener() {
 			@Override
@@ -81,7 +76,4 @@ public class HistoryDisplayer extends AbstractInitializer {
 			}
 		}).create().show();
 	}
-
-	@Override
-	public void init() { /* Empty for no reason, ok? */ }
 }

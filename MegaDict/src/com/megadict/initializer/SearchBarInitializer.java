@@ -1,6 +1,5 @@
 package com.megadict.initializer;
 
-import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -12,21 +11,21 @@ import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
-import com.megadict.bean.BusinessComponent;
-import com.megadict.bean.DictionaryComponent;
+import com.megadict.business.DictionaryClient;
 import com.megadict.utility.Utility;
 
-public class SearchBarInitializer extends AbstractInitializer {
+public class SearchBarInitializer implements Initializer {
+	private final DictionaryClient dictionaryClient;
 
-	public SearchBarInitializer(final Context context, final BusinessComponent businessComponent, final DictionaryComponent dictionaryComponent) {
-		super(context, businessComponent, dictionaryComponent);
+	public SearchBarInitializer(final DictionaryClient dictionaryClient) {
+		this.dictionaryClient = dictionaryClient;
 	}
 
 	@Override
 	public void init() {
 		// Prepare components.
 		final AutoCompleteTextView searchBar =
-				dictionaryComponent.getSearchBar();
+				dictionaryClient.getSearchBar();
 		searchBar.setThreshold(1);
 
 		// Set listeners.
@@ -35,7 +34,7 @@ public class SearchBarInitializer extends AbstractInitializer {
 		setOnItemClickListener(searchBar);
 
 		// Disable soft keyboard.
-		Utility.disableSoftKeyboard(context, searchBar);
+		Utility.disableSoftKeyboard(dictionaryClient.getContext(), searchBar);
 	}
 
 	private void addTextChangedListener(final AutoCompleteTextView searchBar) {
@@ -46,8 +45,7 @@ public class SearchBarInitializer extends AbstractInitializer {
 			}
 
 			private void textChanged(final CharSequence s) {
-				setChanged();
-				notifyObservers(s.toString());
+				dictionaryClient.recommend();
 			}
 		});
 	}
@@ -56,8 +54,7 @@ public class SearchBarInitializer extends AbstractInitializer {
 		searchBar.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
-				preventRecommending();
-				doSearching(searchBar.getText().toString());
+				dictionaryClient.search();
 			}
 		});
 	}
@@ -71,8 +68,7 @@ public class SearchBarInitializer extends AbstractInitializer {
 						|| actionId == EditorInfo.IME_ACTION_NEXT
 						|| (event != null
 						&& event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
-					preventRecommending();
-					doSearching(searchBar.getText().toString());
+					dictionaryClient.search();
 					return true;
 				}
 				return false;

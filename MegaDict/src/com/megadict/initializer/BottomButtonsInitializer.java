@@ -5,25 +5,24 @@ import java.util.List;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
 import com.megadict.R;
-import com.megadict.bean.BusinessComponent;
-import com.megadict.bean.DictionaryComponent;
+import com.megadict.business.DictionaryClient;
 import com.megadict.business.HistoryDisplayer;
 import com.megadict.utility.ActivityHelper;
 import com.megadict.utility.Utility;
 
-public class BottomButtonsInitializer extends AbstractInitializer {
+public class BottomButtonsInitializer implements Initializer {
 	private final HistoryDisplayer historyDisplayer;
 	private final List<ButtonExecutor> executors = new ArrayList<BottomButtonsInitializer.ButtonExecutor>();
+	private final DictionaryClient dictionaryClient;
 
-	public BottomButtonsInitializer(final Context context, final HistoryDisplayer historyDisplayer, final BusinessComponent businessComponent, final DictionaryComponent dictionaryComponent) {
-		super(context, businessComponent, dictionaryComponent);
+	public BottomButtonsInitializer(final HistoryDisplayer historyDisplayer, final DictionaryClient dictionaryClient) {
+		this.dictionaryClient = dictionaryClient;
 		this.historyDisplayer = historyDisplayer;
 		// Init executors to execute items in AlertDialog.
 		initExecutors();
@@ -33,19 +32,19 @@ public class BottomButtonsInitializer extends AbstractInitializer {
 		executors.add(new ButtonExecutor() {
 			@Override
 			public void execute() {
-				Utility.startActivityForResult((Activity)context, ActivityHelper.MANAGE_ACTIVITY, ActivityHelper.MANAGE_REQUEST);
+				Utility.startActivityForResult((Activity)dictionaryClient.getContext(), ActivityHelper.MANAGE_ACTIVITY, ActivityHelper.MANAGE_REQUEST);
 			}
 		});
 		executors.add(new ButtonExecutor() {
 			@Override
 			public void execute() {
-				historyDisplayer.showHistoryDialog(businessComponent.getSearcher().getHistoryList());
+				historyDisplayer.showHistoryDialog(dictionaryClient.getHistoryList());
 			}
 		});
 		executors.add(new ButtonExecutor() {
 			@Override
 			public void execute() {
-				Utility.selectText(context, dictionaryComponent.getResultView());
+				Utility.selectText(dictionaryClient.getContext(), dictionaryClient.getResultView());
 			}
 		});
 		executors.add(new ButtonExecutor() {
@@ -53,20 +52,20 @@ public class BottomButtonsInitializer extends AbstractInitializer {
 			public void execute() {
 				// Downcasting Context to Activity because I ensure this context is an activity,
 				/// but this seems to be a bad practice AFAIK.
-				Utility.startActivityForResult((Activity)context, ActivityHelper.SETTING_ACTIVITY, ActivityHelper.SETTING_REQUEST);
+				Utility.startActivityForResult((Activity)dictionaryClient.getContext(), ActivityHelper.SETTING_ACTIVITY, ActivityHelper.SETTING_REQUEST);
 			}
 		});
 		executors.add(new ButtonExecutor() {
 			@Override
 			public void execute() {
-				Utility.startActivity(context, ActivityHelper.ABOUT_ACTIVITY);
+				Utility.startActivity(dictionaryClient.getContext(), ActivityHelper.ABOUT_ACTIVITY);
 			}
 		});
 	}
 
 	@Override
 	public void init() {
-		final List<Button> bottomButtons = dictionaryComponent.getBottomButtons();
+		final List<Button> bottomButtons = dictionaryClient.getBottomButtons();
 		for(final Button button : bottomButtons) {
 			switch (button.getId()) {
 			case R.id.manageButton:
@@ -89,9 +88,9 @@ public class BottomButtonsInitializer extends AbstractInitializer {
 
 	private void showMoreList() {
 		// Init label array to set items for AlertDialog
-		final String []mainButtonLabels = context.getResources().getStringArray(R.array.mainButtons);
+		final String []mainButtonLabels = dictionaryClient.getContext().getResources().getStringArray(R.array.mainButtons);
 
-		new AlertDialog.Builder(context).
+		new AlertDialog.Builder(dictionaryClient.getContext()).
 		setTitle(R.string.operationDialogTitle).
 		setIcon(R.drawable.crystal_keyboard).
 		setNegativeButton(R.string.close, new DialogInterface.OnClickListener() {
@@ -111,7 +110,7 @@ public class BottomButtonsInitializer extends AbstractInitializer {
 		button.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(final View v) {
-				Utility.startActivityForResult((Activity)context, ActivityHelper.MANAGE_ACTIVITY, ActivityHelper.MANAGE_REQUEST);
+				Utility.startActivityForResult((Activity)dictionaryClient.getContext(), ActivityHelper.MANAGE_ACTIVITY, ActivityHelper.MANAGE_REQUEST);
 			}
 		});
 	}
@@ -120,7 +119,7 @@ public class BottomButtonsInitializer extends AbstractInitializer {
 		button.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(final View v) {
-				historyDisplayer.showHistoryDialog(businessComponent.getSearcher().getHistoryList());
+				historyDisplayer.showHistoryDialog(dictionaryClient.getHistoryList());
 			}
 		});
 	}
@@ -138,7 +137,7 @@ public class BottomButtonsInitializer extends AbstractInitializer {
 		button.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(final View v) {
-				Utility.selectText(context, dictionaryComponent.getResultView());
+				Utility.selectText(dictionaryClient.getContext(), dictionaryClient.getResultView());
 			}
 		});
 	}
