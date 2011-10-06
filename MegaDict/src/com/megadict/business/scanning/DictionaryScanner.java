@@ -187,6 +187,10 @@ public final class DictionaryScanner {
 		return true;
 	}
 
+	public List<Dictionary> getDictionaryModels() {
+		return Collections.unmodifiableList(new ArrayList<Dictionary>(models.values()));
+	}
+
 	public int getDictionaryModelCount() {
 		return models.size();
 	}
@@ -335,8 +339,6 @@ public final class DictionaryScanner {
 
 	// ========================== Protected functions ============================ //
 	private void completeScan() {
-		//		setChanged();
-		//		notifyObservers(Collections.unmodifiableList(new ArrayList<Dictionary>(models.values())));
 		if(onCompleteScanListener != null) {
 			onCompleteScanListener.onCompleteScan(Collections.unmodifiableList(new ArrayList<Dictionary>(models.values())));
 		}

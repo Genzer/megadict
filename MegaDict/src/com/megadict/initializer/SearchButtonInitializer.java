@@ -1,11 +1,11 @@
 package com.megadict.initializer;
 
-import com.megadict.business.DictionaryClient;
-
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+
+import com.megadict.business.DictionaryClient;
 
 public class SearchButtonInitializer implements Initializer {
 
@@ -26,7 +26,7 @@ public class SearchButtonInitializer implements Initializer {
 		searchButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(final View v) {
-				dictionaryClient.searchWithUI();
+				dictionaryClient.search();
 			}
 		});
 	}

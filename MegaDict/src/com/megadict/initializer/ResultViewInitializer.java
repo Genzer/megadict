@@ -57,7 +57,7 @@ public final class ResultViewInitializer implements Initializer {
 				if(text.contains(" ")) {
 					showQuestionDialog(text);
 				} else {
-					dictionaryClient.searchWithUI();
+					dictionaryClient.searchWithUI(text);
 				}
 			} // End onSelectText().
 		});
@@ -75,13 +75,12 @@ public final class ResultViewInitializer implements Initializer {
 		setPositiveButton(R.string.search, new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(final DialogInterface dialog, final int which) {
-				dictionaryClient.searchWithUI();
+				dictionaryClient.searchWithUI(text);
 			}
 		}).
 		setNeutralButton(R.string.split, new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(final DialogInterface dialog, final int which) {
-				//Utility.messageBox(context, "Something");
 				final WordListTask task = new WordListTask();
 				task.setOnPostExecuteListener(new OnPostExecuteListener<List<String>>() {
 					@Override
@@ -159,7 +158,7 @@ public final class ResultViewInitializer implements Initializer {
 
 		@Override
 		protected List<String> doInBackground(final String... params) {
-			final String []items = params[0].split(SPLIT_REGEX);
+			final String []items = params[0].trim().split(SPLIT_REGEX);
 			final Set<String> words = new HashSet<String>(Arrays.asList(items));
 			return new ArrayList<String>(words);
 		}

@@ -26,7 +26,6 @@ public class SearchBarInitializer implements Initializer {
 		// Prepare components.
 		final AutoCompleteTextView searchBar =
 				dictionaryClient.getSearchBar();
-		searchBar.setThreshold(1);
 
 		// Set listeners.
 		setOnEditorActionListener(searchBar);
@@ -41,10 +40,6 @@ public class SearchBarInitializer implements Initializer {
 		searchBar.addTextChangedListener(new SearchBarTextWatcher() {
 			@Override
 			public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
-				textChanged(s);
-			}
-
-			private void textChanged(final CharSequence s) {
 				dictionaryClient.recommend();
 			}
 		});

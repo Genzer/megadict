@@ -170,8 +170,9 @@ public final class WordSearcher {
 										ResultTextMaker.getResultHTML(),
 										"text/html", "utf-8", null);
 
-					// Save word to history regardless of if it is found or not.
-					saveWordToHistory(definition.getWord());
+					// Save the searched word to history only if it is found.
+					if(searchResult == DEFINITION_FOUND)
+						saveWordToHistory(definition.getWord());
 				}
 			}
 		});

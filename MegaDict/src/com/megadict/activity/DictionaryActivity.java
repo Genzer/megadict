@@ -193,19 +193,19 @@ public final class DictionaryActivity extends AbstractActivity {
 		// Must init UI first!
 		initDictionaryComponent();
 
+		// Get application variables.
+		scanner = ((MegaDictApp) getApplication()).scanner;
+
 		// Init searcher and recommender.
 		initBusinessComponent();
 
-		// The application-scoped because scanner must set DictionaryComponent.
+		// Init scanner.
 		initScanner();
 
 		initInitializers();
 	}
 
 	private void initScanner() {
-		// Get application variables.
-		scanner = ((MegaDictApp) getApplication()).scanner;
-		// Set dictionary component for global scanner.
 		scanner.setDictionaryComponent(dictionaryComponent);
 		// Set listeners.
 		scanner.setOnCompleteScanListener(new OnCompleteScanListener() {
@@ -267,7 +267,10 @@ public final class DictionaryActivity extends AbstractActivity {
 		if(bc == null) {
 			// Init searcher and recommender.
 			recommender = new WordRecommender(this, dictionaryComponent);
+			recommender.updateDictionaryModels(scanner.getDictionaryModels());
 			searcher = new WordSearcher(dictionaryComponent);
+			searcher.updateDictionaryModels(scanner.getDictionaryModels());
+
 			// Init business component.
 			businessComponent =	new BusinessComponent(searcher, recommender);
 		} else {

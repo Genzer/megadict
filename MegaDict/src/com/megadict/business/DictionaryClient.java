@@ -6,7 +6,6 @@ import java.util.List;
 import android.content.Context;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
 
 import com.megadict.R;
 import com.megadict.bean.BusinessComponent;
@@ -73,7 +72,7 @@ public class DictionaryClient {
 	}
 
 	/**
-	 * This function does two jobs: Prevent recommending and search.
+	 * This function does two jobs: Prevent recommending and search the word on search bar.
 	 * @param word
 	 */
 	public void search() {
@@ -85,20 +84,9 @@ public class DictionaryClient {
 	 * This function does three jobs: Insert word to search bar, prevent recommending and search.
 	 * @param word
 	 */
-	public void searchWithUI() {
-		final EditText searchBar = dictionaryComponent.getSearchBar();
-		searchBar.setText(getWordOnSearchBar());
-		preventRecommending();
-		searchHelper(getWordOnSearchBar());
-	}
-
-	/**
-	 * This function does three jobs: Insert word to search bar, prevent recommending and search.
-	 * @param word
-	 */
 	public void searchWithUI(final String word) {
-		final EditText searchBar = dictionaryComponent.getSearchBar();
-		searchBar.setText(word);
+		dictionaryComponent.getSearchBar().setText("");
+		dictionaryComponent.getSearchBar().append(word);
 		preventRecommending();
 		searchHelper(word);
 	}
@@ -118,11 +106,11 @@ public class DictionaryClient {
 		}
 	}
 
-	private void preventRecommending() {
-		businessComponent.getRecommender().preventRecommending();
-	}
-
 	private String getWordOnSearchBar() {
 		return dictionaryComponent.getSearchBar().getText().toString();
+	}
+
+	private void preventRecommending() {
+		businessComponent.getRecommender().preventRecommending();
 	}
 }
