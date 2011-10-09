@@ -13,20 +13,20 @@ import android.util.Log;
 import com.megadict.model.Definition;
 import com.megadict.model.Dictionary;
 
-public class WikiMobileDictionary implements Dictionary {
+public class WikiDictionary implements Dictionary {
 	private static final String TAG = "WikiMobileDictionary";
 	private static final String NO_DEFINITION = "No definition";
 	private static final String TIME_OUT = "Timeout";
 	private static final int ALLOWED_WORD_COUNT = 1000;
 	private static final int TIMEOUT_MILLISECONDS = 3000;
 	private static final String PREFIX = "Wikipedia ";
-	private static final String URL_PATTERN = "http://%s.m.wikipedia.org/wiki/%s";
+	private static final String URL_PATTERN = "http://%s.wikipedia.org/w/index.php?title=%s&action=render";
 	private static final String FULL_ARTICLE_PATTERN =
 			"<div style=\"text-align: right\"><a href=\"http://%s.wikipedia.org/wiki/%s\">Full article...</a></div>";
 	private String dictionaryName;
 	private final String countryCode;
 
-	public WikiMobileDictionary(final String countryCode) {
+	public WikiDictionary(final String countryCode) {
 		this.countryCode = countryCode;
 		initDictionaryName();
 	}
@@ -53,6 +53,7 @@ public class WikiMobileDictionary implements Dictionary {
 				final StringBuilder paragraphs = new StringBuilder();
 				for (int i = 0; i < selectedTags.size(); ++i) {
 					if (paragraphs.length() > ALLOWED_WORD_COUNT) break;
+					paragraphs.append(selectedTags.get(i).toString());
 				}
 
 				// If paragraphs still empty, append first p tag to it.

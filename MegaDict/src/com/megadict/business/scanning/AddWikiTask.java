@@ -6,7 +6,7 @@ import android.util.Pair;
 import com.megadict.business.AbstractWorkerTask;
 import com.megadict.model.ChosenModel;
 import com.megadict.model.Dictionary;
-import com.megadict.wiki.WikiMobileDictionary;
+import com.megadict.wiki.WikiDictionary;
 
 class AddWikiTask extends AbstractWorkerTask<String, Void, Pair<Integer, Dictionary>> {
 	private final SQLiteDatabase database;
@@ -21,7 +21,7 @@ class AddWikiTask extends AbstractWorkerTask<String, Void, Pair<Integer, Diction
 		// Get country code
 		final String countryCode = params[0];
 		// Create model.
-		final Dictionary model = new WikiMobileDictionary(countryCode);
+		final Dictionary model = new WikiDictionary(countryCode);
 
 		// Insert dictionary to database.
 		final int dictID = ChosenModel.insertDictionary(database, model.getName(), countryCode, ChosenModel.WIKI_DICTIONARY, 0);

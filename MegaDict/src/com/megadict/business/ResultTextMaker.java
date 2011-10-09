@@ -53,7 +53,7 @@ public final class ResultTextMaker {
 		return String.format(RESULT_HTML, contentWelcomeHTML);
 	}
 
-	public static void resetMiddleBlock() {
+	public static void resetContentMaker() {
 		CONTENT_MAKER.setLength(0);
 	}
 }

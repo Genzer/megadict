@@ -4,12 +4,13 @@ import java.util.Collection;
 import java.util.List;
 
 import android.content.Context;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 
 import com.megadict.R;
 import com.megadict.bean.BusinessComponent;
-import com.megadict.bean.DictionaryComponent;
+import com.megadict.bean.UIComponent;
 import com.megadict.business.recommending.WordRecommender;
 import com.megadict.business.searching.WordSearcher;
 import com.megadict.utility.Utility;
@@ -18,27 +19,37 @@ import com.megadict.widget.ResultView;
 public class DictionaryClient {
 	// Aggregation variables.
 	private final BusinessComponent businessComponent;
-	private final DictionaryComponent dictionaryComponent;
+	private final UIComponent uiComponent;
 	private final Context context;
+
+	// Member variables.
+	private ArrayAdapter<String> adapter;
+
+	public DictionaryClient(final Context context, final BusinessComponent businessComponent, final UIComponent uiComponent) {
+		super();
+		this.context = context;
+		this.businessComponent = businessComponent;
+		this.uiComponent = uiComponent;
+	}
 
 	public Context getContext() {
 		return context;
 	}
 
 	public ResultView getResultView() {
-		return dictionaryComponent.getResultView();
+		return uiComponent.getResultView();
 	}
 
 	public AutoCompleteTextView getSearchBar() {
-		return dictionaryComponent.getSearchBar();
+		return uiComponent.getSearchBar();
 	}
 
 	public Button getSearchButton() {
-		return dictionaryComponent.getSearchButton();
+		return uiComponent.getSearchButton();
 	}
 
 	public List<Button> getBottomButtons() {
-		return dictionaryComponent.getBottomButtons();
+		return uiComponent.getBottomButtons();
 	}
 
 	public void removeWordFromHistory(final String word) {
@@ -57,13 +68,6 @@ public class DictionaryClient {
 		return businessComponent.getSearcher().getHistoryList();
 	}
 
-	public DictionaryClient(final Context context, final BusinessComponent businessComponent, final DictionaryComponent dictionaryComponent) {
-		super();
-		this.context = context;
-		this.businessComponent = businessComponent;
-		this.dictionaryComponent = dictionaryComponent;
-	}
-
 	/**
 	 * Recommend a word.
 	 */
@@ -76,6 +80,7 @@ public class DictionaryClient {
 	 * @param word
 	 */
 	public void search() {
+		uiComponent.getSearchBar().dismissDropDown();
 		preventRecommending();
 		searchHelper(getWordOnSearchBar());
 	}
@@ -85,8 +90,14 @@ public class DictionaryClient {
 	 * @param word
 	 */
 	public void searchWithUI(final String word) {
-		dictionaryComponent.getSearchBar().setText("");
-		dictionaryComponent.getSearchBar().append(word);
+		turnOffSuggestion();
+
+		// Clear text then append to move the caret to the the end.
+		uiComponent.getSearchBar().setText("");
+		uiComponent.getSearchBar().append(word);
+
+		turnOnSuggestion();
+
 		preventRecommending();
 		searchHelper(word);
 	}
@@ -106,8 +117,19 @@ public class DictionaryClient {
 		}
 	}
 
+	private void turnOnSuggestion() {
+		uiComponent.getSearchBar().setAdapter(adapter);
+	}
+
+	@SuppressWarnings("unchecked")
+	private void turnOffSuggestion() {
+		uiComponent.getSearchBar().dismissDropDown();
+		adapter = (ArrayAdapter<String>)uiComponent.getSearchBar().getAdapter();
+		uiComponent.getSearchBar().setAdapter((ArrayAdapter<String>)null);
+	}
+
 	private String getWordOnSearchBar() {
-		return dictionaryComponent.getSearchBar().getText().toString();
+		return uiComponent.getSearchBar().getText().toString();
 	}
 
 	private void preventRecommending() {

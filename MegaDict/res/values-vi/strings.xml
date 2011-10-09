@@ -27,7 +27,8 @@
      <b>/sdcard/Download/megadict và Rescan</b>.</string>    
     <string name="searching">Đang tìm... Làm ơn chờ.</string>
     <string name="recommending">Đang tìm từ gần đúng... Làm ơn chờ.</string>
-    <string name="scanning">Đang tìm từ điển... Làm ơn chờ.</string>
+    <string name="scanning">Đang tìm từ điển... Làm ơn chờ.</string>    
+    <string name="adding">Đang thêm từ điển... Làm ơn chờ.</string>
     <string name="usingDictionary">Bạn đang dùng %1$d từ điển.</string>
     <string name="usingDictionaryPlural">Bạn đang dùng %1$d từ điển.</string>
     <string name="selectText">Có thể chọn từ được rồi.</string>
@@ -35,13 +36,14 @@
     <string name="emptyHistory">Không có từ nào</string>
     <string name="ok">Đồng ý</string>
     <string name="cancel">Thoát</string>
+    <string name="yes">Có</string>
+    <string name="no">Không</string>
     <string name="deleteEllipsis">Xóa...</string>
     <string name="clear">Xóa hết</string>
     <string name="close">Đóng</string>
     <string name="search">Tra từ</string>
     <string name="split">Tách từ</string>
     <string name="searchBarHint">Nhập từ cần tra</string>
-    <string name="adding">Đang thêm từ điển... Làm ơn chờ.</string>
     <string name="chooseAnItem">Chọn một từ</string>
     <string name="couldNotSpeakGoogle">Không thể phát âm. Làm ơn kiểm tra kết nối Internet</string>
     <string name="couldNotSpeakTTS">Không thể phát âm. Có cái gì đó không đúng.</string>

@@ -14,18 +14,18 @@ import com.megadict.R;
 import com.megadict.activity.base.AbstractListActivity;
 import com.megadict.adapter.DictionaryAdapter;
 import com.megadict.application.MegaDictApp;
-import com.megadict.bean.ManageComponent;
 import com.megadict.business.WikiAdder;
 import com.megadict.business.scanning.DictionaryScanner;
+import com.megadict.business.scanning.DictionaryScanner.OnCompleteRescanListener;
 import com.megadict.model.ChosenModel;
 import com.megadict.utility.DatabaseHelper;
 import com.megadict.utility.Utility;
 
 public class ManageActivity extends AbstractListActivity {
 	private DictionaryScanner scanner;
-	private ManageComponent manageComponent;
 	private WikiAdder wikiAdder;
 	private Cursor listViewCursor;
+	private ProgressDialog progressDialog;
 
 	public ManageActivity() {
 		super(R.layout.manage);
@@ -46,14 +46,22 @@ public class ManageActivity extends AbstractListActivity {
 				new DictionaryAdapter(this, listViewCursor);
 		setListAdapter(adapter);
 
-		final ProgressDialog progressDialog = new ProgressDialog(this);
-		progressDialog.setMessage("Scanning storage... ");
+		// Set onCompleteRescanListener for scanner.
+		scanner.setOnCompleteRescanListener(new OnCompleteRescanListener() {
+			@Override
+			public void onCompleteRescan() {
+				// Update ListView when complete rescanning.
+				listViewCursor.requery();
+			}
+		});
 
-		manageComponent =
-				new ManageComponent(progressDialog, listViewCursor);
-		wikiAdder = new WikiAdder(this, manageComponent, scanner);
+		// Create progressDialog.
+		progressDialog = new ProgressDialog(this);
 
-		// Ask for updating models regardless of whether the models change.
+		// Create wikiAdder to add Wiki dictionary.
+		wikiAdder = new WikiAdder(this, progressDialog, scanner);
+
+		// Ask for updating models no matter whether the models change.
 		final Intent returnedIntent = new Intent();
 		returnedIntent.putExtra(DictionaryScanner.MODEL_CHANGED, true);
 		setResult(Activity.RESULT_OK, returnedIntent);
@@ -91,7 +99,7 @@ public class ManageActivity extends AbstractListActivity {
 	// ======================= Private functions =================== //
 	private void doRescanning() {
 		if(scanner.didAllRescanTasksFinish()) {
-			scanner.rescan(manageComponent);
+			scanner.rescan(progressDialog);
 		} else {
 			Utility.messageBox(this, R.string.scanning);
 		}

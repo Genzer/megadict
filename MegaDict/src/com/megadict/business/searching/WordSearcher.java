@@ -6,9 +6,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
+import android.webkit.WebView;
 import android.widget.ProgressBar;
 
-import com.megadict.bean.DictionaryComponent;
 import com.megadict.business.AbstractWorkerTask.OnPostExecuteListener;
 import com.megadict.business.AbstractWorkerTask.OnPreExecuteListener;
 import com.megadict.business.HistoryManager;
@@ -25,7 +25,8 @@ public final class WordSearcher {
 
 	// Aggregation variables.
 	private final List<Dictionary> dictionaryModels = new ArrayList<Dictionary>();
-	private DictionaryComponent dictionaryComponent;
+	private WebView resultView;
+	private final ProgressBar progressBar;
 
 	// Flag variables.
 	private int searchResult = DEFINITION_NOT_FOUND;
@@ -37,8 +38,9 @@ public final class WordSearcher {
 			new ArrayList<SearchTask>();
 	private final HistoryManager historyManager = new HistoryManager();
 
-	public WordSearcher(final DictionaryComponent dictionaryComponent) {
-		this.dictionaryComponent = dictionaryComponent;
+	public WordSearcher(final WebView resultView, final ProgressBar progressBar) {
+		this.resultView = resultView;
+		this.progressBar = progressBar;
 	}
 
 	public boolean didAllSearchTasksFinish() {
@@ -58,10 +60,10 @@ public final class WordSearcher {
 		searchTasks.clear();
 
 		// Reset resultTextMaker to make a new search.
-		ResultTextMaker.resetMiddleBlock();
+		ResultTextMaker.resetContentMaker();
 
 		if (dictionaryModels.isEmpty()) {
-			dictionaryComponent.getResultView().loadDataWithBaseURL(
+			resultView.loadDataWithBaseURL(
 					ResultTextMaker.ASSET_URL,
 					ResultTextMaker.getNoResultHTML(word, noDictionaryStr),
 					"text/html", "utf-8", null);
@@ -75,6 +77,7 @@ public final class WordSearcher {
 				executeSearchTasks(searchedWord);
 			}
 		} // End if.
+
 	}
 
 	public void setNoDictionaryStr(final String noDictionaryStr) {
@@ -85,8 +88,8 @@ public final class WordSearcher {
 		this.noDefinitionStr = noDefinitionStr;
 	}
 
-	public void setDictionaryComponent(final DictionaryComponent dictionaryComponent) {
-		this.dictionaryComponent = dictionaryComponent;
+	public void setResultView(final WebView resultView) {
+		this.resultView = resultView;
 	}
 
 	public void updateDictionaryModels(final List<Dictionary> models) {
@@ -150,7 +153,7 @@ public final class WordSearcher {
 		task.setOnPostExecuteListener(new OnPostExecuteListener<Definition>() {
 			@Override
 			public void onPostExecute(final Definition definition) {
-				if(dictionaryComponent == null) return;
+				if(resultView == null) return;
 
 				if(definition.exists()) {
 					searchResult = DEFINITION_FOUND;
@@ -160,10 +163,8 @@ public final class WordSearcher {
 
 				// Hide progress bar if all tasks finished.
 				if (didAllSearchTasksFinish()) {
-					dictionaryComponent.getProgressBar().setVisibility(ProgressBar.INVISIBLE);
-
 					// If not found, report it out.
-					dictionaryComponent.getResultView().loadDataWithBaseURL(
+					resultView.loadDataWithBaseURL(
 							ResultTextMaker.ASSET_URL,
 							searchResult == DEFINITION_NOT_FOUND ?
 									ResultTextMaker.getNoResultHTML(definition.getWord(), noDefinitionStr) :
@@ -173,6 +174,8 @@ public final class WordSearcher {
 					// Save the searched word to history only if it is found.
 					if(searchResult == DEFINITION_FOUND)
 						saveWordToHistory(definition.getWord());
+
+					progressBar.setVisibility(ProgressBar.INVISIBLE);
 				}
 			}
 		});
@@ -183,7 +186,7 @@ public final class WordSearcher {
 			@Override
 			public void onPreExecute() {
 				if (didAllSearchTasksFinish()) {
-					dictionaryComponent.getProgressBar().setVisibility(ProgressBar.VISIBLE);
+					progressBar.setVisibility(ProgressBar.VISIBLE);
 				}
 			}
 		});

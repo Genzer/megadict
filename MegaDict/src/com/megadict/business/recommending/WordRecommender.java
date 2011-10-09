@@ -11,26 +11,24 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ProgressBar;
 
 import com.megadict.R;
-import com.megadict.bean.DictionaryComponent;
 import com.megadict.business.AbstractWorkerTask.OnPostExecuteListener;
 import com.megadict.business.AbstractWorkerTask.OnPreExecuteListener;
 import com.megadict.format.dict.DICTDictionary;
 import com.megadict.model.Dictionary;
 
 public final class WordRecommender {
-	private static final String TAG = "WordRecommender";
-	private static final int DELAY_TIME = 1000;
+	private static final int DELAY_TIME = 1500;
 	private static final int MAX_RECOMMENDED_WORD_COUNT = 300;
 
 	// Aggregation variables.
 	private final List<Dictionary> dictionaryModels = new ArrayList<Dictionary>();
-	private DictionaryComponent dictionaryComponent;
+	private AutoCompleteTextView searchBar;
+	private final ProgressBar progressBar;
 	private final Context context;
 
 	// Composition variables.
@@ -40,9 +38,10 @@ public final class WordRecommender {
 	private Runnable recommendRunnable;
 	private final SortedSet<String> recommendWords = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
 
-	public WordRecommender(final Context context, final DictionaryComponent dictionaryComponent) {
+	public WordRecommender(final Context context, final AutoCompleteTextView searchBar, final ProgressBar progressBar) {
 		this.context = context;
-		this.dictionaryComponent = dictionaryComponent;
+		this.searchBar = searchBar;
+		this.progressBar = progressBar;
 	}
 
 	public boolean didAllRecommendTasksFinish() {
@@ -62,8 +61,8 @@ public final class WordRecommender {
 		recommendTasks.clear();
 	}
 
-	public void setDictionaryComponent(final DictionaryComponent dictionaryComponent) {
-		this.dictionaryComponent = dictionaryComponent;
+	public void setSearchBar(final AutoCompleteTextView searchBar) {
+		this.searchBar = searchBar;
 	}
 
 	public void updateDictionaryModels(final List<Dictionary> models) {
@@ -84,8 +83,6 @@ public final class WordRecommender {
 	public void preventRecommending() {
 		// Remove old runnable in handler.
 		recommendHandler.removeCallbacks(recommendRunnable);
-		// Dismiss if drop down list presented.
-		dictionaryComponent.getSearchBar().dismissDropDown();
 	}
 
 	private void setOnPreExecuteListener(final RecommendTask task) {
@@ -94,7 +91,7 @@ public final class WordRecommender {
 			public void onPreExecute() {
 				if (didAllRecommendTasksFinish()) {
 					recommendWords.clear();
-					dictionaryComponent.getProgressBar().setVisibility(ProgressBar.VISIBLE);
+					progressBar.setVisibility(ProgressBar.VISIBLE);
 				}
 			}
 		});
@@ -104,26 +101,20 @@ public final class WordRecommender {
 		task.setOnPostExecuteListener(new OnPostExecuteListener<List<String>>() {
 			@Override
 			public void onPostExecute(final List<String> list) {
-				if(dictionaryComponent == null) return;
+				if(searchBar == null) return;
 
 				recommendWords.addAll(list);
 				if (didAllRecommendTasksFinish()) {
 					final List<String> tempList = Arrays.asList(recommendWords.toArray(new String[recommendWords.size()]));
 					final List<String> adaptedList = tempList.subList(0, Math.min(MAX_RECOMMENDED_WORD_COUNT, tempList.size()));
 					final ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, R.layout.dropdown_item, adaptedList);
-
-					final AutoCompleteTextView searchBar = dictionaryComponent.getSearchBar();
 					searchBar.setAdapter(adapter);
-					// This try-catch prevent unexpected errors when orientation changes.
-					try {
-						// Show dropdown list.
-						searchBar.showDropDown();
-						// Hide ProgressBar.
-						final ProgressBar proressBar = dictionaryComponent.getProgressBar();
-						proressBar.setVisibility(ProgressBar.INVISIBLE);
-					} catch (final Exception e) {
-						Log.w(TAG, e.getMessage(), e);
-					}
+
+					// Show dropdown list.
+					searchBar.showDropDown();
+
+					// Hide ProgressBar.
+					progressBar.setVisibility(ProgressBar.INVISIBLE);
 				}
 			}
 		});

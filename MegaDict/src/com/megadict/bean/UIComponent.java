@@ -8,7 +8,7 @@ import android.widget.ProgressBar;
 
 import com.megadict.widget.ResultView;
 
-public class DictionaryComponent {
+public class UIComponent {
 	private final Button searchButton;
 	private final Button pronounceButton;
 	private final AutoCompleteTextView searchBar;
@@ -54,12 +54,12 @@ public class DictionaryComponent {
 			return this;
 		}
 
-		public DictionaryComponent build() {
-			return new DictionaryComponent(this);
+		public UIComponent build() {
+			return new UIComponent(this);
 		}
 	}
 
-	public DictionaryComponent(final Builder builder) {
+	public UIComponent(final Builder builder) {
 		this.searchButton = builder.searchButton;
 		this.pronounceButton = builder.pronounceButton;
 		this.searchBar = builder.searchBar;

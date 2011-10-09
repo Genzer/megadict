@@ -12,7 +12,7 @@ import com.megadict.format.dict.reader.DictionaryFile;
 import com.megadict.model.ChosenModel;
 import com.megadict.model.Dictionary;
 import com.megadict.model.DictionaryInformation;
-import com.megadict.wiki.WikiMobileDictionary;
+import com.megadict.wiki.WikiDictionary;
 
 class ScanTask extends AbstractWorkerTask<DictionaryBean, Void, Pair<Integer, Dictionary>> {
 	private static final String TAG = "ScanTask";
@@ -40,7 +40,7 @@ class ScanTask extends AbstractWorkerTask<DictionaryBean, Void, Pair<Integer, Di
 				dictionary = new DICTDictionary.Builder(indexFile, dictionaryFile).
 						enableSplittingIndexFile().build();
 			} else {
-				dictionary = new WikiMobileDictionary(path);
+				dictionary = new WikiDictionary(path);
 			}
 			return Pair.create(id, dictionary);
 		} catch (final FileNotFoundException e) {

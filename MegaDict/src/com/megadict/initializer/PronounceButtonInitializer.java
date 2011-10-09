@@ -6,9 +6,10 @@ import android.content.Context;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 
 import com.megadict.R;
-import com.megadict.bean.DictionaryComponent;
 import com.megadict.exception.InternetNotConnectedException;
 import com.megadict.exception.SpeakingFailedExeption;
 import com.megadict.exception.UnsupportedLanguageException;
@@ -28,7 +29,7 @@ public class PronounceButtonInitializer {
 	private final TextToSpeechSpeaker ttsSpeaker;
 	private GoogleSpeaker googleSpeaker;
 
-	public PronounceButtonInitializer(final Context context, final DictionaryComponent dictionaryComponent) {
+	public PronounceButtonInitializer(final Context context, final Button pronounceButton, final AutoCompleteTextView searchBar) {
 		this.context = context;
 
 		// Init speaker preference.
@@ -44,11 +45,11 @@ public class PronounceButtonInitializer {
 		// Init the used speaker.
 		initSpeakerBySpeakerType();
 
-		dictionaryComponent.getPronounceButton().setOnClickListener(new OnClickListener() {
+		pronounceButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(final View v) {
 				// Using TTS or Google translate here.
-				final String pronounceWord = dictionaryComponent.getSearchBar().getText().toString();
+				final String pronounceWord = searchBar.getText().toString();
 				if(!"".equals(pronounceWord)) {
 					doSpeaking(pronounceWord);
 				}

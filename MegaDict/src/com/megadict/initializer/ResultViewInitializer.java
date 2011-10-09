@@ -2,9 +2,11 @@ package com.megadict.initializer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
+import java.util.TreeSet;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -124,7 +126,7 @@ public final class ResultViewInitializer implements Initializer {
 			} else {
 				final int slashIndex = url.lastIndexOf("/");
 				if(slashIndex != -1 && slashIndex + 1 < url.length()) {
-					final String searchedWord = url.substring(slashIndex + 1);
+					final String searchedWord = url.substring(slashIndex + 1).replace('_', ' ').toLowerCase(Locale.US);
 					dictionaryClient.searchWithUI(searchedWord);
 				}
 			}
@@ -134,7 +136,7 @@ public final class ResultViewInitializer implements Initializer {
 		private void showLaunchURIDialog(final WebView view, final String url) {
 			new AlertDialog.Builder(dictionaryClient.getContext())
 			.setMessage(R.string.launchURI)
-			.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+			.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(final DialogInterface dialog, final int id) {
 					dialog.cancel();
@@ -144,7 +146,7 @@ public final class ResultViewInitializer implements Initializer {
 					dictionaryClient.getContext().startActivity(browserIntent);
 				}
 			})
-			.setNegativeButton("No", new DialogInterface.OnClickListener() {
+			.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(final DialogInterface dialog, final int id) {
 					dialog.cancel();
@@ -158,9 +160,11 @@ public final class ResultViewInitializer implements Initializer {
 
 		@Override
 		protected List<String> doInBackground(final String... params) {
-			final String []items = params[0].trim().split(SPLIT_REGEX);
-			final Set<String> words = new HashSet<String>(Arrays.asList(items));
-			return new ArrayList<String>(words);
+			final String []items = params[0].split(SPLIT_REGEX);
+			final Set<String> words = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+			words.addAll(Arrays.asList(items));
+			words.remove("");
+			return Collections.unmodifiableList(new ArrayList<String>(words));
 		}
 	}
 }

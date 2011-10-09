@@ -27,21 +27,23 @@
     folders in SD card at the location <b>/sdcard/Download/megadict</b>.</string>    
     <string name="searching">Searching... Please wait.</string>
     <string name="recommending">Recommending... Please wait.</string>
-    <string name="scanning">Scanning... Please wait.</string>
+    <string name="scanning">Scanning... Please wait.</string>    
+    <string name="adding">Adding... Please wait.</string>
     <string name="usingDictionary">You are using %1$d dictionary.</string>
     <string name="usingDictionaryPlural">You are using %1$d dictionaries.</string>
     <string name="selectText">Select text now.</string>
     <string name="canNotSelectText">Can\'t select text.</string>
     <string name="emptyHistory">There is no any word.</string>
     <string name="ok">OK</string>
-    <string name="cancel">Cancel</string>    
+    <string name="cancel">Cancel</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
     <string name="deleteEllipsis">Delete...</string>
     <string name="clear">Clear</string>
     <string name="close">Close</string>
     <string name="search">Search</string>
     <string name="split">Split</string>
     <string name="searchBarHint">Enter word here</string>
-    <string name="adding">Adding... Please wait.</string>
     <string name="chooseAnItem">Choose an item</string>
     <string name="couldNotSpeakGoogle">Couldn\'t speak. Please check your Internet connection.</string>
     <string name="couldNotSpeakTTS">Couldn\'t speak. Something wrong.</string>
