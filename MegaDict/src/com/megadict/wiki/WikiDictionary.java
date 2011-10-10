@@ -18,9 +18,9 @@ public class WikiDictionary implements Dictionary {
 	private static final String NO_DEFINITION = "No definition";
 	private static final String TIME_OUT = "Timeout";
 	private static final int ALLOWED_WORD_COUNT = 1000;
-	private static final int TIMEOUT_MILLISECONDS = 3000;
+	private static final int TIMEOUT_MILLISECONDS = 10000;
 	private static final String PREFIX = "Wikipedia ";
-	private static final String URL_PATTERN = "http://%s.wikipedia.org/w/index.php?title=%s&action=render";
+	private static final String URL_PATTERN = "http://%s.m.wikipedia.org/wiki/%s";
 	private static final String FULL_ARTICLE_PATTERN =
 			"<div style=\"text-align: right\"><a href=\"http://%s.wikipedia.org/wiki/%s\">Full article...</a></div>";
 	private String dictionaryName;

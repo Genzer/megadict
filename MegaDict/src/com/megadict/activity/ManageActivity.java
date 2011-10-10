@@ -68,6 +68,12 @@ public class ManageActivity extends AbstractListActivity {
 	}
 
 	@Override
+	protected void onStart() {
+		super.onStart();
+		refreshStrings();
+	}
+
+	@Override
 	protected void onStop() {
 		super.onStop();
 		finish();
@@ -103,5 +109,9 @@ public class ManageActivity extends AbstractListActivity {
 		} else {
 			Utility.messageBox(this, R.string.scanning);
 		}
+	}
+
+	private void refreshStrings() {
+		progressDialog.setMessage(getString(R.string.scanning));
 	}
 }

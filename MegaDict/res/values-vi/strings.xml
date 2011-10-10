@@ -11,7 +11,7 @@
     <string name="pronounceButtonLabel">Phát âm</string>
     
     <!-- Menu items titles -->
-    <string name="rescanMenuItemTitle">Rescan</string>
+    <string name="rescanMenuItemTitle">Scan từ điển</string>
     <string name="settingMenuItemTitle">Cấu hình</string>
     <string name="manageMenuItemTitle">Quản lý</string>
     <string name="aboutMenuItemTitle">Thông tin</string>
@@ -20,7 +20,7 @@
     <string name="wikiMenuItemTitle">Wikipedia</string>
     
     <!-- Common Strings -->
-    <string name="welcome">MegaDict phiên bản 1.3</string>   
+    <string name="welcome">MegaDict phiên bản 1.4</string>   
     <string name="noDefinition">Không tìm thấy nghĩa.</string>    
     <string name="noDictionary">Làm ơn chọn từ điển.</string>
     <string name="noDictionary2">Không có từ điểm. Làm ơn chép các thư mục từ điển vào thẻ nhớ tại vị trí
