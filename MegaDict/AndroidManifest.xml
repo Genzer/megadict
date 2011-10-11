@@ -15,7 +15,7 @@
     
     <application android:name=".application.MegaDictApp" 
     			 android:icon="@drawable/megadict_icon" 
-    			 android:label="@string/appName" android:debuggable="true">
+    			 android:label="@string/appName" android:debuggable="false">
     			 
     	<!-- Every activities must use MegaDictTheme to set custom window title. 
     	 Refer "http://stackoverflow.com/questions/2086989/custom-title-with-image" -->

@@ -72,19 +72,11 @@ public final class DictionaryActivity extends AbstractActivity {
 
 	@Override
 	public void onCreate(final Bundle savedInstanceState) {
-		//Debug.startMethodTracing("calc");
+		//Debug.startMethodTracing("MegaDict");
 		super.onCreate(savedInstanceState);
-
-		// Load language when first start app.
-		Utility.updateLocale(this, LanguagePreference.newInstance(this).getLanguage());
-		// Set this to update menus.
-		languageChanged = true;
 
 		// Init all UIs.
 		initSomething();
-
-		// Once UI was initialized, refresh all strings.
-		refreshStrings();
 
 		// Check Internet connection.
 		if(!Utility.isOnline(this)) {
@@ -95,8 +87,6 @@ public final class DictionaryActivity extends AbstractActivity {
 	@Override
 	protected void onStop() {
 		super.onStop();
-
-		// Reset languageChanged.
 		languageChanged = false;
 	}
 
@@ -104,7 +94,6 @@ public final class DictionaryActivity extends AbstractActivity {
 	protected void onDestroy() {
 		//Debug.stopMethodTracing();
 		super.onDestroy();
-
 		searcher.setResultView(null);
 		recommender.setSearchBar(null);
 		pronounceButtonInitializer.shutDownTTSSpeaker();
@@ -124,6 +113,7 @@ public final class DictionaryActivity extends AbstractActivity {
 		if(languageChanged) {
 			menu.clear();
 			inflateMenu(menu);
+			languageChanged = false;
 		}
 		return true;
 	}
@@ -176,8 +166,7 @@ public final class DictionaryActivity extends AbstractActivity {
 
 	private void refreshStrings() {
 		// Change noDefinition string.
-		searcher.setNoDefinitionStr(getString(R.string.noDefinition));
-		searcher.setNoDictionaryStr(getString(R.string.noDictionary));
+		setSearcherStrings();
 		// Redraw search bar hint
 		uiComponent.getSearchBar().setHint(R.string.searchBarHint);
 		// Redraw bottom buttons.
@@ -185,6 +174,11 @@ public final class DictionaryActivity extends AbstractActivity {
 		for(final Button button : buttons) {
 			button.setText(bottomButtonMap.get(button));
 		}
+	}
+
+	private void setSearcherStrings() {
+		searcher.setNoDefinitionStr(getString(R.string.noDefinition));
+		searcher.setNoDictionaryStr(getString(R.string.noDictionary));
 	}
 
 	// ==================== Init functions =================//
@@ -269,6 +263,7 @@ public final class DictionaryActivity extends AbstractActivity {
 			recommender.updateDictionaryModels(scanner.getDictionaryModels());
 			searcher = new WordSearcher(uiComponent.getResultView(), uiComponent.getProgressBar());
 			searcher.updateDictionaryModels(scanner.getDictionaryModels());
+			setSearcherStrings();
 
 			// Init business component.
 			businessComponent =	new BusinessComponent(searcher, recommender);
