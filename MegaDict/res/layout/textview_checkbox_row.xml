@@ -2,15 +2,15 @@
 <LinearLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
   android:orientation="horizontal" 
-  android:layout_height="match_parent" 
-  android:layout_width="match_parent" 
+  android:layout_height="fill_parent" 
+  android:layout_width="fill_parent" 
   android:layout_gravity="center_vertical"
   style="@style/DreamStyle" android:padding="5dip">
   
     <TextView android:layout_weight="1"
     android:id="@+id/dictionaryName"  
     android:layout_height="wrap_content"  
-    android:layout_width="match_parent"  
+    android:layout_width="fill_parent"  
     android:text="This is sample text."      
     android:layout_gravity="center_vertical"    
     style="@style/DreamTextView"    

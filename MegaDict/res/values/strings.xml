@@ -20,7 +20,7 @@
     <string name="wikiMenuItemTitle">Wikipedia</string>
     
     <!-- Common Strings -->
-    <string name="welcome">MegaDict version 1.4</string>   
+    <string name="welcome">MegaDict version 1.4.0.2</string>   
     <string name="noDefinition">There is no definition.</string>    
     <string name="noDictionary">Please choose a dictionary.</string>
     <string name="noDictionary2">There is no dictionary. Please put dictionaries\' data 
@@ -51,6 +51,7 @@
     <string name="internetNotConnectedWarning">Internet not connected. Some features will not work.</string>
     <string name="internetNotConnected">Internet not connected.</string>
     <string name="launchURI">Launch this URI?</string>
+    <string name="sdcardDoesNotExist">SD card not available or readonly. Please insert it and make sure it writable.</string>
     
     <!-- Dialog title -->
     <string name="wordListDialogTitle">Pick a word</string>

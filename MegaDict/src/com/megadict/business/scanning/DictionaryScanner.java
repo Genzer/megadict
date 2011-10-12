@@ -17,11 +17,13 @@ import com.megadict.business.AbstractWorkerTask.OnPostExecuteListener;
 import com.megadict.business.AbstractWorkerTask.OnPreExecuteListener;
 import com.megadict.business.ExternalReader;
 import com.megadict.business.ExternalStorage;
+import com.megadict.exception.CouldNotCreateExternalDirectoryException;
 import com.megadict.model.ChosenModel;
 import com.megadict.model.Dictionary;
 import com.megadict.model.DictionaryInformation;
 import com.megadict.model.ModelMap;
 import com.megadict.utility.DatabaseHelper;
+import com.megadict.utility.Utility;
 
 public final class DictionaryScanner {
 	public static final String MODEL_CHANGED = "modelChanged";
@@ -84,15 +86,20 @@ public final class DictionaryScanner {
 		// Change ProgressDialog message.
 		progressDialog.setMessage(context.getString(R.string.scanning));
 
-		// Read from external storage.
-		final List<DictionaryInformation> infos = ExternalReader.readExternalStorage(ExternalStorage.getExternalDirectory());
-		// Get database.
-		final SQLiteDatabase database =	DatabaseHelper.getDatabase(context);
-		// Truncate the table.
-		database.delete(ChosenModel.TABLE_NAME, null, null);
-		// Execute rescan tasks.
-		if (!infos.isEmpty()) {
-			executeRecanTasks(progressDialog, database, infos);
+		try {
+			// Read from external storage.
+			List<DictionaryInformation> infos;
+			infos = ExternalReader.readExternalStorage(ExternalStorage.getExternalDirectory());
+			// Get database.
+			final SQLiteDatabase database =	DatabaseHelper.getDatabase(context);
+			// Truncate the table.
+			database.delete(ChosenModel.TABLE_NAME, null, null);
+			// Execute rescan tasks.
+			if (!infos.isEmpty()) {
+				executeRecanTasks(progressDialog, database, infos);
+			}
+		} catch (final CouldNotCreateExternalDirectoryException e) {
+			Utility.messageBoxLong(context, R.string.sdcardDoesNotExist);
 		}
 	}
 

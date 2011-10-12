@@ -23,6 +23,7 @@ import com.megadict.application.MegaDictApp;
 import com.megadict.bean.BusinessComponent;
 import com.megadict.bean.UIComponent;
 import com.megadict.business.DictionaryClient;
+import com.megadict.business.ExternalStorage;
 import com.megadict.business.HistoryDisplayer;
 import com.megadict.business.recommending.WordRecommender;
 import com.megadict.business.scanning.DictionaryScanner;
@@ -75,13 +76,20 @@ public final class DictionaryActivity extends AbstractActivity {
 		//Debug.startMethodTracing("MegaDict");
 		super.onCreate(savedInstanceState);
 
-		// Init all UIs.
-		initSomething();
+		// Call this to create megadict folder.
+		try {
+			ExternalStorage.getExternalDirectory();
+		} catch (final Exception e) {
+			Utility.messageBoxLong(getBaseContext(), R.string.sdcardDoesNotExist);
+		}
 
 		// Check Internet connection.
 		if(!Utility.isOnline(this)) {
 			Utility.messageBoxLong(this, R.string.internetNotConnectedWarning);
 		}
+
+		// Init all UIs.
+		initSomething();
 	}
 
 	@Override
